@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amprovans Motors</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="shortcut icon" href="./images/logo.jpg" type="image/x-icon">
+</head>
+
+<body>
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo-crop.jpg" alt="Amprovans Motors Logo">
+    </div>
+
+    <nav id="nav-links" class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#vehicles">All Vehicles</a>
+        <a href="#about">About Us</a>
+        <a href="#contact">Contact Us</a>
+    </nav>
+
+    <div class="hamburger" id="hamburgerBtn">
+      <i class="fas fa-bars"></i>
+    </div>
+</header>
+
+<!-- ---------------- HERO / LANDING ---------------- -->
+<section id="home" class="section home-section">
+    
+    <div class="home-content" id="homeContent">
+      <h1>Buy Your Dream Car Easily &amp; Safely</h1>
+      <p class="subtitle">Drive your dreams.</p>
+    </div>
+
+
+    <!-- CLIENT BADGE -->
+    <div class="client-badge" aria-hidden="true">
+      <div class="badge-inner">
+        <span class="big-number">200+</span>
+        <span class="small-text">Satisfied Clients</span>
+      </div>
+    </div>
+
+  <!-- SLIDE-IN CAR ANIMATION (right side, overlay) -->
+  <div class="slide-cars" aria-hidden="true">
+    <img id="slideCar" src="images/Drive-in.png" alt="Slideshow car">
+  </div>
+
+  <!-- CTA links moved near bottom of landing page for better UX on desktop -->
+  <div class="hero-cta" aria-hidden="false">
+    <a class="cta-link buy" href="#vehicles">Buy a Car</a>
+    <a class="cta-link sell" href="#sell">Sell a Car</a>
+  </div>
+
+</section>
+
+
+<section id="vehicles" class="section vehicles-section">
+
+    <!-- Sticky Filter/Search Bar -->
+    <div id="inventory-bar" class="inventory-bar">
+
+        <!-- SEARCH BAR -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search by name, price, engine, transmission...">
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filters">
+
+            <select id="filterMake">
+                <option value="">Select Make</option>
+            </select>
+
+            <select id="filterModel" disabled>
+                <option value="">Select Model</option>
+            </select>
+
+            <select id="filterYear">
+                <option value="">Year</option>
+            </select>
+
+            <div class="price-inputs">
+                <input type="text" id="minPrice" placeholder="Min Price">
+                <input type="text" id="maxPrice" placeholder="Max Price">
+            </div>
+
+            <button id="applyFilter" class="apply-btn">
+                <i class="fa-solid fa-check"></i> Apply
+            </button>
+
+            <button id="resetFilter" class="reset-btn">
+                <i class="fa-solid fa-trash"></i> Clear
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Cars Grid -->
+<!-- Vehicles Grid (place under the inventory-bar and the section title) -->
+<div id="vehicleGrid" class="vehicle-grid"></div>
+
+</section>
+
+<section id="about" class="section">
+    <h2>About Us</h2>
+</section>
+
+<section id="contact" class="section">
+    <h2>Contact Us</h2>
+    <p>Request a car not listed</p>
+</section>
+
+<!-- Back to Top Button -->
+<button id="backToTop" title="Go to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+<script src="scripts/fetchCars.js"></script>
+<script src="scripts/main.js"></script>
+</body>
+</html>

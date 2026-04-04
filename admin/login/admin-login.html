@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 350px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .link {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Admin Login</h2>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button onclick="login()">Login</button>
+    <p class="error" id="loginErrorMsg"></p>
+    <a href="reset-password.html" class="link">Forgot Password?</a>
+  </div>
+
+<script>
+async function login() {
+  const res = await fetch("http://localhost:5000/api/auth/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      username: document.getElementById("email").value,
+      password: document.getElementById("password").value
+    })
+  });
+
+  const data = await res.json();
+
+  if(data.token) {
+    // Save token in localStorage
+    localStorage.setItem("token", data.token);
+    // Redirect to dashboard
+    window.location.href = "../admin-dashboard.html";
+  } else {
+    alert("Login failed. Check credentials.");
+  }
+}
+</script>
+</body>
+</html>

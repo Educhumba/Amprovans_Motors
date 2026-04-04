@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Car Details - Amprovans Motors</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo-crop.jpg" alt="Amprovans Motors Logo">
+    </div>
+
+    <nav id="nav-links" class="nav-links">
+        <a href="index.html#home">Home</a>
+        <a href="index.html#vehicles">All Vehicles</a>
+        <a href="index.html#about">About Us</a>
+        <a href="index.html#contact">Contact Us</a>
+    </nav>
+
+    <div class="hamburger" id="hamburgerBtn">
+      <i class="fas fa-bars"></i>
+    </div>
+</header>
+
+<main class="car-container">
+    <section id="carDetails">
+      <div id="gallery" class="gallery-section">
+        <div class="image-area">
+            <img id="mainImage" src="images/logo.jpg" alt="main" class="main-image">
+            <div class="thumbs-wrapper">
+                <button class="thumb-arrow thumb-left"><i class="fas fa-chevron-left"></i></button>
+                <div id="thumbs" class="thumbs"></div>
+                <button class="thumb-arrow thumb-right"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <aside class="details-sidebar">
+          <h1 id="carTitle">Loading...</h1>
+          <div id="carPrice" class="car-price"></div>
+
+          <div class="specs">
+            <div><strong>Make:</strong> <span id="make" class="value"></span></div>
+            <div><strong>Model:</strong> <span id="model" class="value"></span></div>
+            <div><strong>Year:</strong> <span id="year" class="value"></span></div>
+            <div><strong>Engine:</strong> <span id="engine" class="value"></span> cc</div>
+            <div><strong>Transmission:</strong> <span id="transmission" class="value"></span></div>
+            <div><strong>Mileage:</strong> <span id="mileage" class="value"></span> km</div>
+            <div><strong>Location:</strong> <span id="location" class="value"></span></div>
+          </div>
+
+          <section class="about-section">
+            <h3>About this car</h3>
+            <p id="description"></p>
+          </section>
+
+          <div class="contact-buttons">
+            <a id="whatsappBtn" class="btn whatsapp" target="_blank">
+              <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+            <a id="callBtn" class="btn call">
+              <i class="fas fa-phone"></i> Call
+            </a>
+            <button id="shareBtn" class="btn share">
+              <i class="fas fa-share-alt"></i> Share
+            </button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="related" class="related-section">
+      <h3>Related vehicles</h3>
+      <div id="relatedGrid" class="vehicle-grid"></div>
+    </section>
+</main>
+
+<!-- Only include JS files you actually have -->
+<script src="scripts/fetchCars.js"></script>
+<script src="scripts/car-details.js"></script>
+</body>
+</html>

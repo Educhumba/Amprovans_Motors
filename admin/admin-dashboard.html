@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <i class="fa-solid fa-car"></i> Car Admin
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Admin Panel</h2>
+      <nav>
+        <ul>
+          <li class="active" data-tab="car-listings"><i class="fa-solid fa-list"></i> Car Listings</li>
+          <li data-tab="car-hire"><i class="fa-solid fa-car-side"></i> Car Hire</li>
+          <li data-tab="car-auction"><i class="fa-solid fa-gavel"></i> Car Auction</li>
+          <li data-tab="messages"><i class="fa-solid fa-envelope"></i> Messages</li>
+          <li data-tab="sales-agents"><i class="fa-solid fa-user-tie"></i> Sales Agents</li>
+          <li data-tab="sales"><i class="fa-solid fa-dollar-sign"></i> Sales</li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Car Listings -->
+      <section id="adminCarForm">
+        <h2>Car Listing Management</h2>
+        <form id="carForm">
+
+          <!-- Make and Model -->
+          <div class="form-group">
+            <label for="carMake">Make</label>
+            <select id="carMake" name="make" required>
+              <option value="">Select Make</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="carModel">Model</label>
+            <select id="carModel" name="model" required disabled>
+              <option value="">Select Model</option>
+            </select>
+          </div>
+
+          <!-- Year -->
+          <div class="form-group">
+            <label for="carYear">Year</label>
+            <select id="carYear" name="year" required>
+              <option value="">Select Year</option>
+            </select>
+          </div>
+
+          <!-- Transmission -->
+          <div class="form-group">
+            <label for="carTransmission">Transmission</label>
+            <select id="carTransmission" name="transmission" required>
+              <option value="">Select Transmission</option>
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+            </select>
+          </div>
+
+          <!-- Fuel Type -->
+          <div class="form-group">
+            <label for="carFuel">Fuel Type</label>
+            <select id="carFuel" name="fuel" required>
+              <option value="">Select Fuel</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+
+          <!-- Body -->
+          <div class="form-group">
+            <label for="carBody">Body Type</label>
+            <select id="carBody" name="body" required>
+              <option value="">Select Body</option>
+              <option value="Sedan">Sedan</option>
+              <option value="SUV">SUV</option>
+              <option value="Hatchback">Hatchback</option>
+              <option value="Coupe">Coupe</option>
+              <option value="Convertible">Convertible</option>
+              <option value="Pickup">Pickup</option>
+            </select>
+          </div>
+
+          <!-- Condition -->
+          <div class="form-group">
+            <label for="carCondition">Condition</label>
+            <select id="carCondition" name="condition" required>
+              <option value="">Select Condition</option>
+              <option value="New">New</option>
+              <option value="Used">Used</option>
+            </select>
+          </div>
+
+          <!-- Color -->
+          <div class="form-group">
+            <label for="carColor">Color</label>
+            <select id="carColor" name="color" required>
+              <option value="">Select Color</option>
+              <option value="White">White</option>
+              <option value="Black">Black</option>
+              <option value="Silver">Silver</option>
+              <option value="Blue">Blue</option>
+              <option value="Red">Red</option>
+              <option value="Gray">Gray</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- Mileage -->
+          <div class="form-group">
+            <label for="carMileage">Mileage (km)</label>
+            <input type="number" id="carMileage" name="mileage" placeholder="e.g. 78000" required>
+          </div>
+
+          <!-- Engine -->
+          <div class="form-group">
+            <label for="carEngine">Engine (cc)</label>
+            <input type="number" id="carEngine" name="engine" placeholder="e.g. 1500" required>
+          </div>
+
+          <!-- Location -->
+          <div class="form-group">
+            <label for="carLocation">Location</label>
+            <input type="text" id="carLocation" name="location" placeholder="e.g. Nairobi" required>
+          </div>
+
+          <!-- Price -->
+          <div class="form-group">
+            <label for="carPrice">Price (KSh)</label>
+            <input type="number" id="carPrice" name="price" placeholder="e.g. 1250000" required>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group">
+            <label for="carStatus">Status</label>
+            <select id="carStatus" name="status" required>
+              <option value="">Select Status</option>
+              <option value="available">Available</option>
+              <option value="booked">Booked</option>
+              <option value="sold">Sold</option>
+            </select>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="carDescription">Description</label>
+            <textarea id="carDescription" name="description" rows="3" placeholder="Add car description"></textarea>
+          </div>
+
+            <!-- Car Images -->
+            <div class="form-group">
+              <label for="carImages">Car Images</label>
+              <input type="file" id="carImages" name="images" accept="image/*" multiple>
+              <div id="imagePreview" class="image-preview"></div>
+            </div>
+
+          <!-- Submit Button -->
+          <div class="form-group">
+            <button type="submit" id="submitCar">Add / Update Car</button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- Other tabs -->
+      <section id="car-hire" class="tab-section">
+        <h3>Car Hire</h3>
+        <p>Manage car hire requests here...</p>
+      </section>
+      <section id="car-auction" class="tab-section">
+        <h3>Car Auction</h3>
+        <p>Manage car auctions here...</p>
+      </section>
+      <section id="messages" class="tab-section">
+        <h3>Messages</h3>
+        <p>View customer messages here...</p>
+      </section>
+      <section id="sales-agents" class="tab-section">
+        <h3>Sales Agents</h3>
+        <p>Manage your sales agents here...</p>
+      </section>
+      <section id="sales" class="tab-section">
+        <h3>Sales</h3>
+        <p>Track sales here...</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if(!token) {
+      alert("You must login first");
+      window.location.href = "./login/admin-login.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "./login/admin-login.html";
+    }
+
+    // Sidebar tabs
+    const tabs = document.querySelectorAll('.sidebar ul li');
+    const sections = document.querySelectorAll('.tab-section');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Car Makes & Models
+    const carData = {
+      "Toyota": ["Corolla", "Camry", "Land Cruiser", "Hilux"],
+      "Honda": ["Civic", "Accord", "CR-V", "Pilot"],
+      "Ford": ["Focus", "Mustang", "Explorer", "F-150"],
+      "BMW": ["3 Series", "5 Series", "X5", "X3"],
+      "Mercedes": ["C-Class", "E-Class", "GLA", "GLE"]
+    };
+
+    const carMakeSelect = document.getElementById("carMake");
+    const carModelSelect = document.getElementById("carModel");
+
+    Object.keys(carData).forEach(make => {
+      const option = document.createElement("option");
+      option.value = make;
+      option.textContent = make;
+      carMakeSelect.appendChild(option);
+    });
+
+    carMakeSelect.addEventListener("change", () => {
+      const selectedMake = carMakeSelect.value;
+      carModelSelect.innerHTML = '<option value="">Select Model</option>';
+      carModelSelect.disabled = !selectedMake;
+      if (selectedMake) {
+        carData[selectedMake].forEach(model => {
+          const option = document.createElement("option");
+          option.value = model;
+          option.textContent = model;
+          carModelSelect.appendChild(option);
+        });
+      }
+    });
+
+    // Populate years
+    const carYearSelect = document.getElementById("carYear");
+    const currentYear = new Date().getFullYear();
+    for(let year = currentYear; year >= 1990; year--) {
+      const option = document.createElement("option");
+      option.value = year;
+      option.textContent = year;
+      carYearSelect.appendChild(option);
+    }
+
+    // Image Preview
+    const carImagesInput = document.getElementById("carImages");
+    const imagePreviewDiv = document.getElementById("imagePreview");
+
+    carImagesInput.addEventListener("change", () => {
+      imagePreviewDiv.innerHTML = ""; // clear existing previews
+      const files = carImagesInput.files;
+
+      if (files) {
+        Array.from(files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            imagePreviewDiv.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
+
+    // Add car
+    document.getElementById("carForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+
+      const res = await fetch("http://localhost:5000/api/cars", {
+        method: "POST",
+        headers: { Authorization: token },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Car added successfully");
+      } else {
+        alert("Error: " + data.error);
+      }
+      form.reset();
+      carModelSelect.disabled = true;
+      loadCars();
+    });
+
+    // Load cars
+    async function loadCars() {
+      const res = await fetch("http://localhost:5000/api/cars", {
+        headers: { Authorization: token }
+      });
+      const cars = await res.json();
+      const div = document.getElementById("cars");
+      if(!div) return;
+      div.innerHTML = "";
+      cars.forEach(car => {
+        div.innerHTML += `
+          <div class="car-card">
+            <h4>${car.title}</h4>
+            <p>Status: ${car.status}</p>
+            <select onchange="updateStatus(${car.id}, this.value)">
+              <option value="available">Available</option>
+              <option value="booked">Booked</option>
+              <option value="sold">Sold</option>
+            </select>
+            <button class="delete-btn" onclick="deleteCar(${car.id})">Delete</button>
+          </div>
+        `;
+      });
+    }
+
+    async function updateStatus(id, status) {
+      await fetch(`http://localhost:5000/api/cars/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type":"application/json", Authorization: token },
+        body: JSON.stringify({status})
+      });
+      loadCars();
+    }
+
+    async function deleteCar(id) {
+      await fetch(`http://localhost:5000/api/cars/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: token }
+      });
+      loadCars();
+    }
+
+    loadCars();
+  </script>
+</body>
+</html>
