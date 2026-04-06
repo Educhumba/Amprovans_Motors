@@ -166,6 +166,32 @@ textarea {
   border: 1px solid #ccc;
 }
 
+.preview-item {
+  position: relative;
+}
+
+.preview-item img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+}
+
 #submitCar {
   background: var(--primary);
   color: #fff;
@@ -185,4 +211,178 @@ textarea {
 @media(max-width: 768px) {
   .main-content { margin-left: 0; padding: 15px; }
   #carForm { grid-template-columns: 1fr; }
+}
+
+/* ---------------- Filters & Search Buttons ---------------- */
+.filters, .search-container {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+.filters select, .search-container input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.2s;
+}
+
+.filters select:focus, .search-container input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 5px rgba(64, 147, 71, 0.3);
+}
+
+.filters button, .search-container button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: 0.3s;
+}
+
+.filters button:hover, .search-container button:hover {
+  background: var(--secondary);
+}
+
+/* Make search input expand nicely on larger screens */
+.search-container input {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Optional: make car cards grid nicely spaced */
+.cars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+
+
+
+
+/* ---------------- SALES AGENTS ---------------- */
+
+.agents-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.primary-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.primary-btn:hover {
+  background: var(--secondary);
+}
+
+.secondary-btn {
+  background: #ccc;
+  color: #333;
+  border: none;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.agent-form-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Agents Grid */
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+/* Agent Card */
+.agent-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agent-card h4 {
+  color: var(--deep-blue);
+}
+
+.agent-status {
+  font-weight: bold;
+}
+
+.status-active {
+  color: green;
+}
+
+.status-suspended {
+  color: red;
+}
+
+.agent-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.suspend-btn {
+  background: orange;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.activate-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-agent-btn {
+  background: var(--delete);
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
 }

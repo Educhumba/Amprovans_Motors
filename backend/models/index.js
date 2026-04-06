@@ -5,8 +5,8 @@ const Car = require("./Car");
 const CarImage = require("./CarImage");
 
 // Relationships
-Car.hasMany(CarImage, { as: "images", onDelete: "CASCADE" });
-CarImage.belongsTo(Car);
+Car.hasMany(CarImage, { foreignKey: "car_id", as: "images", onDelete: "CASCADE" });
+CarImage.belongsTo(Car, {foreignKey: "car_id"});
 
 module.exports = {
   sequelize,

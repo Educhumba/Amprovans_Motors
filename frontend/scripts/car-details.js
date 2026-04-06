@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     // Fetch all cars from backend
-    const res = await fetch("http://localhost:5000/api/cars");
+    const res = await fetch("http://localhost:5000/api/cars/public");
     const cars = await res.json();
     const car = cars.find(c => c.id == id);
     if (!car) return;
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("description").textContent = car.description;
 
     const mainImg = document.getElementById("mainImage");
-    mainImg.src = car.images && car.images.length ? `http://localhost:5000${car.images[0].url}` : "images/logo.jpg";
+    mainImg.src = car.images && car.images.length ? `http://localhost:5000${car.images[0].image_path}` : "images/logo.jpg";
 
     // CONTACT BUTTONS
     const phone = "+254110146704";
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(car.images){
       car.images.forEach(img => {
         const t = document.createElement("img");
-        t.src = `http://localhost:5000${img.url}`;
+        t.src = `http://localhost:5000${img.image_path}`;
         t.style.width = '80px';
         t.style.height = '60px';
         t.style.cursor = 'pointer';

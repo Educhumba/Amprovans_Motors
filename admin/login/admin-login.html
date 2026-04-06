@@ -66,24 +66,48 @@
 
 <script>
 async function login() {
-  const res = await fetch("http://localhost:5000/api/auth/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      username: document.getElementById("email").value,
-      password: document.getElementById("password").value
-    })
-  });
+  const errorMsg = document.getElementById("loginErrorMsg");
 
-  const data = await res.json();
+  try {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-  if(data.token) {
-    // Save token in localStorage
-    localStorage.setItem("token", data.token);
-    // Redirect to dashboard
-    window.location.href = "../admin-dashboard.html";
-  } else {
-    alert("Login failed. Check credentials.");
+    if (!email || !password) {
+      errorMsg.textContent = "Please enter both email and password.";
+      return;
+    }
+
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,        // ✅ send email instead of username
+        password
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.token) {
+      // Save authentication data
+      localStorage.setItem("token", data.token);
+
+      // Save role
+      localStorage.setItem("role", data.user.role);
+
+      // Save user info
+      localStorage.setItem("userName", data.user.name);
+
+      // Redirect to dashboard
+      window.location.href = "../admin-dashboard.html";
+
+    } else {
+      errorMsg.textContent = data.error || "Login failed. Check credentials.";
+    }
+
+  } catch (err) {
+    console.error(err);
+    errorMsg.textContent = "Server error. Try again later.";
   }
 }
 </script>

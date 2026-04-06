@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const grid = document.getElementById("vehicleGrid");
 
   try {
-    const res = await fetch("http://localhost:5000/api/cars");
+    const res = await fetch("http://localhost:5000/api/cars/public");
     const cars = await res.json();
 
     // ✅ STORE GLOBALLY
@@ -40,7 +40,7 @@ function renderCars(cars) {
     const img = document.createElement("img");
     img.className = "card-image";
     img.src = car.images && car.images.length 
-      ? `http://localhost:5000${car.images[0].url}` 
+      ? `http://localhost:5000${car.images[0].image_path}` 
       : "images/logo.jpg";
 
     const badge = document.createElement("div");

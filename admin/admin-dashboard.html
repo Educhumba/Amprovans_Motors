@@ -25,11 +25,11 @@
       <nav>
         <ul>
           <li class="active" data-tab="car-listings"><i class="fa-solid fa-list"></i> Car Listings</li>
-          <li data-tab="car-hire"><i class="fa-solid fa-car-side"></i> Car Hire</li>
-          <li data-tab="car-auction"><i class="fa-solid fa-gavel"></i> Car Auction</li>
-          <li data-tab="messages"><i class="fa-solid fa-envelope"></i> Messages</li>
-          <li data-tab="sales-agents"><i class="fa-solid fa-user-tie"></i> Sales Agents</li>
-          <li data-tab="sales"><i class="fa-solid fa-dollar-sign"></i> Sales</li>
+          <li data-tab="car-hire" data-role="admin,agent"><i class="fa-solid fa-car-side"></i> Car Hire</li>
+          <li data-tab="car-auction" data-role="admin,agent"><i class="fa-solid fa-gavel"></i> Car Auction</li>
+          <li data-tab="messages" data-role="admin,agent"><i class="fa-solid fa-envelope"></i> Messages</li>
+          <li data-tab="sales-agents" data-role="admin"><i class="fa-solid fa-user-tie"></i> Sales Agents</li>
+          <li data-tab="sales" data-role="admin"><i class="fa-solid fa-dollar-sign"></i> Sales</li>
         </ul>
       </nav>
     </aside>
@@ -37,7 +37,7 @@
     <!-- Main Content -->
     <main class="main-content">
       <!-- Car Listings -->
-      <section id="adminCarForm">
+      <section id="car-listings" class="tab-section" data-role="admin">
         <h2>Car Listing Management</h2>
         <form id="carForm">
 
@@ -179,26 +179,89 @@
           </div>
 
         </form>
+
+        <h3>All Cars</h3>
+
+        <!-- Filters -->
+        <div class="filters">
+          <select id="filterMake">
+            <option value="">All Makes</option>
+          </select>
+
+          <select id="filterYear">
+            <option value="">All Years</option>
+          </select>
+
+          <button id="resetFilters">Reset Filters</button>
+          <button onclick="generateReport()">Export PDF</button>
+        </div>
+
+        <div class="search-container">
+          <input type="text" id="searchCar" placeholder="Search by make, model, or year">
+        </div>
+
+        <div id="cars" class="cars-grid"></div>
       </section>
 
       <!-- Other tabs -->
-      <section id="car-hire" class="tab-section">
+      <section id="car-hire" class="tab-section" data-role="admin,agent">
         <h3>Car Hire</h3>
         <p>Manage car hire requests here...</p>
       </section>
-      <section id="car-auction" class="tab-section">
+      <section id="car-auction" class="tab-section" data-role="admin,agent">
         <h3>Car Auction</h3>
         <p>Manage car auctions here...</p>
       </section>
-      <section id="messages" class="tab-section">
+      <section id="messages" class="tab-section" data-role="admin,agent">
         <h3>Messages</h3>
         <p>View customer messages here...</p>
       </section>
-      <section id="sales-agents" class="tab-section">
-        <h3>Sales Agents</h3>
-        <p>Manage your sales agents here...</p>
+
+      <section id="sales-agents" class="tab-section" data-role="admin">
+        <div class="agents-header">
+          <h2>Sales Agents Management</h2>
+          <button id="addAgentBtn" class="primary-btn">
+            <i class="fa-solid fa-user-plus"></i> Add Agent
+          </button>
+        </div>
+
+        <!-- Add Agent Form (Hidden by default) -->
+        <div id="agentFormContainer" class="agent-form-container hidden">
+          <h3>Register New Agent</h3>
+
+          <form id="agentForm">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="agentName" required />
+            </div>
+
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="agentEmail" required />
+            </div>
+
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" id="agentPhone" required />
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Create Agent</button>
+              <button type="button" id="cancelAgentBtn" class="secondary-btn">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Agents List -->
+        <div class="agents-list-container">
+          <h3>All Agents</h3>
+
+          <div id="agentsList" class="agents-grid">
+            <!-- Agents will load here dynamically -->
+          </div>
+        </div>
       </section>
-      <section id="sales" class="tab-section">
+      <section id="sales" class="tab-section" data-role="admin,agent">
         <h3>Sales</h3>
         <p>Track sales here...</p>
       </section>
@@ -206,10 +269,39 @@
   </div>
 
   <script>
-    const token = localStorage.getItem("token");
-    if(!token) {
+    // ----------------------------
+    // AUTH & ROLE MANAGEMENT
+    // ----------------------------
+    let token = localStorage.getItem("token");
+    let role = localStorage.getItem("role");
+
+    if (!token) {
       alert("You must login first");
       window.location.href = "./login/admin-login.html";
+    }
+
+    let allCars = []; // store all cars globally
+    let editingCarId = null;
+
+    function applyRoleAccess() {
+      const menuItems = document.querySelectorAll(".sidebar ul li");
+      const sections = document.querySelectorAll("section");
+
+      menuItems.forEach(item => {
+        const allowedRoles = item.dataset.role;
+        if (!allowedRoles) return;
+
+        const rolesArray = allowedRoles.split(",");
+        if (!rolesArray.includes(role)) item.style.display = "none";
+      });
+
+      sections.forEach(section => {
+        const allowedRoles = section.dataset.role;
+        if (!allowedRoles) return;
+
+        const rolesArray = allowedRoles.split(",");
+        if (!rolesArray.includes(role)) section.style.display = "none";
+      });
     }
 
     function logout() {
@@ -217,30 +309,60 @@
       window.location.href = "./login/admin-login.html";
     }
 
-    // Sidebar tabs
+    applyRoleAccess();
+
+    // ----------------------------
+    // TAB MANAGEMENT
+    // ----------------------------
     const tabs = document.querySelectorAll('.sidebar ul li');
-    const sections = document.querySelectorAll('.tab-section');
+    const tabSections = document.querySelectorAll('.tab-section');
+
+    function activateTab(tab) {
+      if (tab.style.display === "none") return;
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tabSections.forEach(s => s.classList.remove('active'));
+
+      tab.classList.add('active');
+
+      const target = document.getElementById(tab.dataset.tab);
+      if (target) target.classList.add('active');
+
+      if (tab.dataset.tab === "car-listings") loadCars();
+    }
+
     tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        sections.forEach(s => s.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.tab).classList.add('active');
-      });
+      tab.addEventListener('click', () => activateTab(tab));
     });
 
-    // Car Makes & Models
+    function activateDefaultTab() {
+      const firstVisibleTab = document.querySelector(".sidebar ul li:not([style*='display: none'])");
+      if (firstVisibleTab) activateTab(firstVisibleTab);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      activateDefaultTab();
+    });
+
+    // ----------------------------
+    // CAR MAKES & MODELS
+    // ----------------------------
     const carData = {
       "Toyota": ["Corolla", "Camry", "Land Cruiser", "Hilux"],
       "Honda": ["Civic", "Accord", "CR-V", "Pilot"],
       "Ford": ["Focus", "Mustang", "Explorer", "F-150"],
       "BMW": ["3 Series", "5 Series", "X5", "X3"],
+      "Audi": ["A1", "A2", "A4", "A5", "Quattro"],
       "Mercedes": ["C-Class", "E-Class", "GLA", "GLE"]
     };
 
     const carMakeSelect = document.getElementById("carMake");
     const carModelSelect = document.getElementById("carModel");
+    const carYearSelect = document.getElementById("carYear");
 
+    const currentYear = new Date().getFullYear();
+
+    // Populate car make
     Object.keys(carData).forEach(make => {
       const option = document.createElement("option");
       option.value = make;
@@ -252,6 +374,7 @@
       const selectedMake = carMakeSelect.value;
       carModelSelect.innerHTML = '<option value="">Select Model</option>';
       carModelSelect.disabled = !selectedMake;
+
       if (selectedMake) {
         carData[selectedMake].forEach(model => {
           const option = document.createElement("option");
@@ -262,104 +385,299 @@
       }
     });
 
-    // Populate years
-    const carYearSelect = document.getElementById("carYear");
-    const currentYear = new Date().getFullYear();
-    for(let year = currentYear; year >= 1990; year--) {
+    // Populate car year
+    for (let year = currentYear; year >= 1990; year--) {
       const option = document.createElement("option");
       option.value = year;
       option.textContent = year;
       carYearSelect.appendChild(option);
     }
 
-    // Image Preview
+    // ----------------------------
+    // IMAGE PREVIEW HANDLING
+    // ----------------------------
     const carImagesInput = document.getElementById("carImages");
     const imagePreviewDiv = document.getElementById("imagePreview");
+    let selectedFiles = [];
+
+    function updatePreview() {
+      imagePreviewDiv.innerHTML = "";
+      selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const wrapper = document.createElement("div");
+          wrapper.classList.add("preview-item");
+
+          const img = document.createElement("img");
+          img.src = e.target.result;
+
+          const removeBtn = document.createElement("button");
+          removeBtn.textContent = "X";
+          removeBtn.classList.add("remove-btn");
+          removeBtn.onclick = () => {
+            selectedFiles.splice(index, 1);
+            updatePreview();
+          };
+
+          wrapper.appendChild(img);
+          wrapper.appendChild(removeBtn);
+          imagePreviewDiv.appendChild(wrapper);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
 
     carImagesInput.addEventListener("change", () => {
-      imagePreviewDiv.innerHTML = ""; // clear existing previews
-      const files = carImagesInput.files;
+      selectedFiles = Array.from(carImagesInput.files);
+      updatePreview();
+    });
 
-      if (files) {
-        Array.from(files).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            imagePreviewDiv.appendChild(img);
-          };
-          reader.readAsDataURL(file);
+    // ----------------------------
+    // CAR CRUD FUNCTIONS
+    // ----------------------------
+    const carForm = document.getElementById("carForm");
+    carForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const url = editingCarId ? `http://localhost:5000/api/cars/${editingCarId}` : "http://localhost:5000/api/cars";
+      const method = editingCarId ? "PUT" : "POST";
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData
+        });
+        const data = await res.json();
+        // console.log("UPDATE RESPONSE:", data);
+        if (res.ok) {
+          alert(editingCarId ? "Car updated successfully" : "Car added successfully");
+          editingCarId = null;
+          carForm.reset();
+          carModelSelect.disabled = true;
+          selectedFiles = [];
+          imagePreviewDiv.innerHTML = "";
+          loadCars();
+        } else alert("Error: " + data.error);
+      } catch (err) {
+        console.error(err);
+        alert("Unexpected error occurred");
+      }
+      // for (let pair of formData.entries()) {
+      //   console.log(pair[0], pair[1]);
+      // }
+    });
+
+    async function loadCars() {
+      try {
+        const res = await fetch("http://localhost:5000/api/cars", { headers: { Authorization: `Bearer ${token}` } });
+        allCars = await res.json();
+        populateFilters(allCars);
+        displayCars(allCars);
+      } catch (err) {
+        console.error("Error loading cars:", err);
+        const div = document.getElementById("cars");
+        if (div) div.innerHTML = "<p>Failed to load cars. Try again later.</p>";
+      }
+    }
+
+    function populateFilters(cars) {
+      const makes = [...new Set(cars.map(car => car.make))].sort();
+      const years = [...new Set(cars.map(car => car.year))].sort((a, b) => b - a);
+
+      const filterMake = document.getElementById("filterMake");
+      const filterYear = document.getElementById("filterYear");
+
+      if (filterMake.options.length <= 1) {
+        filterMake.innerHTML = `<option value="">All Makes</option>`;
+        makes.forEach(make => {
+          const option = document.createElement("option");
+          option.value = make;
+          option.textContent = make;
+          filterMake.appendChild(option);
         });
       }
-    });
 
-    // Add car
-    document.getElementById("carForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const form = e.target;
-      const formData = new FormData(form);
-
-      const res = await fetch("http://localhost:5000/api/cars", {
-        method: "POST",
-        headers: { Authorization: token },
-        body: formData
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("Car added successfully");
-      } else {
-        alert("Error: " + data.error);
+      if (filterYear.options.length <= 1) {
+        filterYear.innerHTML = `<option value="">All Years</option>`;
+        years.forEach(year => {
+          const option = document.createElement("option");
+          option.value = year;
+          option.textContent = year;
+          filterYear.appendChild(option);
+        });
       }
-      form.reset();
-      carModelSelect.disabled = true;
-      loadCars();
-    });
+    }
 
-    // Load cars
-    async function loadCars() {
-      const res = await fetch("http://localhost:5000/api/cars", {
-        headers: { Authorization: token }
-      });
-      const cars = await res.json();
+    function displayCars(cars) {
       const div = document.getElementById("cars");
-      if(!div) return;
       div.innerHTML = "";
-      cars.forEach(car => {
+
+      const selectedMake = document.getElementById("filterMake").value;
+      const selectedYear = document.getElementById("filterYear").value;
+      const searchTerm = document.getElementById("searchCar").value.trim().toLowerCase();
+
+      const filteredCars = cars.filter(car => {
+        const matchesMake = !selectedMake || car.make === selectedMake;
+        const matchesYear = !selectedYear || car.year.toString() === selectedYear;
+        const matchesSearch =
+          !searchTerm || car.make.toLowerCase().includes(searchTerm) || car.model.toLowerCase().includes(searchTerm) || car.year.toString().includes(searchTerm);
+        return matchesMake && matchesYear && matchesSearch;
+      });
+
+      if (filteredCars.length === 0) {
+        div.innerHTML = "<p>No cars found matching the criteria.</p>";
+        return;
+      }
+
+      filteredCars.forEach(car => {
         div.innerHTML += `
           <div class="car-card">
-            <h4>${car.title}</h4>
+            <h4>${car.make} ${car.model} (${car.year})</h4>
+            <p>Price: KSh ${Number(car.price).toLocaleString()}</p>
             <p>Status: ${car.status}</p>
             <select onchange="updateStatus(${car.id}, this.value)">
-              <option value="available">Available</option>
-              <option value="booked">Booked</option>
-              <option value="sold">Sold</option>
+              <option value="available" ${car.status === "available" ? "selected" : ""}>Available</option>
+              <option value="booked" ${car.status === "booked" ? "selected" : ""}>Booked</option>
+              <option value="sold" ${car.status === "sold" ? "selected" : ""}>Sold</option>
             </select>
+            <button class="edit-btn" onclick="editCar(${car.id})">Edit</button>
             <button class="delete-btn" onclick="deleteCar(${car.id})">Delete</button>
-          </div>
-        `;
+          </div>`;
       });
+    }
+
+    document.getElementById("filterMake").addEventListener("change", () => displayCars(allCars));
+    document.getElementById("filterYear").addEventListener("change", () => displayCars(allCars));
+    document.getElementById("searchCar").addEventListener("input", () => displayCars(allCars));
+    document.getElementById("resetFilters").addEventListener("click", () => {
+      document.getElementById("filterMake").value = "";
+      document.getElementById("filterYear").value = "";
+      document.getElementById("searchCar").value = "";
+      displayCars(allCars);
+    });
+
+    async function editCar(id) {
+      try {
+        const res = await fetch("http://localhost:5000/api/cars", { headers: { Authorization: `Bearer ${token}` } });
+        const cars = await res.json();
+        const car = cars.find(c => c.id === id);
+        if (!car) return alert("Car not found");
+
+        editingCarId = id;
+
+        document.getElementById("carMake").value = car.make;
+        carMakeSelect.dispatchEvent(new Event("change"));
+        document.getElementById("carModel").value = car.model;
+        document.getElementById("carYear").value = car.year;
+        document.getElementById("carTransmission").value = car.transmission;
+        document.getElementById("carFuel").value = car.fuel;
+        document.getElementById("carBody").value = car.body;
+        document.getElementById("carCondition").value = car.condition;
+        document.getElementById("carColor").value = car.color;
+        document.getElementById("carMileage").value = car.mileage;
+        document.getElementById("carEngine").value = car.engine;
+        document.getElementById("carLocation").value = car.location;
+        document.getElementById("carPrice").value = car.price;
+        document.getElementById("carStatus").value = car.status;
+        document.getElementById("carDescription").value = car.description || "";
+
+        imagePreviewDiv.innerHTML = "";
+        selectedFiles = [];
+        if (car.images && car.images.length) {
+          car.images.forEach(img => {
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("preview-item");
+
+            const image = document.createElement("img");
+            image.src = `http://localhost:5000${img.image_path}`;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "X";
+            deleteBtn.classList.add("remove-btn");
+
+            deleteBtn.onclick = () => deleteImage(img.id);
+
+            wrapper.appendChild(image);
+            wrapper.appendChild(deleteBtn);
+            imagePreviewDiv.appendChild(wrapper);
+          });
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load car data for editing");
+      }
     }
 
     async function updateStatus(id, status) {
       await fetch(`http://localhost:5000/api/cars/${id}/status`, {
         method: "PUT",
-        headers: { "Content-Type":"application/json", Authorization: token },
-        body: JSON.stringify({status})
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ status })
       });
       loadCars();
+    }
+
+    async function deleteImage(id) {
+      if (!confirm("Delete this image?")) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/cars/images/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json"  }
+        });
+
+        if (!res.ok) throw new Error("Failed");
+
+        // Reload both
+        loadCars();
+
+        // If editing, reload that car
+        if (editingCarId) {
+          editCar(editingCarId);
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert("Failed to delete image");
+      }
     }
 
     async function deleteCar(id) {
-      await fetch(`http://localhost:5000/api/cars/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: token }
-      });
-      loadCars();
+      if (!confirm("Delete this car permanently?")) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/cars/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` , "Content-Type": "application/json" }
+        });
+
+        if (!res.ok) throw new Error("Delete failed");
+
+        loadCars();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to delete car");
+      }
     }
 
-    loadCars();
+    function generateReport() {
+      const cars = document.querySelectorAll(".car-card");
+      let content = "Car Report\n\n";
+      cars.forEach(car => { content += car.innerText + "\n\n"; });
+      const blob = new Blob([content], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "car-report.pdf";
+      link.click();
+    }
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', () => loadCars());
   </script>
+
+  <script src="./scripts/agents.js"></script>
 </body>
 </html>
