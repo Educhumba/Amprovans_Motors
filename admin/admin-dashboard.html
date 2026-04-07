@@ -143,6 +143,12 @@
             <input type="text" id="carLocation" name="location" placeholder="e.g. Nairobi" required>
           </div>
 
+          <!-- Cost -->
+          <div class="form-group">
+            <label for="carCost">Cost (KSh)</label>
+            <input type="number" id="carCost" name="cost" placeholder="e.g. 900000" required>
+          </div>
+
           <!-- Price -->
           <div class="form-group">
             <label for="carPrice">Price (KSh)</label>
@@ -157,6 +163,16 @@
               <option value="available">Available</option>
               <option value="booked">Booked</option>
               <option value="sold">Sold</option>
+            </select>
+          </div>
+
+          <!-- Ownership -->
+          <div class="form-group">
+            <label for="carOwnership">Ownership</label>
+            <select id="carOwnership" name="ownership" required>
+              <option value="">Select Ownership</option>
+              <option value="company">Company</option>
+              <option value="client">Client</option>
             </select>
           </div>
 
@@ -261,10 +277,81 @@
           </div>
         </div>
       </section>
-      <section id="sales" class="tab-section" data-role="admin,agent">
-        <h3>Sales</h3>
-        <p>Track sales here...</p>
-      </section>
+
+        <section id="sales" class="tab-section" data-role="admin,agent">
+          <h2><i class="fa-solid fa-dollar-sign"></i> Sales Management</h2>
+
+          <!-- Sale Entry Form -->
+          <div class="sale-entry-form">
+            <h3><i class="fa-solid fa-cart-plus"></i> Record a Sale</h3>
+            <form id="saleForm">
+              <div class="form-group">
+                <label for="selectCar">Select Car</label>
+                <select id="selectCar" required>
+                  <option value="">-- Select Car --</option>
+                  <!-- Cars will be loaded dynamically -->
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="salePrice">Sold Price (KSh)</label>
+                <input type="number" id="salePrice" min="0" placeholder="e.g. 1,200,000" required>
+              </div>
+
+              <!-- Agent selection visible only to admin -->
+              <div class="form-group" id="agentSelectGroup" style="display: none;">
+                <label for="selectAgent">Select Agent</label>
+                <select id="selectAgent">
+                  <option value="">-- Select Agent --</option>
+                  <!-- Agents loaded dynamically -->
+                </select>
+              </div>
+
+              <button type="submit" class="primary-btn"><i class="fa-solid fa-check"></i> Complete Sale</button>
+            </form>
+          </div>
+
+          <!-- Sales Stats -->
+          <div class="sales-stats">
+            <h3><i class="fa-solid fa-chart-line"></i> Sales Statistics</h3>
+            <p><strong>Total Sales:</strong> <span id="totalSales">0</span></p>
+            <p><strong>Gross Profit:</strong> KSh <span id="grossProfit">0</span></p>
+            <p><strong>Total Agent Commission:</strong> KSh <span id="totalCommission">0</span></p>
+            <p><strong>Net Profit:</strong> KSh <span id="netProfit">0</span></p>
+          </div>
+
+          <!-- Filters -->
+          <div class="sales-filters">
+            <select id="filterAgent">
+              <option value="">All Agents</option>
+              <!-- Agents loaded dynamically -->
+            </select>
+
+            <input type="date" id="filterStartDate">
+            <input type="date" id="filterEndDate">
+
+            <button id="resetSalesFilters" class="secondary-btn"><i class="fa-solid fa-rotate-right"></i> Reset Filters</button>
+            <button id="exportSalesPDF" class="secondary-btn"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+          </div>
+
+          <!-- Sales Table -->
+          <div class="sales-table-container">
+            <table class="sales-table">
+              <thead>
+                <tr>
+                  <th>Car</th>
+                  <th>Price (KSh)</th>
+                  <th>Profit (KSh)</th>
+                  <th>Agent</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody">
+                <!-- Sales will be loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
     </main>
   </div>
 
@@ -578,8 +665,10 @@
         document.getElementById("carMileage").value = car.mileage;
         document.getElementById("carEngine").value = car.engine;
         document.getElementById("carLocation").value = car.location;
+        document.getElementById("carCost").value = car.cost || "";
         document.getElementById("carPrice").value = car.price;
         document.getElementById("carStatus").value = car.status;
+        document.getElementById("carOwnership").value = car.ownership || "";
         document.getElementById("carDescription").value = car.description || "";
 
         imagePreviewDiv.innerHTML = "";
@@ -679,5 +768,6 @@
   </script>
 
   <script src="./scripts/agents.js"></script>
+  <script src="./scripts/sales.js"></script>
 </body>
 </html>

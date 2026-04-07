@@ -14,8 +14,11 @@ const Car = sequelize.define("Car", {
   mileage: { type: DataTypes.INTEGER, allowNull: false },
   engine: { type: DataTypes.INTEGER, allowNull: false },
   location: { type: DataTypes.STRING, allowNull: false },
-  price: { type: DataTypes.FLOAT, allowNull: false },
-  status: { type: DataTypes.STRING, defaultValue: "available" },
+  price: { type: DataTypes.DECIMAL(10,2), allowNull: false },
+  cost: { type: DataTypes.DECIMAL(10,2), allowNull: false, defaultValue: 0 },
+  ownership: { type: DataTypes.ENUM("company","client"),allowNull: false, defaultValue: "company" },
+  updated_by: {type: DataTypes.INTEGER,allowNull: true},
+  status: { type: DataTypes.ENUM("available","sold","booked"), defaultValue: "available" },
   description: { type: DataTypes.TEXT }
 });
 
