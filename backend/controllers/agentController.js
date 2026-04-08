@@ -5,6 +5,8 @@ const sendMail = require("../config/mail");
 const userModel = require("../models/userModel");
 const User = require("../models/User");
 const { Op } = require("sequelize");
+const PDFDocument = require("pdfkit-table");
+const moment = require("moment");
 
 const agentController = {
 
@@ -78,8 +80,27 @@ const agentController = {
   // GET ALL AGENTS
   getAgents: async (req, res) => {
     try {
-      const agents = await userModel.getAllAgents();
+      const { status, verified } = req.query; // <-- accept query params
+
+      let whereClause = { role: "agent" }; // only agents
+
+      // Status filter
+      if (status && ["active", "inactive", "suspended"].includes(status)) {
+        whereClause.status = status;
+      }
+
+      // Verified filter
+      if (verified && ["verified", "unverified"].includes(verified)) {
+        whereClause.is_verified = verified === "verified";
+      }
+
+      const agents = await User.findAll({
+        where: whereClause,
+        order: [["created_at", "DESC"]]
+      });
+
       res.json(agents);
+
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to fetch agents" });
@@ -99,7 +120,65 @@ const agentController = {
       console.error(err);
       res.status(500).json({ error: "Failed to update status" });
     }
+  },
+
+  //Genarate agents report
+generateAgentsReport: async (req, res) => {
+  try {
+    const { status, verified } = req.query;
+
+    let whereClause = { role: "agent" };
+
+    if (status && ["active", "inactive", "suspended"].includes(status)) {
+      whereClause.status = status;
+    }
+
+    if (verified && ["verified", "unverified"].includes(verified)) {
+      whereClause.is_verified = verified === "verified";
+    }
+
+    const agents = await User.findAll({
+      where: whereClause,
+      order: [["created_at", "DESC"]]
+    });
+
+    // PDF setup
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=agents_report.pdf");
+
+    doc.pipe(res);
+
+    doc.fontSize(18).text("Agents Report", { align: "center" });
+    doc.moveDown();
+
+    // Prepare table
+    const table = {
+      headers: ["Name", "Email", "Phone", "Role", "Status", "Verified", "Date Added"],
+      rows: agents.map(agent => [
+        agent.name,
+        agent.email,
+        agent.phone,
+        agent.role,
+        agent.status,
+        agent.is_verified ? "Yes" : "No",
+        moment(agent.created_at).format("YYYY-MM-DD")
+      ])
+    };
+
+    await doc.table(table, {
+      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(12),
+      prepareRow: (row, i) => doc.font("Helvetica").fontSize(11)
+    });
+
+    doc.end();
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate report" });
   }
+}
 
 };
 

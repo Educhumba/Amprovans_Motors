@@ -1,6 +1,9 @@
 const { Car, CarImage } = require("../models");
 const path = require("path");
 const fs = require("fs");
+const PDFDocument = require("pdfkit-table");
+const moment = require("moment");
+const { addPage } = require("pdfkit");
 
 const carController = {
 
@@ -224,6 +227,221 @@ const carController = {
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err.message });
+    }
+  },
+
+  // =========================
+  // GENERATE CARS REPORT
+  // =========================
+  generateCarsReport: async (req, res) => {
+    try {
+      const {
+        make,
+        year,
+        status,
+        ownership,
+        search,
+        startDate,
+        endDate
+      } = req.query;
+
+      const where = {};
+
+      if (make) where.make = make;
+      if (year) where.year = year;
+      if (status) where.status = status;
+      if (ownership) where.ownership = ownership;
+
+      // Date filter
+      if (startDate && endDate) {
+        where.createdAt = {
+          [require("sequelize").Op.between]: [
+            new Date(startDate),
+            new Date(endDate)
+          ]
+        };
+      }
+
+      let cars = await Car.findAll({
+        where,
+        order: [["createdAt", "DESC"]]
+      });
+
+      // search filter
+      if (search) {
+        const s = search.toLowerCase();
+        cars = cars.filter(c =>
+          c.make.toLowerCase().includes(s) ||
+          c.model.toLowerCase().includes(s) ||
+          String(c.year).includes(s)
+        );
+      }
+
+      // ======================
+      // CALCULATIONS
+      // ======================
+
+      const totalCars = cars.length;
+
+      const totalValue = cars.reduce(
+        (sum, c) => sum + Number(c.price || 0),
+        0
+      );
+
+      const totalCost = cars.reduce(
+        (sum, c) => sum + Number(c.cost || 0),
+        0
+      );
+
+      const totalProfit = totalValue - totalCost;
+
+      const availableCount = cars.filter(c => c.status === "available").length;
+      const soldCount = cars.filter(c => c.status === "sold").length;
+
+      const companyCount = cars.filter(c => c.ownership === "company").length;
+      const clientCount = cars.filter(c => c.ownership === "client").length;
+
+      // ======================
+      // PDF
+      // ======================
+
+      const doc = new PDFDocument({margin: 30,size: "A4",layout: "landscape"});
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=cars-report-${Date.now()}.pdf`
+      );
+
+      doc.pipe(res);
+
+      // Title
+      doc.fontSize(18).text("Cars Inventory Report", { align: "center" });
+
+      doc.moveDown();
+
+      doc
+        .fontSize(10)
+        .text(`Generated: ${moment().format("YYYY-MM-DD HH:mm")}`);
+
+      doc.moveDown();
+
+      // Filters section
+      doc.fontSize(12).text("Filtered as:");
+      doc.fontSize(10);
+
+      doc.text(`Make: ${make || "All"}`);
+      doc.text(`Year: ${year || "All"}`);
+      doc.text(`Status: ${status || "All"}`);
+      doc.text(`Ownership: ${ownership || "All"}`);
+      doc.text(`Search: ${search || "None"}`);
+      doc.text(
+        `Date Range: ${
+          startDate && endDate
+            ? `${startDate} → ${endDate}`
+            : "All time"
+        }`
+      );
+
+      doc.moveDown();
+
+    // ======================
+    // TABLE
+    // ======================
+    doc.fontSize(14).text("Cars List", { underline: true });
+    doc.moveDown();
+
+    const table = {
+      headers: [
+        "Car",
+        "Ownership",
+        "Status",
+        "Cost (KSh)",
+        "Price (KSh)",
+        "Potential Profit (KSh)",
+        "Location"
+      ],
+
+      rows: cars.map(car => [
+        `${car.make} ${car.model} (${car.year})`,
+        car.ownership,
+        car.status,
+        Number(car.cost || 0).toLocaleString(),
+        Number(car.price || 0).toLocaleString(),
+        Number((car.price || 0) - (car.cost || 0)).toLocaleString(),
+        car.location
+      ])
+    };
+
+    // totals row
+    table.rows.push([
+      "TOTALS",
+      "",
+      "",
+      totalCost.toLocaleString(),
+      totalValue.toLocaleString(),
+      totalProfit.toLocaleString(),
+      ""
+    ]);
+
+    doc.table(table, {
+      columnsSize: [220, 90, 80, 110, 110, 130, 120],
+      prepareHeader: () =>
+        doc.font("Helvetica-Bold").fontSize(9),
+
+      prepareRow: (row, i) => {
+        doc.font("Helvetica").fontSize(8);
+
+        // Bold totals row
+        if (i === table.rows.length - 1) {
+          doc.font("Helvetica-Bold");
+        }
+      }
+    });
+
+
+    // ======================
+    // SUMMARY STATS
+    // ======================
+
+    doc.moveDown(2);
+
+    doc.font("Helvetica-Bold").fontSize(12).text("Summary");
+    doc.moveDown();
+
+    doc.font("Helvetica").fontSize(10);
+
+    doc.font("Helvetica-Bold").text("Total Cars: ", { continued: true })
+      .font("Helvetica").text(totalCars);
+
+    doc.font("Helvetica-Bold").text("Available Cars: ", { continued: true })
+      .font("Helvetica").text(availableCount);
+
+    doc.font("Helvetica-Bold").text("Sold Cars: ", { continued: true })
+      .font("Helvetica").text(soldCount);
+
+    doc.font("Helvetica-Bold").text("Company Cars: ", { continued: true })
+      .font("Helvetica").text(companyCount);
+
+    doc.font("Helvetica-Bold").text("Client Cars: ", { continued: true })
+      .font("Helvetica").text(clientCount);
+
+    doc.moveDown();
+
+    doc.font("Helvetica-Bold").text("Total Inventory Value: ", { continued: true })
+      .font("Helvetica").text(`KSh ${totalValue.toLocaleString()}`);
+
+    doc.font("Helvetica-Bold").text("Total Cost: ", { continued: true })
+      .font("Helvetica").text(`KSh ${totalCost.toLocaleString()}`);
+
+    doc.font("Helvetica-Bold").text("Profit Potential: ", { continued: true })
+      .font("Helvetica").text(`KSh ${totalProfit.toLocaleString()}`);
+
+    doc.end();
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to generate report" });
     }
   }
 

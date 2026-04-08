@@ -13,8 +13,11 @@ const token = localStorage.getItem("token");
 
 document.addEventListener("DOMContentLoaded", () => {
   loadAvailableCarsForSales();
-  loadAgents();
+  if (role === "admin") {
+    loadAgents();
+  }
   loadSales();
+  loadSummary();
 
   // Show agent select only for admin
   if (role === "admin") document.getElementById("agentSelectGroup").style.display = "block";
@@ -78,18 +81,22 @@ async function loadAgents() {
 // ----------------------------
 async function loadSales() {
   try {
-    const res = await fetch("http://localhost:5000/api/sales", { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch("http://localhost:5000/api/sales", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
     allSales = await res.json();
 
-    // Filter for agent if role is agent
     let filteredSales = allSales;
+
     if (role === "agent") {
       const myAgentId = localStorage.getItem("userId");
-      filteredSales = allSales.filter(s => s.agentId == myAgentId);
+
+      filteredSales = allSales.filter(s => String(s.agent_id) === String(myAgentId));
     }
 
     displaySales(filteredSales);
-    updateStats(filteredSales);
+
   } catch (err) {
     console.error("Error loading sales:", err);
   }
@@ -104,31 +111,48 @@ function displaySales(sales) {
 
   sales.forEach(s => {
     const row = document.createElement("tr");
-    const profit = s.price - s.cost;
+
+    const car = s.Car || {};
+    const carName = `${car.make || "N/A"} ${car.model || ""} (${car.year || ""})`;
+
+    const soldPrice = Number(s.sold_price || 0);
+    const profit = Number(s.profit || 0);
+
+    const agentName = s.Agent && s.Agent.name ? s.Agent.name : "Admin";
+    const date = s.created_at ? new Date(s.created_at).toLocaleDateString() : "-";
+
     row.innerHTML = `
-      <td>${s.carMake} ${s.carModel} (${s.carYear})</td>
-      <td>${Number(s.price).toLocaleString()}</td>
-      <td>${Number(profit).toLocaleString()}</td>
-      <td>${s.agentName || "-"}</td>
-      <td>${new Date(s.date).toLocaleDateString()}</td>
+      <td>${carName}</td>
+      <td>KSh ${soldPrice.toLocaleString()}</td>
+      <td>KSh ${profit.toLocaleString()}</td>
+      <td>${agentName}</td>
+      <td>${date}</td>
     `;
+
     tbody.appendChild(row);
   });
 }
 
 // ----------------------------
-// Update Sales Stats
+// Update stats
 // ----------------------------
-function updateStats(sales) {
-  let totalSales = sales.length;
-  let grossProfit = sales.reduce((sum, s) => sum + (s.price - s.cost), 0);
-  let totalCommission = sales.reduce((sum, s) => sum + ((s.agentId ? s.price * commissionRate : 0)), 0);
-  let netProfit = grossProfit - totalCommission;
+async function loadSummary() {
+  const res = await fetch("http://localhost:5000/api/sales/summary", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
 
-  document.getElementById("totalSales").textContent = totalSales;
-  document.getElementById("grossProfit").textContent = grossProfit.toLocaleString();
-  document.getElementById("totalCommission").textContent = totalCommission.toLocaleString();
-  document.getElementById("netProfit").textContent = netProfit.toLocaleString();
+  const data = await res.json();
+
+  if (role === "admin") {
+    document.getElementById("totalSales").textContent = data.totalSales.toLocaleString();
+    document.getElementById("grossProfit").textContent = data.totalProfit.toLocaleString();
+    document.getElementById("totalCommission").textContent = data.totalCommission.toLocaleString();
+    document.getElementById("netProfit").textContent = data.netProfit.toLocaleString();
+  } else {
+    document.getElementById("mySales").textContent = data.totalSales.toLocaleString();
+    document.getElementById("myProfit").textContent = data.totalProfit.toLocaleString();
+    document.getElementById("myCommission").textContent = data.totalCommission.toLocaleString();
+  }
 }
 
 // ----------------------------
@@ -168,6 +192,7 @@ saleForm.addEventListener("submit", async e => {
     alert("Sale recorded successfully!");
     loadAvailableCarsForSales();
     loadSales();
+    loadSummary();
     saleForm.reset();
   } catch (err) {
     console.error(err);
@@ -185,39 +210,151 @@ document.getElementById("resetSalesFilters").addEventListener("click", () => {
   document.getElementById("filterAgent").value = "";
   document.getElementById("filterStartDate").value = "";
   document.getElementById("filterEndDate").value = "";
-  displaySales(allSales);
-  updateStats(allSales);
+  loadSales();
 });
 
 function filterSales() {
+  if (role === "agent") {
+    // Agents should NEVER filter others
+    return;
+  }
+
   const agentId = document.getElementById("filterAgent").value;
   const startDate = document.getElementById("filterStartDate").value;
   const endDate = document.getElementById("filterEndDate").value;
 
   let filtered = allSales;
 
-  if (role === "agent") filtered = filtered.filter(s => s.agentId == localStorage.getItem("userId"));
-  if (agentId) filtered = filtered.filter(s => s.agentId == agentId);
-  if (startDate) filtered = filtered.filter(s => new Date(s.date) >= new Date(startDate));
-  if (endDate) filtered = filtered.filter(s => new Date(s.date) <= new Date(endDate));
+  if (agentId) {
+    filtered = filtered.filter(s => s.agent_id == agentId);
+  }
+
+  if (startDate) {
+    filtered = filtered.filter(s => new Date(s.created_at) >= new Date(startDate));
+  }
+
+  if (endDate) {
+    filtered = filtered.filter(s => new Date(s.created_at) <= new Date(endDate));
+  }
 
   displaySales(filtered);
-  updateStats(filtered);
 }
 
 // ----------------------------
 // Export PDF
 // ----------------------------
-document.getElementById("exportSalesPDF").addEventListener("click", () => {
-  const rows = document.querySelectorAll("#salesTableBody tr");
-  if (!rows.length) return alert("No sales to export");
+// Enable/disable date inputs based on report type
+document.getElementById("reportType").addEventListener("change", e => {
+  const type = e.target.value;
+  const startInput = document.getElementById("filterStartDate");
+  const endInput = document.getElementById("filterEndDate");
 
-  let content = "Sales Report\n\n";
-  rows.forEach(row => content += row.innerText + "\n");
-  const blob = new Blob([content], { type: "application/pdf" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "sales-report.pdf";
-  link.click();
+  if (type === "custom") {
+    startInput.disabled = false;
+    endInput.disabled = false;
+  } else {
+    startInput.disabled = true;
+    endInput.disabled = true;
+    startInput.value = "";
+    endInput.value = "";
+  }
+});
+
+// ----------------------------
+// Export PDF using backend
+// ----------------------------
+document.getElementById("exportSalesPDF").addEventListener("click", async () => {
+  const reportType = document.getElementById("reportType").value;
+  const startDate = document.getElementById("filterStartDate").value;
+  const endDate = document.getElementById("filterEndDate").value;
+  const agentId = document.getElementById("filterAgent").value;
+
+  if (!reportType) return alert("Select a report type");
+
+  let query = [];
+  if (reportType === "custom") {
+    if (!startDate || !endDate) return alert("Select start and end dates for custom report");
+    query.push(`start_date=${startDate}`);
+    query.push(`end_date=${endDate}`);
+  } else if (reportType === "weekly") {
+    const today = new Date();
+    const lastWeek = new Date(today);
+    lastWeek.setDate(today.getDate() - 7);
+    query.push(`start_date=${lastWeek.toISOString().split('T')[0]}`);
+    query.push(`end_date=${today.toISOString().split('T')[0]}`);
+  } else if (reportType === "monthly") {
+    const today = new Date();
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(today.getMonth() - 1);
+    query.push(`start_date=${lastMonth.toISOString().split('T')[0]}`);
+    query.push(`end_date=${today.toISOString().split('T')[0]}`);
+  }
+
+  if (agentId) query.push(`agent_id=${agentId}`);
+
+  const url = `http://localhost:5000/api/sales/report/pdf?${query.join('&')}`;
+
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error("Failed to generate report");
+
+    const blob = await res.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `sales-report-${Date.now()}.pdf`;
+    link.click();
+  } catch (err) {
+    console.error(err);
+    alert("Error generating PDF report");
+  }
+});
+
+document.getElementById("exportDetailedSalesPDF").addEventListener("click", async () => {
+  const startDate = document.getElementById("filterStartDate").value;
+  const endDate = document.getElementById("filterEndDate").value;
+  const agentId = document.getElementById("filterAgent").value;
+
+  // Optional: validate date inputs
+  if ((startDate && !endDate) || (!startDate && endDate)) {
+    return alert("Please select both start and end dates for the report");
+  }
+
+  // Construct query string
+  let query = [];
+  if (startDate) query.push(`start_date=${startDate}`);
+  if (endDate) query.push(`end_date=${endDate}`);
+  if (agentId) query.push(`agent_id=${agentId}`);
+
+  const url = `http://localhost:5000/api/sales/report/detailed?${query.join("&")}`;
+
+  try {
+    const token = localStorage.getItem("token"); // make sure you have the JWT stored
+    if (!token) return alert("You must be logged in to download reports");
+
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) {
+      if (res.status === 403) alert("You are not authorized to generate this report");
+      else if (res.status === 404) alert("No sales found for the selected period");
+      else throw new Error("Failed to generate report");
+      return;
+    }
+
+    const blob = await res.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `detailed-sales-report-${Date.now()}.pdf`;
+    link.click();
+
+  } catch (err) {
+    console.error(err);
+    alert("Error generating detailed PDF report");
+  }
 });
 })();

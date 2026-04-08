@@ -17,6 +17,7 @@ router.get("/public", carController.getCars);
 // Routes with RBAC
 router.post("/", authenticate, authorize("admin"), upload.array("images", 10), carController.addCar);
 router.get("/", authenticate, authorize(["admin", "agent"]), carController.getCars);
+router.get("/report",authenticate,authorize(["admin", "agent"]),carController.generateCarsReport);
 router.put("/:id", authenticate, authorize("admin"), upload.array("images", 10), carController.updateCar);
 router.put("/:id/status", authenticate, authorize("admin"), carController.updateStatus);
 router.delete("/:id", authenticate, authorize("admin"), carController.deleteCar);

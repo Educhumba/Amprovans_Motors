@@ -556,3 +556,28 @@ textarea {
     flex-direction: column;
   }
 }
+
+/* ------------------------ */
+/* Sales Filters Styling */
+/* ------------------------ */
+.sales-filters select,
+.sales-filters input[type="date"] {
+  padding: 8px 12px;
+  margin-right: 8px;
+  border: 1px solid var(--muted);
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+.sales-filters button {
+  margin-right: 8px;
+}
+
+.sales-filters input[type="date"]:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+#reportType {
+  min-width: 120px;
+}

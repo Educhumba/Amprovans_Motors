@@ -50,71 +50,385 @@
   </div>
 
   <!-- CTA links moved near bottom of landing page for better UX on desktop -->
-  <div class="hero-cta" aria-hidden="false">
+<div class="hero-cta" aria-hidden="false">
+
+    <div class="hire-cta-text">
+        <a href="#hire" class="hire-link">
+            Looking to hire a car?
+        </a>
+    </div>
+
     <a class="cta-link buy" href="#vehicles">Buy a Car</a>
     <a class="cta-link sell" href="#sell">Sell a Car</a>
-  </div>
+
+</div>
 
 </section>
 
 
 <section id="vehicles" class="section vehicles-section">
-
     <!-- Sticky Filter/Search Bar -->
     <div id="inventory-bar" class="inventory-bar">
-
         <!-- SEARCH BAR -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search by name, price, engine, transmission...">
             <button id="searchBtn"><i class="fas fa-search"></i></button>
         </div>
-
         <!-- FILTERS -->
         <div class="filters">
-
             <select id="filterMake">
                 <option value="">Select Make</option>
             </select>
-
             <select id="filterModel" disabled>
                 <option value="">Select Model</option>
             </select>
-
             <select id="filterYear">
                 <option value="">Year</option>
             </select>
-
             <div class="price-inputs">
                 <input type="text" id="minPrice" placeholder="Min Price">
                 <input type="text" id="maxPrice" placeholder="Max Price">
             </div>
-
             <button id="applyFilter" class="apply-btn">
                 <i class="fa-solid fa-check"></i> Apply
             </button>
-
             <button id="resetFilter" class="reset-btn">
                 <i class="fa-solid fa-trash"></i> Clear
             </button>
+        </div>
+    </div>
+    <!-- Cars Grid -->
+<!-- Vehicles Grid (place under the inventory-bar and the section title) -->
+<div id="vehicleGrid" class="vehicle-grid"></div>
+</section>
+
+
+
+<section id="hire" class="section hire-section">
+    <h2>Car Hire Services</h2>
+    <p class="hire-intro">
+        Hire premium vehicles at flexible and transparent rates. Whether for business, travel, or special occasions, 
+        Amprovans Motors offers reliable and well-maintained vehicles ready for you.
+    </p>
+
+    <div class="hire-pricing-info">
+        <h3>How Our Pricing Works</h3>
+        <p>
+            Our daily hire rates are calculated based on the value of each vehicle to ensure fairness and consistency.
+            Typically, the daily rate is approximately <strong>0.7% of the car’s market value</strong>.
+        </p>
+        <p>
+            This means higher-value vehicles (such as luxury models) have higher daily rates, while more economical cars 
+            remain affordable. Final pricing may vary slightly depending on demand, rental duration, and special arrangements.
+        </p>
+    </div>
+    <div class="hire-penalty-info">
+        <h3>Late Return Policy</h3>
+        <p>
+            Vehicles returned after the agreed return date will incur a 
+            <strong>late fee of 20% of the daily rate per extra day</strong>.
+        </p>
+        <p>
+            We recommend timely returns or early communication with our team 
+            to avoid additional charges.
+        </p>
+    </div>
+    <!-- PROCESS -->
+    <div class="hire-steps">
+        <div class="step">
+            <h3>1. Choose a Car</h3>
+            <p>Select from available vehicles listed below.</p>
+        </div>
+        <div class="step">
+            <h3>2. Fill Request Form</h3>
+            <p>Provide your details and rental duration.</p>
+        </div>
+        <div class="step">
+            <h3>3. Confirmation</h3>
+            <p>Our team will contact you to confirm availability and pricing.</p>
+        </div>
+    </div>
+    <!-- FORM -->
+    <form id="hireForm" class="hire-form">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="fullName" required>
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="phone" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email">
+        </div>
+        <div class="form-group">
+            <label>Select Car</label>
+            <select id="hireCarSelect" required>
+                <option value="">Loading available cars...</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Estimated Daily Rate</label>
+            <input type="text" id="dailyRate" readonly>
+            <small class="rate-note">
+                *Rate is automatically calculated based on vehicle value.
+            </small>
+        </div>
+        <div class="form-group">
+            <label>Total Estimated Cost</label>
+            <input type="text" id="totalCost" readonly>
+            <small class="rate-note">
+                *Calculated based on duration and daily rate.
+            </small>
+        </div>
+        <div class="form-group">
+            <label>Pick-up Date</label>
+            <input type="date" id="pickupDate" required>
+        </div>
+        <div class="form-group">
+            <label>Return Date</label>
+            <input type="date" id="returnDate" required>
+        </div>
+        <div class="form-group">
+            <label>Pickup Location</label>
+            <input type="text" id="pickupLocation" required>
+        </div>
+        <div class="form-group">
+            <label>Additional Notes</label>
+            <textarea id="notes"></textarea>
+        </div>
+        <button type="submit" class="hire-btn">
+            Submit Hire Request
+        </button>
+    </form>
+</section>
+
+
+<section id="about" class="section about-section">
+    <div class="about-container">
+
+        <h2 class="section-title">About Amprovans Motors</h2>
+
+        <p class="about-tagline">
+            <i class="fas fa-car-side"></i>
+            Driving Trust. Delivering Excellence.
+        </p>
+
+        <p class="about-description">
+            At <strong>Amprovans Motors</strong>, we go beyond just selling cars — we deliver experiences, 
+            reliability, and peace of mind. Whether you're purchasing your dream vehicle or hiring one 
+            for your next journey, we ensure every interaction is seamless, transparent, and satisfying.
+        </p>
+
+        <div class="about-highlights">
+            <div class="highlight-card">
+                <i class="fas fa-check-circle"></i>
+                <h3>Quality Assured</h3>
+                <p>Every vehicle is carefully inspected to meet our high performance and safety standards.</p>
+            </div>
+
+            <div class="highlight-card">
+                <i class="fas fa-handshake"></i>
+                <h3>Trusted Service</h3>
+                <p>We build long-term relationships through honesty, transparency, and customer-first service.</p>
+            </div>
+
+            <div class="highlight-card">
+                <i class="fas fa-tags"></i>
+                <h3>Fair Pricing</h3>
+                <p>Competitive and transparent pricing with no hidden costs — what you see is what you pay.</p>
+            </div>
+
+            <div class="highlight-card">
+                <i class="fas fa-road"></i>
+                <h3>Flexible Solutions</h3>
+                <p>From buying to hiring, we provide options tailored to your needs and lifestyle.</p>
+            </div>
+        </div>
+
+        <div class="about-cta">
+            <h3>Why Choose Us?</h3>
+            <p>
+                Because we don’t just move cars — we move people forward. 
+                Your journey starts here, with confidence and class.
+            </p>
+
+            <a href="#vehicles" class="about-btn">
+                <i class="fas fa-car"></i> Explore Vehicles
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<section id="contact" class="section contact-section">
+
+    <div class="contact-container">
+
+        <h2 class="section-title">Contact Us</h2>
+
+        <p class="contact-tagline">
+            <i class="fas fa-headset"></i>
+            We’re here to help — Reach out anytime
+        </p>
+
+        <div class="contact-content">
+
+            <!-- LEFT: CONTACT INFO -->
+            <div class="contact-info">
+
+                <div class="info-card">
+                    <i class="fas fa-phone-alt"></i>
+                    <div>
+                        <h4>Call Us</h4>
+                        <p>+254 712 345 678</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h4>Email</h4>
+                        <p>info@amprovansmotors.com</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h4>Location</h4>
+                        <p>Nairobi, Kenya</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4>Working Hours</h4>
+                        <p>Mon - Sat: 8:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="quick-actions">
+                    <a href="tel:+254712345678" class="quick-btn call">
+                        <i class="fas fa-phone"></i> Call Now
+                    </a>
+
+                    <a href="https://wa.me/254712345678?text=Hello%20Amprovans%20Motors,%20I%20would%20like%20to%20inquire%20about%20your%20services." 
+                       target="_blank" 
+                       class="quick-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: CONTACT FORM -->
+            <div class="contact-form-wrapper">
+
+                <h3>Send Us a Message</h3>
+
+                <form id="contactForm" class="contact-form">
+
+                    <div class="form-group">
+                        <input type="text" id="contactName" placeholder="Full Name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email" id="contactEmail" placeholder="Email Address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="tel" id="contactPhone" placeholder="Phone Number">
+                    </div>
+
+                    <div class="form-group">
+                        <textarea id="contactMessage" placeholder="Write your message..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="contact-btn">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+
+                </form>
+
+                <p id="contactStatus" class="contact-status"></p>
+
+            </div>
 
         </div>
 
     </div>
 
-    <!-- Cars Grid -->
-<!-- Vehicles Grid (place under the inventory-bar and the section title) -->
-<div id="vehicleGrid" class="vehicle-grid"></div>
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <a href="https://wa.me/254712345678?text=Hello%20Amprovans%20Motors,%20I%20just%20visited%20your%20website." 
+       class="floating-whatsapp" 
+       target="_blank" 
+       id="floatingWhatsapp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
 </section>
 
-<section id="about" class="section">
-    <h2>About Us</h2>
-</section>
+<footer class="footer">
 
-<section id="contact" class="section">
-    <h2>Contact Us</h2>
-    <p>Request a car not listed</p>
-</section>
+    <div class="footer-container">
+
+        <!-- BRAND -->
+        <div class="footer-brand">
+            <h3>Amprovans Motors</h3>
+            <p>
+                Driving trust, delivering excellence. Your reliable partner in car sales and hire services.
+            </p>
+        </div>
+
+        <!-- QUICK LINKS -->
+        <div class="footer-links">
+            <h4>Quick Links</h4>
+            <a href="#home"><i class="fas fa-chevron-right"></i> Home</a>
+            <a href="#vehicles"><i class="fas fa-chevron-right"></i> Vehicles</a>
+            <a href="#hire"><i class="fas fa-chevron-right"></i> Hire Services</a>
+            <a href="#about"><i class="fas fa-chevron-right"></i> About Us</a>
+            <a href="#contact"><i class="fas fa-chevron-right"></i> Contact</a>
+        </div>
+
+        <!-- SERVICES -->
+        <div class="footer-links">
+            <h4>Our Services</h4>
+            <a href="#"><i class="fas fa-car"></i> Car Sales</a>
+            <a href="#"><i class="fas fa-key"></i> Car Hire</a>
+            <a href="#"><i class="fas fa-exchange-alt"></i> Trade-Ins</a>
+            <a href="#"><i class="fas fa-tools"></i> Vehicle Sourcing</a>
+        </div>
+
+        <!-- CONTACT SUMMARY -->
+        <div class="footer-contact">
+            <h4>Contact Info</h4>
+            <p><i class="fas fa-phone"></i> +254 712 345 678</p>
+            <p><i class="fas fa-envelope"></i> info@amprovansmotors.com</p>
+            <p><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</p>
+        </div>
+
+    </div>
+
+    <!-- SOCIAL MEDIA -->
+    <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+
+    <!-- COPYRIGHT -->
+    <div class="footer-bottom">
+        <p>
+            &copy; <span id="year"></span> Amprovans Motors. All Rights Reserved.
+        </p>
+    </div>
+
+</footer>
 
 <!-- Back to Top Button -->
 <button id="backToTop" title="Go to top">
@@ -122,5 +436,7 @@
 </button>
 <script src="scripts/fetchCars.js"></script>
 <script src="scripts/main.js"></script>
+<script src="scripts/carHire.js"></script>
+<script src="scripts/contactUs.js"></script>
 </body>
 </html>

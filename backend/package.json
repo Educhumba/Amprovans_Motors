@@ -15,9 +15,12 @@
     "dotenv": "^17.4.0",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "moment": "^2.30.1",
     "multer": "^2.1.1",
     "mysql2": "^3.20.0",
     "nodemailer": "^8.0.4",
+    "pdfkit": "^0.18.0",
+    "pdfkit-table": "^0.1.99",
     "sequelize": "^6.37.8"
   }
 }

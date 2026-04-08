@@ -2,6 +2,12 @@
 // AGENTS.JS – UPDATED
 // ----------------------------
 window.addEventListener("DOMContentLoaded", () => {
+  const role = localStorage.getItem("role")?.toLowerCase();
+
+if (role !== "admin") {
+  console.log("Agents.js blocked for non-admin");
+  return;
+}
   // ----------------------------
   // ELEMENTS
   // ----------------------------
@@ -75,26 +81,53 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  const statusFilter = document.getElementById("statusFilter");
+
+  statusFilter.addEventListener("change", () => {
+    loadAgents(statusFilter.value);
+  });
+
+  // New filter element
+  const verifiedFilter = document.getElementById("verifiedFilter");
+
+  // Reload agents when verified filter changes
+  verifiedFilter.addEventListener("change", () => {
+    loadAgents(statusFilter.value, verifiedFilter.value);
+  });
+
   // ----------------------------
   // LOAD AGENTS
   // ----------------------------
-  async function loadAgents() {
-    try {
-      const res = await fetch(API_URL, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+async function loadAgents(filterStatus = "all", filterVerified = "all") {
+  try {
+    const res = await fetch(API_URL, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || "Failed to load agents");
+    if (!res.ok) throw new Error(data.error || "Failed to load agents");
 
-      renderAgents(data);
+    let filteredAgents = data;
 
-    } catch (err) {
-      console.error(err);
-      agentsList.innerHTML = `<p>Failed to load agents</p>`;
+    // Filter by status
+    if (filterStatus !== "all") {
+      filteredAgents = filteredAgents.filter(agent => agent.status === filterStatus);
     }
+
+    // Filter by verified
+    if (filterVerified !== "all") {
+      const isVerified = filterVerified === "verified";
+      filteredAgents = filteredAgents.filter(agent => agent.is_verified === isVerified);
+    }
+
+    renderAgents(filteredAgents);
+
+  } catch (err) {
+    console.error(err);
+    agentsList.innerHTML = `<p>Failed to load agents</p>`;
   }
+}
 
   // ----------------------------
   // RENDER AGENTS
@@ -135,7 +168,11 @@ window.addEventListener("DOMContentLoaded", () => {
       const statusBtn = card.querySelector(".suspend-btn, .activate-btn");
       statusBtn?.addEventListener("click", () => {
         const newStatus = agent.status === "active" ? "suspended" : "active";
-        toggleStatus(agent.id, newStatus);
+        const action = newStatus === "active" ? "activate" : "suspend";
+
+        if (confirm(`Are you sure you want to ${action} this agent?`)) {
+          toggleStatus(agent.id, newStatus);
+        }
       });
 
       // ----------------------------
@@ -199,8 +236,42 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  const generateAgentReportBtn = document.getElementById("generateAgentReportBtn");
+
+  generateAgentReportBtn?.addEventListener("click", async () => {
+    const status = statusFilter.value;
+    const verified = verifiedFilter.value;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/agents/agents?status=${status}&verified=${verified}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to generate report");
+
+      const blob = await res.blob(); // Get PDF as blob
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "agents_report.pdf"; // Set default filename
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  });
+
   // ----------------------------
   // INITIAL LOAD
   // ----------------------------
-  loadAgents();
+  if (role === "admin") {
+    loadAgents();
+  }
 });

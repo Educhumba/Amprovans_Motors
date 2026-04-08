@@ -4,6 +4,9 @@ function toggleMenu() {
     nav.style.display = nav.style.display === "flex" ? "none" : "flex";
 }
 
+// AUTO UPDATE FOOTER YEAR
+document.getElementById("year").textContent = new Date().getFullYear();
+
 // ----------------- LANDING PAGE SLIDE IN ANIMATION ----------------------
 const homeContent = document.getElementById('homeContent');
 

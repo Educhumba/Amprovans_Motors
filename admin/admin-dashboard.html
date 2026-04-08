@@ -29,7 +29,7 @@
           <li data-tab="car-auction" data-role="admin,agent"><i class="fa-solid fa-gavel"></i> Car Auction</li>
           <li data-tab="messages" data-role="admin,agent"><i class="fa-solid fa-envelope"></i> Messages</li>
           <li data-tab="sales-agents" data-role="admin"><i class="fa-solid fa-user-tie"></i> Sales Agents</li>
-          <li data-tab="sales" data-role="admin"><i class="fa-solid fa-dollar-sign"></i> Sales</li>
+          <li data-tab="sales" data-role="admin,agent"><i class="fa-solid fa-dollar-sign"></i> Sales</li>
         </ul>
       </nav>
     </aside>
@@ -208,6 +208,22 @@
             <option value="">All Years</option>
           </select>
 
+          <select id="filterStatus">
+            <option value="">All Status</option>
+            <option value="available">Available</option>
+            <option value="booked">Booked</option>
+            <option value="sold">Sold</option>
+          </select>
+
+          <select id="filterOwnership">
+            <option value="">All Ownership</option>
+            <option value="company">Company</option>
+            <option value="client">Client</option>
+          </select>
+
+          <input type="date" id="filterStartDate">
+          <input type="date" id="filterEndDate">
+
           <button id="resetFilters">Reset Filters</button>
           <button onclick="generateReport()">Export PDF</button>
         </div>
@@ -236,9 +252,30 @@
       <section id="sales-agents" class="tab-section" data-role="admin">
         <div class="agents-header">
           <h2>Sales Agents Management</h2>
-          <button id="addAgentBtn" class="primary-btn">
-            <i class="fa-solid fa-user-plus"></i> Add Agent
-          </button>
+
+          <div class="agents-controls">
+            <button id="addAgentBtn" class="primary-btn">
+              <i class="fa-solid fa-user-plus"></i> Add Agent
+            </button>
+
+
+            <!-- Status Filter -->
+            <select id="statusFilter">
+              <option value="all">All Agents</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+            </select>
+            <!-- Verified Filter -->
+            <select id="verifiedFilter">
+              <option value="all">All</option>
+              <option value="verified">Verified</option>
+              <option value="unverified">Unverified</option>
+            </select>
+
+            <button id="generateAgentReportBtn" class="secondary-btn">
+              <i class="fa-solid fa-file-pdf"></i> Generate Report
+            </button>
+          </div>
         </div>
 
         <!-- Add Agent Form (Hidden by default) -->
@@ -281,74 +318,100 @@
         <section id="sales" class="tab-section" data-role="admin,agent">
           <h2><i class="fa-solid fa-dollar-sign"></i> Sales Management</h2>
 
-          <!-- Sale Entry Form -->
+          <!-- ========================= -->
+          <!-- SALE ENTRY (VISIBLE TO ALL) -->
+          <!-- ========================= -->
           <div class="sale-entry-form">
             <h3><i class="fa-solid fa-cart-plus"></i> Record a Sale</h3>
             <form id="saleForm">
+
               <div class="form-group">
                 <label for="selectCar">Select Car</label>
-                <select id="selectCar" required>
-                  <option value="">-- Select Car --</option>
-                  <!-- Cars will be loaded dynamically -->
-                </select>
+                <select id="selectCar" required></select>
               </div>
 
               <div class="form-group">
                 <label for="salePrice">Sold Price (KSh)</label>
-                <input type="number" id="salePrice" min="0" placeholder="e.g. 1,200,000" required>
+                <input type="number" id="salePrice" required>
               </div>
 
-              <!-- Agent selection visible only to admin -->
-              <div class="form-group" id="agentSelectGroup" style="display: none;">
-                <label for="selectAgent">Select Agent</label>
-                <select id="selectAgent">
-                  <option value="">-- Select Agent --</option>
-                  <!-- Agents loaded dynamically -->
-                </select>
+              <!-- ONLY ADMIN -->
+              <div class="form-group admin-only" id="agentSelectGroup">
+                <label>Select Agent</label>
+                <select id="selectAgent"></select>
               </div>
 
-              <button type="submit" class="primary-btn"><i class="fa-solid fa-check"></i> Complete Sale</button>
+              <button type="submit" class="primary-btn">
+                <i class="fa-solid fa-check"></i> Complete Sale
+              </button>
             </form>
           </div>
 
-          <!-- Sales Stats -->
-          <div class="sales-stats">
-            <h3><i class="fa-solid fa-chart-line"></i> Sales Statistics</h3>
-            <p><strong>Total Sales:</strong> <span id="totalSales">0</span></p>
-            <p><strong>Gross Profit:</strong> KSh <span id="grossProfit">0</span></p>
-            <p><strong>Total Agent Commission:</strong> KSh <span id="totalCommission">0</span></p>
-            <p><strong>Net Profit:</strong> KSh <span id="netProfit">0</span></p>
+          <!-- ========================= -->
+          <!-- ADMIN FULL STATS -->
+          <!-- ========================= -->
+          <div class="sales-stats admin-only">
+            <h3><i class="fa-solid fa-chart-line"></i> Full Business Stats</h3>
+            <p>Total Sales: <span id="totalSales">0</span></p>
+            <p>Gross Profit: <span id="grossProfit">0</span></p>
+            <p>Commission: <span id="totalCommission">0</span></p>
+            <p>Net Profit: <span id="netProfit">0</span></p>
           </div>
 
-          <!-- Filters -->
-          <div class="sales-filters">
-            <select id="filterAgent">
-              <option value="">All Agents</option>
-              <!-- Agents loaded dynamically -->
+          <!-- ========================= -->
+          <!-- AGENT PERSONAL STATS -->
+          <!-- ========================= -->
+          <div class="sales-stats agent-only">
+            <h3><i class="fa-solid fa-user"></i> My Performance</h3>
+            <p>My Sales: <span id="mySales">0</span></p>
+            <p>My Profit: <span id="myProfit">0</span></p>
+            <p>My Commission: <span id="myCommission">0</span></p>
+          </div>
+
+          <!-- ========================= -->
+          <!-- FILTERS (ADMIN ONLY) -->
+          <!-- ========================= -->
+          <div class="sales-filters admin-only">
+            <select id="filterAgent"></select>
+
+            <!-- Report type selector -->
+            <select id="reportType">
+              <option value="">Select Report Type</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="custom">Custom</option>
             </select>
 
-            <input type="date" id="filterStartDate">
-            <input type="date" id="filterEndDate">
-
-            <button id="resetSalesFilters" class="secondary-btn"><i class="fa-solid fa-rotate-right"></i> Reset Filters</button>
-            <button id="exportSalesPDF" class="secondary-btn"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+            <!-- Start & End dates (for custom only) -->
+            <input type="date" id="filterStartDate" disabled>
+            <input type="date" id="filterEndDate" disabled>
+            
+            <button id="resetSalesFilters" class="secondary-btn">
+              <i class="fa-solid fa-rotate-right"></i> Reset Filters
+            </button>
+            <button id="exportSalesPDF" class="secondary-btn">
+              <i class="fa-solid fa-file-pdf"></i> Generate PDF
+            </button>
+            <button id="exportDetailedSalesPDF" class="secondary-btn">
+              <i class="fa-solid fa-file-pdf"></i> Export Detailed PDF
+            </button>
           </div>
 
-          <!-- Sales Table -->
+          <!-- ========================= -->
+          <!-- SALES TABLE -->
+          <!-- ========================= -->
           <div class="sales-table-container">
             <table class="sales-table">
               <thead>
                 <tr>
                   <th>Car</th>
-                  <th>Price (KSh)</th>
-                  <th>Profit (KSh)</th>
+                  <th>Price</th>
+                  <th>Profit</th>
                   <th>Agent</th>
                   <th>Date</th>
                 </tr>
               </thead>
-              <tbody id="salesTableBody">
-                <!-- Sales will be loaded dynamically -->
-              </tbody>
+              <tbody id="salesTableBody"></tbody>
             </table>
           </div>
         </section>
@@ -378,18 +441,50 @@
         const allowedRoles = item.dataset.role;
         if (!allowedRoles) return;
 
-        const rolesArray = allowedRoles.split(",");
-        if (!rolesArray.includes(role)) item.style.display = "none";
+        const rolesArray = allowedRoles
+          .split(",")
+          .map(r => r.trim().toLowerCase());
+
+        if (!rolesArray.includes(role)) {
+          item.style.display = "none";
+        }
       });
 
       sections.forEach(section => {
         const allowedRoles = section.dataset.role;
         if (!allowedRoles) return;
 
-        const rolesArray = allowedRoles.split(",");
-        if (!rolesArray.includes(role)) section.style.display = "none";
+        const rolesArray = allowedRoles
+          .split(",")
+          .map(r => r.trim().toLowerCase());
+
+        if (!rolesArray.includes(role)) {
+          section.style.display = "none";
+        }
       });
     }
+
+function handleSalesUIByRole() {
+  if (role === "agent") {
+    // Hide all admin-only elements
+    document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
+
+    // Show agent-only elements
+    document.querySelectorAll(".agent-only").forEach(el => el.style.display = "block");
+
+    // Hide sales filters completely
+    const filters = document.querySelector(".sales-filters");
+    if (filters) filters.style.display = "none";
+
+  } else if (role === "admin") {
+    // Admin sees everything
+    document.querySelectorAll(".admin-only").forEach(el => el.style.display = "block");
+    document.querySelectorAll(".agent-only").forEach(el => el.style.display = "none");
+
+    const filters = document.querySelector(".sales-filters");
+    if (filters) filters.style.display = "block";
+  }
+}
 
     function logout() {
       localStorage.removeItem("token");
@@ -397,6 +492,7 @@
     }
 
     applyRoleAccess();
+    handleSalesUIByRole();
 
     // ----------------------------
     // TAB MANAGEMENT
@@ -602,14 +698,53 @@
 
       const selectedMake = document.getElementById("filterMake").value;
       const selectedYear = document.getElementById("filterYear").value;
-      const searchTerm = document.getElementById("searchCar").value.trim().toLowerCase();
+      const selectedStatus = document.getElementById("filterStatus").value;
+      const selectedOwnership = document.getElementById("filterOwnership").value;
+      const startDate = document.getElementById("filterStartDate").value;
+      const endDate = document.getElementById("filterEndDate").value;
+      const searchTerm = document
+        .getElementById("searchCar")
+        .value.trim()
+        .toLowerCase();
 
       const filteredCars = cars.filter(car => {
-        const matchesMake = !selectedMake || car.make === selectedMake;
-        const matchesYear = !selectedYear || car.year.toString() === selectedYear;
+        const matchesMake =
+          !selectedMake || car.make === selectedMake;
+
+        const matchesYear =
+          !selectedYear || car.year.toString() === selectedYear;
+
+        const matchesStatus =
+          !selectedStatus || car.status === selectedStatus;
+
+        const matchesOwnership =
+          !selectedOwnership || car.ownership === selectedOwnership;
+
         const matchesSearch =
-          !searchTerm || car.make.toLowerCase().includes(searchTerm) || car.model.toLowerCase().includes(searchTerm) || car.year.toString().includes(searchTerm);
-        return matchesMake && matchesYear && matchesSearch;
+          !searchTerm ||
+          car.make.toLowerCase().includes(searchTerm) ||
+          car.model.toLowerCase().includes(searchTerm) ||
+          car.year.toString().includes(searchTerm);
+
+        // date filtering
+        let matchesDate = true;
+
+        if (startDate && endDate) {
+          const carDate = new Date(car.createdAt);
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+
+          matchesDate = carDate >= start && carDate <= end;
+        }
+
+        return (
+          matchesMake &&
+          matchesYear &&
+          matchesStatus &&
+          matchesOwnership &&
+          matchesSearch &&
+          matchesDate
+        );
       });
 
       if (filteredCars.length === 0) {
@@ -636,11 +771,20 @@
 
     document.getElementById("filterMake").addEventListener("change", () => displayCars(allCars));
     document.getElementById("filterYear").addEventListener("change", () => displayCars(allCars));
+    document.getElementById("filterStatus").addEventListener("change", () => displayCars(allCars));
+    document.getElementById("filterOwnership").addEventListener("change", () => displayCars(allCars));
+    document.getElementById("filterStartDate").addEventListener("change", () => displayCars(allCars));
+    document.getElementById("filterEndDate").addEventListener("change", () => displayCars(allCars));
     document.getElementById("searchCar").addEventListener("input", () => displayCars(allCars));
     document.getElementById("resetFilters").addEventListener("click", () => {
       document.getElementById("filterMake").value = "";
       document.getElementById("filterYear").value = "";
+      document.getElementById("filterStatus").value = "";
+      document.getElementById("filterOwnership").value = "";
+      document.getElementById("filterStartDate").value = "";
+      document.getElementById("filterEndDate").value = "";
       document.getElementById("searchCar").value = "";
+
       displayCars(allCars);
     });
 
@@ -753,14 +897,36 @@
     }
 
     function generateReport() {
-      const cars = document.querySelectorAll(".car-card");
-      let content = "Car Report\n\n";
-      cars.forEach(car => { content += car.innerText + "\n\n"; });
-      const blob = new Blob([content], { type: "application/pdf" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "car-report.pdf";
-      link.click();
+      const params = new URLSearchParams();
+
+      const make = document.getElementById("filterMake").value;
+      const year = document.getElementById("filterYear").value;
+      const status = document.getElementById("filterStatus").value;
+      const ownership = document.getElementById("filterOwnership").value;
+      const search = document.getElementById("searchCar").value;
+      const startDate = document.getElementById("filterStartDate").value;
+      const endDate = document.getElementById("filterEndDate").value;
+
+      if (make) params.append("make", make);
+      if (year) params.append("year", year);
+      if (status) params.append("status", status);
+      if (ownership) params.append("ownership", ownership);
+      if (search) params.append("search", search);
+      if (startDate) params.append("startDate", startDate);
+      if (endDate) params.append("endDate", endDate);
+
+      fetch(`http://localhost:5000/api/cars/report?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.blob())
+        .then(blob => {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "cars-report.pdf";
+          link.click();
+        });
     }
 
     // Initial load
