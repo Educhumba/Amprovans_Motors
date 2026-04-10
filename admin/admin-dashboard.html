@@ -25,9 +25,18 @@
       <nav>
         <ul>
           <li class="active" data-tab="car-listings"><i class="fa-solid fa-list"></i> Car Listings</li>
-          <li data-tab="car-hire" data-role="admin,agent"><i class="fa-solid fa-car-side"></i> Car Hire</li>
-          <li data-tab="car-auction" data-role="admin,agent"><i class="fa-solid fa-gavel"></i> Car Auction</li>
-          <li data-tab="messages" data-role="admin,agent"><i class="fa-solid fa-envelope"></i> Messages</li>
+          <li data-tab="car-hire" data-role="admin,agent">
+            <i class="fa-solid fa-car-side"></i> Car Hire
+            <span id="hireCounter" class="counter">0</span>
+          </li>
+          <li data-tab="car-auction" data-role="admin,agent">
+            <i class="fa-solid fa-gavel"></i> Car Auction
+            <span id="auctionCounter" class="counter">0</span>
+          </li>
+          <li data-tab="messages" data-role="admin,agent">
+            <i class="fa-solid fa-envelope"></i> Messages
+            <span id="messagesCounter" class="counter">0</span>
+          </li>
           <li data-tab="sales-agents" data-role="admin"><i class="fa-solid fa-user-tie"></i> Sales Agents</li>
           <li data-tab="sales" data-role="admin,agent"><i class="fa-solid fa-dollar-sign"></i> Sales</li>
         </ul>
@@ -54,6 +63,19 @@
             <select id="carModel" name="model" required disabled>
               <option value="">Select Model</option>
             </select>
+          </div>
+
+          <!-- Plate Number -->
+          <div class="form-group">
+            <label for="carPlate">Plate Number</label>
+            <input 
+              type="text" 
+              id="carPlate" 
+              name="plate_number" 
+              placeholder="e.g. KAY 123E" 
+              required
+              style="text-transform:uppercase"
+            >
           </div>
 
           <!-- Year -->
@@ -229,25 +251,134 @@
         </div>
 
         <div class="search-container">
-          <input type="text" id="searchCar" placeholder="Search by make, model, or year">
+          <input type="text" id="searchCar" placeholder="Search by make, model, year or plate number">
         </div>
 
         <div id="cars" class="cars-grid"></div>
       </section>
 
-      <!-- Other tabs -->
+      <!-- CAR HIRE -->
       <section id="car-hire" class="tab-section" data-role="admin,agent">
-        <h3>Car Hire</h3>
-        <p>Manage car hire requests here...</p>
+        <h2><i class="fa-solid fa-car-side"></i> Car Hire Requests </h2>
+
+        <p>Manage all car hire requests. Approve or reject bookings.</p>
+
+        <!-- FILTERS -->
+        <div class="filter-bar">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="pending">Pending</button>
+          <button class="filter-btn" data-filter="approved">Approved</button>
+          <button class="filter-btn" data-filter="rejected">Rejected</button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="hire-table-container">
+          <table class="hire-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Car</th>
+                <th>Daily</th>
+                <th>Total</th>
+                <th>Days</th>
+                <th>Pickup</th>
+                <th>Return</th>
+                <th>Location</th>
+                <th>Notes</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="hireTableBody">
+              <!-- JS injects rows -->
+            </tbody>
+          </table>
+        </div>
       </section>
-      <section id="car-auction" class="tab-section" data-role="admin,agent">
-        <h3>Car Auction</h3>
-        <p>Manage car auctions here...</p>
-      </section>
-      <section id="messages" class="tab-section" data-role="admin,agent">
-        <h3>Messages</h3>
-        <p>View customer messages here...</p>
-      </section>
+
+<!-- REJECTION MODAL -->
+<div id="rejectModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Reject Hire Request</h3>
+
+    <textarea id="rejectReasonInput" placeholder="Enter rejection reason..."></textarea>
+
+    <div class="modal-actions">
+      <button onclick="submitRejection()" class="reject-btn">Submit</button>
+      <button onclick="closeRejectModal()" class="approve-btn">Cancel</button>
+    </div>
+  </div>
+</div>      
+
+<!-- CAR AUCTION -->
+    <section id="car-auction" class="tab-section" data-role="admin,agent">
+      <h2><i class="fa-solid fa-gavel"></i> Car Auction Requests</h2>
+      <p>Review and approve/reject submitted cars from clients.</p>
+
+      <!-- Scrollable Table Container -->
+      <div class="auction-table-container">
+        <table class="auction-table">
+          <thead>
+            <tr>
+              <th>Car</th>
+              <th>Plate</th>
+              <th>Owner</th>
+              <th>Email</th>
+              <th>Mileage / Transmission / Fuel</th>
+              <th>Expected Price</th>
+              <th>Description</th>
+              <th>Images</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pendingAuctions">
+            <!-- JS injects rows here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Image Modal for expanding thumbnails -->
+      <div id="imageModal" class="hidden">
+        <span class="close">&times;</span>
+        <img id="modalImg" src="" alt="Car Image">
+      </div>
+    </section>
+
+
+    <!-- MESSAGES -->
+    <section id="messages" class="tab-section" data-role="admin,agent">
+      <h2><i class="fas fa-envelope"></i> Customer Messages</h2>
+
+      <p>View and manage all customer messages. Mark as resolved when addressed.</p>
+
+      <!-- FILTERS -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="pending">Pending</button>
+        <button class="filter-btn" data-filter="resolved">Resolved</button>
+      </div>
+
+      <!-- TABLE -->
+      <div class="messages-table-container">
+        <table class="messages-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Message</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="messagesTableBody">
+            <!-- JS injects rows here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
 
       <section id="sales-agents" class="tab-section" data-role="admin">
         <div class="agents-header">
@@ -724,7 +855,8 @@ function handleSalesUIByRole() {
           !searchTerm ||
           car.make.toLowerCase().includes(searchTerm) ||
           car.model.toLowerCase().includes(searchTerm) ||
-          car.year.toString().includes(searchTerm);
+          car.year.toString().includes(searchTerm) ||
+          (car.plate_number && car.plate_number.toLowerCase().includes(searchTerm));
 
         // date filtering
         let matchesDate = true;
@@ -746,7 +878,7 @@ function handleSalesUIByRole() {
           matchesDate
         );
       });
-
+ 
       if (filteredCars.length === 0) {
         div.innerHTML = "<p>No cars found matching the criteria.</p>";
         return;
@@ -756,6 +888,7 @@ function handleSalesUIByRole() {
         div.innerHTML += `
           <div class="car-card">
             <h4>${car.make} ${car.model} (${car.year})</h4>
+            <p class="plate">Plate: ${car.plate_number || "N/A"}</p>
             <p>Price: KSh ${Number(car.price).toLocaleString()}</p>
             <p>Status: ${car.status}</p>
             <select onchange="updateStatus(${car.id}, this.value)">
@@ -800,6 +933,7 @@ function handleSalesUIByRole() {
         document.getElementById("carMake").value = car.make;
         carMakeSelect.dispatchEvent(new Event("change"));
         document.getElementById("carModel").value = car.model;
+        document.getElementById("carPlate").value = car.plate_number || "";
         document.getElementById("carYear").value = car.year;
         document.getElementById("carTransmission").value = car.transmission;
         document.getElementById("carFuel").value = car.fuel;
@@ -935,5 +1069,8 @@ function handleSalesUIByRole() {
 
   <script src="./scripts/agents.js"></script>
   <script src="./scripts/sales.js"></script>
+  <script src="./scripts/auctions.js"></script>
+  <script src="scripts/carHire.js"></script>
+  <script src="scripts/clientMessages.js"></script>
 </body>
 </html>

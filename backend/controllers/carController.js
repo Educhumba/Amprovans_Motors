@@ -5,6 +5,25 @@ const PDFDocument = require("pdfkit-table");
 const moment = require("moment");
 const { addPage } = require("pdfkit");
 
+// =========================
+// NORMALIZE PLATE NUMBER
+// =========================
+function normalizePlate(plate) {
+  if (!plate) return plate;
+
+  // remove spaces & dashes
+  plate = plate.replace(/[\s-]/g, "").toUpperCase();
+
+  // match Kenyan format
+  const match = plate.match(/^([A-Z]{3})(\d{3})([A-Z])$/);
+
+  if (match) {
+    return `${match[1]} ${match[2]}${match[3]}`;
+  }
+
+  return plate.toUpperCase();
+}
+
 const carController = {
 
   // =========================
@@ -13,7 +32,7 @@ const carController = {
   addCar: async (req, res) => {
     try {
       const {
-        make, model, year, transmission, fuel, body,
+        plate_number,make, model, year, transmission, fuel, body,
         condition, color, mileage, engine, location,
         price, cost, ownership, description
       } = req.body;
@@ -21,6 +40,21 @@ const carController = {
       const user = req.user;
 
       // ✅ VALIDATION
+      if (!plate_number) {
+        return res.status(400).json({ error: "Plate number required" });
+      }
+
+      const normalizedPlate = normalizePlate(plate_number);
+
+      const existing = await Car.findOne({
+        where: { plate_number: normalizedPlate }
+      });
+
+      if (existing) {
+        return res.status(400).json({
+          error: "Plate number already exists"
+        });
+      }
       if (!price || price <= 0) {
         return res.status(400).json({ error: "Invalid price" });
       }
@@ -35,7 +69,7 @@ const carController = {
 
       // ✅ CREATE CAR
       const car = await Car.create({
-        make, model, year, transmission, fuel, body,
+        plate_number: normalizedPlate, make, model, year, transmission, fuel, body,
         condition, color, mileage, engine, location,
         price, cost, ownership,
         description,
@@ -68,6 +102,7 @@ const carController = {
       const cars = await Car.findAll({
         include: { model: CarImage, as: "images" }
       });
+console.log(JSON.stringify(cars, null, 2)); // 👈 ADD THIS
       res.json(cars);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -152,6 +187,24 @@ const carController = {
         return res.status(400).json({
           error: "Car can only be marked as sold via sales system"
         });
+      }
+
+      // prevent duplicate plate number
+      if (req.body.plate_number) {
+
+        const normalizedPlate = normalizePlate(req.body.plate_number);
+
+        const existing = await Car.findOne({
+          where: { plate_number: normalizedPlate }
+        });
+
+        if (existing && existing.id != id) {
+          return res.status(400).json({
+            error: "Plate number already exists"
+          });
+        }
+
+        req.body.plate_number = normalizedPlate;
       }
 
       // ✅ UPDATE CAR
@@ -273,7 +326,8 @@ const carController = {
         cars = cars.filter(c =>
           c.make.toLowerCase().includes(s) ||
           c.model.toLowerCase().includes(s) ||
-          String(c.year).includes(s)
+          String(c.year).includes(s) ||
+          (c.plate_number && c.plate_number.toLowerCase().includes(s))
         );
       }
 
@@ -353,6 +407,7 @@ const carController = {
 
     const table = {
       headers: [
+        "Plate",
         "Car",
         "Ownership",
         "Status",
@@ -363,6 +418,7 @@ const carController = {
       ],
 
       rows: cars.map(car => [
+        car.plate_number || "-",
         `${car.make} ${car.model} (${car.year})`,
         car.ownership,
         car.status,
@@ -378,6 +434,7 @@ const carController = {
       "TOTALS",
       "",
       "",
+      "",
       totalCost.toLocaleString(),
       totalValue.toLocaleString(),
       totalProfit.toLocaleString(),
@@ -385,7 +442,7 @@ const carController = {
     ]);
 
     doc.table(table, {
-      columnsSize: [220, 90, 80, 110, 110, 130, 120],
+      columnsSize: [110, 200, 90, 80, 110, 110, 130, 120],
       prepareHeader: () =>
         doc.font("Helvetica-Bold").fontSize(9),
 

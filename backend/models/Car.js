@@ -3,6 +3,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database"); // import directly
 
 const Car = sequelize.define("Car", {
+  plate_number: {type: DataTypes.STRING,allowNull: false, unique: true},
   make: { type: DataTypes.STRING, allowNull: false },
   model: { type: DataTypes.STRING, allowNull: false },
   year: { type: DataTypes.INTEGER, allowNull: false },
@@ -15,7 +16,7 @@ const Car = sequelize.define("Car", {
   engine: { type: DataTypes.INTEGER, allowNull: false },
   location: { type: DataTypes.STRING, allowNull: false },
   price: { type: DataTypes.DECIMAL(10,2), allowNull: false },
-  cost: { type: DataTypes.DECIMAL(10,2), allowNull: false, defaultValue: 0 },
+  cost: { type: DataTypes.DECIMAL(10,2), allowNull: true, defaultValue: 0 },
   ownership: { type: DataTypes.ENUM("company","client"),allowNull: false, defaultValue: "company" },
   updated_by: {type: DataTypes.INTEGER,allowNull: true},
   status: { type: DataTypes.ENUM("available","sold","booked"), defaultValue: "available" },

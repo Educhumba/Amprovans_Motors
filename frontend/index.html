@@ -198,10 +198,156 @@
             <label>Additional Notes</label>
             <textarea id="notes"></textarea>
         </div>
-        <button type="submit" class="hire-btn">
+        <button type="submit" class="hire-btn" id="hireSubmitBtn">
             Submit Hire Request
         </button>
     </form>
+</section>
+
+
+<section id="sell" class="section auction-section">
+    <div class="auction-container">
+        <h2 class="section-title">Sell Your Car with Us</h2>
+        <p class="auction-tagline">
+            <i class="fas fa-gavel"></i>
+            Turn your car into cash — fast, safe, and stress-free
+        </p>
+        <p class="auction-description">
+            At <strong>Amprovans Motors</strong>, we help you sell your vehicle effortlessly by connecting you 
+            to serious buyers. We handle the marketing, inquiries, and negotiations — you just sit back and get paid.
+        </p>
+        <!-- BENEFITS -->
+        <div class="auction-benefits">
+            <div class="benefit-card">
+                <i class="fas fa-bullhorn"></i>
+                <h3>We Market for You</h3>
+                <p>Your car is showcased to a wide audience of verified buyers.</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-user-shield"></i>
+                <h3>Secure Transactions</h3>
+                <p>We protect you from fraud and handle buyer verification.</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-hand-holding-usd"></i>
+                <h3>Best Value</h3>
+                <p>We negotiate to get you the best possible price.</p>
+            </div>
+        </div>
+        <!-- COMMISSION INFO -->
+        <div class="auction-commission">
+            <h3><i class="fas fa-percentage"></i> Our Commission</h3>
+            <p>
+                We charge a small commission of 
+                <strong id="commissionDisplay"></strong> 
+                on successful sales. This covers marketing, client handling, and transaction processing.
+            </p>
+        </div>
+
+                <!-- FORM -->
+        <form id="auctionForm" class="auction-form">
+        <h3>Submit Your Car</h3>
+        <!-- OWNER DETAILS -->
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="ownerName" required>
+        </div>
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="ownerPhone" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="ownerEmail" required>
+        </div>
+        <!-- CAR DETAILS -->
+        <div class="form-group">
+            <label>Plate Number</label>
+            <input type="text" id="plateNumber" required>
+        </div>
+        <div class="form-group">
+            <label>Make</label>
+            <input type="text" id="carMake" required>
+        </div>
+        <div class="form-group">
+            <label>Model</label>
+            <input type="text" id="carModel" required>
+        </div>
+        <div class="form-group">
+            <label>Year</label>
+            <input type="number" id="carYear" required>
+        </div>
+        <div class="form-group">
+            <label>Mileage (KM)</label>
+            <input type="number" id="mileage" required>
+        </div>
+        <div class="form-group">
+            <label>Engine (cc)</label>
+            <input type="number" id="engine" required>
+        </div>
+        <div class="form-group">
+            <label>Transmission</label>
+            <select id="transmission" required>
+                <option value="">Select</option>
+                <option>Automatic</option>
+                <option>Manual</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Fuel Type</label>
+            <select id="fuel" required>
+                <option value="">Select</option>
+                <option>Petrol</option>
+                <option>Diesel</option>
+                <option>Hybrid</option>
+                <option>Electric</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Body Type</label>
+            <select id="body" required>
+                <option value="">Select</option>
+                <option>Sedan</option>
+                <option>SUV</option>
+                <option>Hatchback</option>
+                <option>Pickup</option>
+                <option>Coupe</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Condition</label>
+            <select id="condition">
+                <option value="">Select</option>
+                <option>Used</option>
+                <option>New</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Color</label>
+            <input type="text" id="color" required>
+        </div>
+        <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="location" required>
+        </div>
+        <div class="form-group">
+            <label>Expected Price (KES)</label>
+            <input type="number" id="expectedPrice" required>
+        </div>
+        <div class="form-group full-width">
+            <label>Description</label>
+            <textarea id="carDescription"></textarea>
+        </div>
+        <div class="form-group full-width">
+            <label>Upload Images</label>
+            <input type="file" id="carImages" multiple accept="image/*">
+        </div>
+        <button type="submit" class="auction-btn">
+            Submit Car for Review
+        </button>
+        </form>
+        <p id="auctionStatus" class="auction-status"></p>
+    </div>
 </section>
 
 
@@ -263,21 +409,15 @@
 </section>
 
 <section id="contact" class="section contact-section">
-
     <div class="contact-container">
-
         <h2 class="section-title">Contact Us</h2>
-
         <p class="contact-tagline">
             <i class="fas fa-headset"></i>
             We’re here to help — Reach out anytime
         </p>
-
         <div class="contact-content">
-
             <!-- LEFT: CONTACT INFO -->
             <div class="contact-info">
-
                 <div class="info-card">
                     <i class="fas fa-phone-alt"></i>
                     <div>
@@ -285,7 +425,6 @@
                         <p>+254 712 345 678</p>
                     </div>
                 </div>
-
                 <div class="info-card">
                     <i class="fas fa-envelope"></i>
                     <div>
@@ -293,7 +432,6 @@
                         <p>info@amprovansmotors.com</p>
                     </div>
                 </div>
-
                 <div class="info-card">
                     <i class="fas fa-map-marker-alt"></i>
                     <div>
@@ -301,7 +439,6 @@
                         <p>Nairobi, Kenya</p>
                     </div>
                 </div>
-
                 <div class="info-card">
                     <i class="fas fa-clock"></i>
                     <div>
@@ -309,59 +446,44 @@
                         <p>Mon - Sat: 8:00 AM - 6:00 PM</p>
                     </div>
                 </div>
-
                 <!-- QUICK ACTIONS -->
                 <div class="quick-actions">
                     <a href="tel:+254712345678" class="quick-btn call">
                         <i class="fas fa-phone"></i> Call Now
                     </a>
-
                     <a href="https://wa.me/254712345678?text=Hello%20Amprovans%20Motors,%20I%20would%20like%20to%20inquire%20about%20your%20services." 
                        target="_blank" 
                        class="quick-btn whatsapp">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </a>
                 </div>
-
             </div>
-
             <!-- RIGHT: CONTACT FORM -->
             <div class="contact-form-wrapper">
 
                 <h3>Send Us a Message</h3>
 
                 <form id="contactForm" class="contact-form">
-
                     <div class="form-group">
                         <input type="text" id="contactName" placeholder="Full Name" required>
                     </div>
-
                     <div class="form-group">
                         <input type="email" id="contactEmail" placeholder="Email Address" required>
                     </div>
-
                     <div class="form-group">
                         <input type="tel" id="contactPhone" placeholder="Phone Number">
                     </div>
-
                     <div class="form-group">
                         <textarea id="contactMessage" placeholder="Write your message..." required></textarea>
                     </div>
-
                     <button type="submit" class="contact-btn">
                         <i class="fas fa-paper-plane"></i> Send Message
                     </button>
-
                 </form>
-
                 <p id="contactStatus" class="contact-status"></p>
-
             </div>
-
         </div>
-
     </div>
-
     <!-- FLOATING WHATSAPP BUTTON -->
     <a href="https://wa.me/254712345678?text=Hello%20Amprovans%20Motors,%20I%20just%20visited%20your%20website." 
        class="floating-whatsapp" 
@@ -369,8 +491,9 @@
        id="floatingWhatsapp">
         <i class="fab fa-whatsapp"></i>
     </a>
-
 </section>
+
+
 
 <footer class="footer">
 
@@ -438,5 +561,6 @@
 <script src="scripts/main.js"></script>
 <script src="scripts/carHire.js"></script>
 <script src="scripts/contactUs.js"></script>
+<script src="scripts/auctions.js"></script>
 </body>
 </html>

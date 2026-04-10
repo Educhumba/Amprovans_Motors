@@ -268,8 +268,540 @@ textarea {
 
 
 
-/* ---------------- SALES AGENTS ---------------- */
 
+
+/* ========================= */
+/* CAR HIRE SECTION */
+/* ========================= */
+#car-hire {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+
+/* FILTER BAR */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+
+.filter-btn:hover {
+  background: var(--secondary);
+  color: #fff;
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+}
+
+/* TABLE CONTAINER */
+.hire-table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* TABLE */
+.hire-table {
+  min-width: 1200px; /* more columns than auction */
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.hire-table th,
+.hire-table td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.hire-table th {
+  background: var(--primary);
+  color: #fff;
+}
+
+.hire-table tr:hover {
+  background: rgba(64,147,71,0.05);
+}
+
+/* NOTES COLUMN */
+.notes-cell {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* STATUS BADGES */
+.status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* ACTION BUTTONS */
+.approve-btn,
+.reject-btn {
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-right: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.approve-btn {
+  background: var(--primary);
+  color: #fff;
+}
+
+.approve-btn:hover {
+  background: var(--secondary);
+}
+
+.reject-btn {
+  background: var(--delete);
+  color: #fff;
+}
+
+.reject-btn:hover {
+  background: #cc0000;
+}
+
+/* COUNTER BADGE (same as auction) */
+#hireCounter {
+  background: var(--delete);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+/* HEADER COUNTER */
+#hireCounterHeader {
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-left: 5px;
+}
+/* MODAL BACKDROP */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* HIDDEN STATE */
+.hidden {
+  display: none;
+}
+
+/* MODAL BOX */
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow);
+}
+
+/* TEXTAREA */
+.modal-content textarea {
+  width: 100%;
+  height: 100px;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+/* BUTTONS */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hire-table th,
+  .hire-table td {
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .approve-btn,
+  .reject-btn {
+    margin-bottom: 4px;
+  }
+}
+
+
+
+
+
+
+
+/* ------------------------ */
+/* CAR AUCTION SECTION CSS  */
+/* ------------------------ */
+#car-auction {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+
+/* Scrollable table behind sidebar */
+.auction-table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.auction-table {
+  min-width: 1000px; /* ensures horizontal scroll on narrow screens */
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.auction-table th,
+.auction-table td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.auction-table th {
+  background: var(--primary);
+  color: #fff;
+}
+
+.auction-table tr:hover {
+  background: rgba(64,147,71,0.05);
+}
+
+/* Thumbnail Images */
+.auction-table img.thumbnail {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+/* Modal */
+#imageModal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  padding-top: 60px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.8);
+}
+
+#imageModal img {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 80%;
+}
+
+#imageModal .close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Action Inputs + Buttons */
+.auction-table .action-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.auction-table .action-group input {
+  flex: 1 1 auto;
+  min-width: 80px;
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  outline: none;
+  transition: 0.2s;
+}
+
+.auction-table .action-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 5px rgba(64, 147, 71, 0.3);
+}
+
+/* Approve / Reject Buttons */
+.auction-action-btn {
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.approve-btn { background: var(--primary); color:#fff; }
+.approve-btn:hover { background: var(--secondary); }
+.reject-btn { background: var(--delete); color:#fff; }
+.reject-btn:hover { background: #cc0000; }
+
+/* Auction Counter Badge */
+#auctionCounter {
+  background: var(--delete);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+/* Responsive adjustments */
+@media(max-width:768px){
+  .auction-table th, .auction-table td {
+    font-size:0.85rem;
+  }
+  .auction-table img.thumbnail { width:50px; height:35px; }
+
+  /* Stack action fields on mobile */
+  .auction-table .action-group { flex-direction: column; gap: 4px; }
+}
+
+
+
+
+/* ========================= */
+/* MESSAGES SECTION */
+/* ========================= */
+#messages {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+
+/* FILTER BAR */
+#messages .filter-bar {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+#messages .filter-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+
+#messages .filter-btn:hover {
+  background: var(--secondary);
+  color: #fff;
+}
+
+#messages .filter-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+}
+
+/* TABLE CONTAINER */
+.messages-table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* TABLE */
+.messages-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.messages-table th,
+.messages-table td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.messages-table th {
+  background: var(--primary);
+  color: #fff;
+}
+
+.messages-table tr:hover {
+  background: rgba(64, 147, 71, 0.05);
+}
+
+/* MESSAGE CELL */
+.message-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* STATUS BADGES */
+#messages .status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+#messages .status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+#messages .status.resolved {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* ACTION BUTTONS */
+#messages .resolve-btn {
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+}
+
+#messages .resolve-btn:hover {
+  background: var(--secondary);
+}
+
+/* COUNTER BADGE */
+#messagesCounter {
+  background: var(--delete);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+/* HEADER COUNTER */
+#messageCounterHeader {
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-left: 5px;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .messages-table th,
+  .messages-table td {
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+
+  #messages .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #messages .resolve-btn {
+    margin-bottom: 4px;
+  }
+}
+
+
+
+
+
+
+
+/* ---------------- SALES AGENTS ---------------- */
 .agents-header {
   display: flex;
   justify-content: space-between;

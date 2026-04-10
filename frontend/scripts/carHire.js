@@ -45,13 +45,14 @@ function updateTotalCost() {
   const pickup = document.getElementById("pickupDate").value;
   const returnDate = document.getElementById("returnDate").value;
 
-  // 🚨 Ensure all exist
   if (!rateText) {
+    document.getElementById("totalCost").dataset.total = 0;
     document.getElementById("totalCost").value = "Select a car first";
     return;
   }
 
   if (!pickup || !returnDate) {
+    document.getElementById("totalCost").dataset.total = 0;
     document.getElementById("totalCost").value = "";
     return;
   }
@@ -60,14 +61,18 @@ function updateTotalCost() {
   const days = calculateDays(pickup, returnDate);
 
   if (days <= 0) {
+    document.getElementById("totalCost").dataset.total = 0;
     document.getElementById("totalCost").value = "Invalid dates";
     return;
   }
 
   const total = rate * days;
 
-  document.getElementById("totalCost").value =
-    `KSh ${total.toLocaleString()} (${days} days)`;
+  // Save pure number in data attribute for submission
+  document.getElementById("totalCost").dataset.total = total;
+
+  // Display formatted value with days
+  document.getElementById("totalCost").value = `KSh ${total.toLocaleString()} (${days} days)`;
 }
 
 /* ------------------ POPULATE DROPDOWN ------------------ */
@@ -158,31 +163,41 @@ function handleHireSubmit(e) {
 
   if (!validateDates()) return;
 
+  const submitBtn = document.getElementById("hireSubmitBtn");
+  submitBtn.disabled = true;
+
+  const totalCost = Number(document.getElementById("totalCost").dataset.total);
+
   const data = {
     fullName: document.getElementById("fullName").value,
     phone: document.getElementById("phone").value,
     email: document.getElementById("email").value,
     carId: document.getElementById("hireCarSelect").value,
+    carName: document.getElementById("hireCarSelect").selectedOptions[0].text,
     pickupDate: document.getElementById("pickupDate").value,
     returnDate: document.getElementById("returnDate").value,
     pickupLocation: document.getElementById("pickupLocation").value,
     notes: document.getElementById("notes").value,
-    dailyRate: document.getElementById("dailyRate").value,
-    totalCost: document.getElementById("totalCost").value
+    dailyRate: Number(document.getElementById("dailyRate").value.replace(/[^0-9]/g, "")),
+    totalCost: totalCost // 👈 use the clean number
   };
 
-  console.log("Hire Request:", data);
-
-  alert("Hire request submitted! We will contact you shortly.");
-
-  // 🔥 NEXT STEP (backend)
-  /*
-  fetch("http://localhost:5000/api/hire", {
+  fetch("http://localhost:5000/api/car-hire", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   })
-  */
+  .then(res => res.json())
+  .then(response => {
+    console.log("Server response:", response);
+    alert("Hire request submitted successfully!");
+    document.getElementById("hireForm").reset();
+    submitBtn.disabled = false;
+  })
+  .catch(err => {
+    console.error("Error:", err);
+    alert("Failed to submit hire request");
+    submitBtn.disabled = false;
+  });
 
-  document.getElementById("hireForm").reset();
 }
