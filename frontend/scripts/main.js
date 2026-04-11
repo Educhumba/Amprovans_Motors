@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (homeContent) {
     setTimeout(() => {
       homeContent.classList.add('slide-in');
-    }, 600); // small delay for smooth entry
+    }, 600); 
   }
 });
 // image sources
@@ -72,18 +72,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  const searchInput = document.getElementById("searchInput");
+  const searchWarning = document.getElementById("searchWarning");
   const searchBtn = document.getElementById("searchBtn");
-  const applyBtn = document.getElementById("applyFilter");
+
+  const make = document.getElementById("filterMake");
+  const model = document.getElementById("filterModel");
+  const year = document.getElementById("filterYear");
+  const minPrice = document.getElementById("minPrice");
+  const maxPrice = document.getElementById("maxPrice");
+
   const resetBtn = document.getElementById("resetFilter");
 
+  // REAL-TIME SEARCH (typing)
+  let timeout;
+
+  searchInput.addEventListener("input", () => {
+    let original = searchInput.value;
+    // Allow only letters, numbers, space, hyphen
+    let cleaned = original.replace(/[^a-zA-Z0-9\s-]/g, "");
+    if (original !== cleaned) {
+      searchWarning.textContent =
+        "⚠ Only letters, numbers, and hyphens (-) allowed";
+      searchWarning.classList.add("show");
+      // auto hide
+      clearTimeout(searchWarning.timeout);
+      searchWarning.timeout = setTimeout(() => {
+        searchWarning.classList.remove("show");
+      }, 2000);
+    }
+    searchInput.value = cleaned;
+    clearTimeout(timeout);
+    timeout = setTimeout(applySearchAndFilter, 300);
+  });
+
   searchBtn.addEventListener("click", applySearchAndFilter);
-  applyBtn.addEventListener("click", applySearchAndFilter);
+
+  // REAL-TIME FILTERS
+  make.addEventListener("change", applySearchAndFilter);
+  model.addEventListener("change", applySearchAndFilter);
+  year.addEventListener("change", applySearchAndFilter);
+
+  minPrice.addEventListener("input", applySearchAndFilter);
+  maxPrice.addEventListener("input", applySearchAndFilter);
+
+  // RESET
   resetBtn.addEventListener("click", resetFilters);
 
 });
 
 function applySearchAndFilter() {
-  const searchText = document.getElementById("searchInput").value.toLowerCase();
+  let rawInput = document.getElementById("searchInput").value;
+  let cleanedInput = rawInput.replace(/[^a-zA-Z0-9\s-]/g, "");
+  const searchText = cleanedInput.toLowerCase();
   const make = document.getElementById("filterMake").value;
   const model = document.getElementById("filterModel").value;
   const year = document.getElementById("filterYear").value;
@@ -95,7 +136,7 @@ function applySearchAndFilter() {
   // SEARCH
   if (searchText) {
     result = result.filter(car =>
-      `${car.make} ${car.model} ${car.engine} ${car.transmission} ${car.price}`
+      `${car.make} ${car.model} ${car.engine} ${car.transmission} ${car.price} ${car.year} ${car.mileage}`
         .toLowerCase()
         .includes(searchText)
     );
@@ -125,3 +166,22 @@ function resetFilters() {
 
   renderCars(window.allCars);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const backToTopBtn = document.getElementById("backToTop");
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      backToTopBtn.classList.add("show");
+    } else {
+      backToTopBtn.classList.remove("show");
+    }
+  });
+
+  backToTopBtn.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+});

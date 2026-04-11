@@ -1,4 +1,31 @@
+const fullName = document.getElementById("fullName");
+const phone = document.getElementById("phone");
+const email = document.getElementById("email");
+const pickupLocation = document.getElementById("pickupLocation");
+const submitBtn = document.getElementById("hireSubmitBtn");
+
+const nameError = document.getElementById("nameError");
+const phoneError = document.getElementById("phoneError");
+const emailError = document.getElementById("emailError");
+const locationError = document.getElementById("locationError");
+
+// ================= VALIDATION HELPERS =================
+function validateName(name) {
+  const regex = /^[A-Za-z\s]+$/;
+  return name.length >= 3 && regex.test(name);
+}
+
+function validatePhone(phone) {
+  const cleaned = phone.replace(/[^0-9]/g, "");
+  return cleaned.length >= 10 && cleaned.length <= 12;
+}
+
+function validateEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
 document.addEventListener("DOMContentLoaded", () => {
+
   waitForCarsAndInit();
 
   document.getElementById("hireForm")
@@ -13,6 +40,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const today = new Date().toISOString().split("T")[0];
   document.getElementById("pickupDate").min = today;
   document.getElementById("returnDate").min = today;
+
+  // show required errors on blur
+  fullName.addEventListener("blur", () => {
+    if (!fullName.value.trim()) {
+      nameError.textContent = "Full name is required";
+      nameError.classList.add("show");
+    }
+  });
+
+  phone.addEventListener("blur", () => {
+    if (!phone.value.trim()) {
+      phoneError.textContent = "Phone number is required";
+      phoneError.classList.add("show");
+    }
+  });
+
+  email.addEventListener("blur", () => {
+    if (email.required && !email.value.trim()) {
+      emailError.textContent = "Email is required";
+      emailError.classList.add("show");
+    }
+  });
+  pickupLocation.addEventListener("blur", () => {
+    if (pickupLocation.required && !pickupLocation.value.trim()) {
+      locationError.textContent = "Pickup location is required";
+      locationError.classList.add("show");
+    }
+  });
 });
 
 /* ---------------- WAIT UNTIL CARS LOAD ---------------- */
@@ -32,11 +87,9 @@ function calculateDailyRate(price) {
 function calculateDays(pickup, returnDate) {
   const start = new Date(pickup);
   const end = new Date(returnDate);
-
   const diffTime = end - start;
-  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  return days > 0 ? days : 0;
+  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  return days;
 }
 
 //Calculate total cost 
@@ -73,6 +126,81 @@ function updateTotalCost() {
 
   // Display formatted value with days
   document.getElementById("totalCost").value = `KSh ${total.toLocaleString()} (${days} days)`;
+}
+
+// ================= NAME =================
+fullName.addEventListener("input", () => {
+  // allow letters and spaces only
+  fullName.value = fullName.value.replace(/[^A-Za-z\s]/g, "");
+  const value = fullName.value;
+  if (!validateName(value)) {
+    nameError.textContent = "Name must be at least 3 letters (letters only)";
+    nameError.classList.add("show");
+  } else {
+    nameError.classList.remove("show");
+  }
+  toggleSubmit();
+});
+
+// ================= PHONE =================
+phone.addEventListener("input", () => {
+  // allow numbers and +
+  phone.value = phone.value.replace(/[^0-9+]/g, "");
+  // restrict max length to 12 digits (ignore +)
+  const digits = phone.value.replace(/\D/g, "").slice(0, 12);
+  // keep + if user typed it
+  if (phone.value.startsWith("+")) {
+    phone.value = "+" + digits;
+  } else {
+    phone.value = digits;
+  }
+  if (!validatePhone(phone.value)) {
+    phoneError.textContent = "Phone must be 10–12 digits (e.g. 07... or +254...)";
+    phoneError.classList.add("show");
+  } else {
+    phoneError.classList.remove("show");
+  }
+  toggleSubmit();
+});
+
+// ================= EMAIL =================
+email.addEventListener("input", () => {
+  if (email.value && !validateEmail(email.value)) {
+    emailError.textContent = "Enter a valid email address";
+    emailError.classList.add("show");
+  } else {
+    emailError.classList.remove("show");
+  }
+  toggleSubmit();
+});
+// ================= PICKUP LOCATION =================
+pickupLocation.addEventListener("input", () => {
+  // allow letters, numbers, spaces, comma and dash
+  pickupLocation.value =
+    pickupLocation.value.replace(/[^A-Za-z0-9\s,-]/g, "");
+    toggleSubmit();
+});
+
+function toggleSubmit() {
+  const nameValid = validateName(fullName.value);
+  const phoneValid = validatePhone(phone.value);
+  const emailValid = email.value ? validateEmail(email.value) : true;
+
+  const carSelected = document.getElementById("hireCarSelect").value;
+  const pickup = document.getElementById("pickupDate").value;
+  const returnDate = document.getElementById("returnDate").value;
+  const location = document.getElementById("pickupLocation").value.trim();
+
+  const allValid =
+    nameValid &&
+    phoneValid &&
+    emailValid &&
+    carSelected &&
+    pickup &&
+    returnDate &&
+    location;
+
+  submitBtn.disabled = !allValid;
 }
 
 /* ------------------ POPULATE DROPDOWN ------------------ */
@@ -127,7 +255,7 @@ function handleDateChange() {
 
   if (!pickup || !returnDate) return;
 
-  if (returnDate <= pickup) {
+  if (returnDate < pickup) {
     alert("Return date must be after pickup date");
 
     document.getElementById("totalCost").value = "Invalid dates";
@@ -149,7 +277,7 @@ function validateDates() {
     return false;
   }
 
-  if (returnDate <= pickup) {
+  if (returnDate < pickup) {
     alert("Return date must be after pickup date");
     return false;
   }
@@ -162,6 +290,9 @@ function handleHireSubmit(e) {
   e.preventDefault();
 
   if (!validateDates()) return;
+  if (!validateName(fullName.value)) return alert("Invalid name");
+if (!validatePhone(phone.value)) return alert("Invalid phone number");
+if (email.value && !validateEmail(email.value)) return alert("Invalid email");
 
   const submitBtn = document.getElementById("hireSubmitBtn");
   submitBtn.disabled = true;

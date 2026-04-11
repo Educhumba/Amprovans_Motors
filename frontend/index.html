@@ -34,8 +34,6 @@
       <h1>Buy Your Dream Car Easily &amp; Safely</h1>
       <p class="subtitle">Drive your dreams.</p>
     </div>
-
-
     <!-- CLIENT BADGE -->
     <div class="client-badge" aria-hidden="true">
       <div class="badge-inner">
@@ -43,15 +41,12 @@
         <span class="small-text">Satisfied Clients</span>
       </div>
     </div>
-
   <!-- SLIDE-IN CAR ANIMATION (right side, overlay) -->
   <div class="slide-cars" aria-hidden="true">
     <img id="slideCar" src="images/Drive-in.png" alt="Slideshow car">
   </div>
-
   <!-- CTA links moved near bottom of landing page for better UX on desktop -->
 <div class="hero-cta" aria-hidden="false">
-
     <div class="hire-cta-text">
         <a href="#hire" class="hire-link">
             Looking to hire a car?
@@ -62,9 +57,7 @@
     <a class="cta-link sell" href="#sell">Sell a Car</a>
 
 </div>
-
 </section>
-
 
 <section id="vehicles" class="section vehicles-section">
     <!-- Sticky Filter/Search Bar -->
@@ -73,6 +66,7 @@
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search by name, price, engine, transmission...">
             <button id="searchBtn"><i class="fas fa-search"></i></button>
+            <div id="searchWarning" class="search-warning-popup"></div>
         </div>
         <!-- FILTERS -->
         <div class="filters">
@@ -89,9 +83,6 @@
                 <input type="text" id="minPrice" placeholder="Min Price">
                 <input type="text" id="maxPrice" placeholder="Max Price">
             </div>
-            <button id="applyFilter" class="apply-btn">
-                <i class="fa-solid fa-check"></i> Apply
-            </button>
             <button id="resetFilter" class="reset-btn">
                 <i class="fa-solid fa-trash"></i> Clear
             </button>
@@ -151,19 +142,22 @@
     <!-- FORM -->
     <form id="hireForm" class="hire-form">
         <div class="form-group">
-            <label>Full Name</label>
+            <label>Full Name *</label>
             <input type="text" id="fullName" required>
+            <small class="hire-error" id="nameError"></small>
         </div>
         <div class="form-group">
-            <label>Phone Number</label>
+            <label>Phone Number *</label>
             <input type="tel" id="phone" required>
+            <small class="hire-error" id="phoneError"></small>
         </div>
         <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="email">
+            <label>Email *</label>
+            <input type="email" id="email" required>
+            <small class="hire-error" id="emailError"></small>
         </div>
         <div class="form-group">
-            <label>Select Car</label>
+            <label>Select Car *</label>
             <select id="hireCarSelect" required>
                 <option value="">Loading available cars...</option>
             </select>
@@ -183,21 +177,23 @@
             </small>
         </div>
         <div class="form-group">
-            <label>Pick-up Date</label>
+            <label>Pick-up Date *</label>
             <input type="date" id="pickupDate" required>
         </div>
         <div class="form-group">
-            <label>Return Date</label>
+            <label>Return Date *</label>
             <input type="date" id="returnDate" required>
         </div>
         <div class="form-group">
-            <label>Pickup Location</label>
+            <label>Pickup Location *</label>
             <input type="text" id="pickupLocation" required>
+            <small class="hire-error" id="emailError"></small>
         </div>
         <div class="form-group">
             <label>Additional Notes</label>
             <textarea id="notes"></textarea>
         </div>
+        <small style="color: red;">All fields marked * are required</small>
         <button type="submit" class="hire-btn" id="hireSubmitBtn">
             Submit Hire Request
         </button>
@@ -249,44 +245,44 @@
         <h3>Submit Your Car</h3>
         <!-- OWNER DETAILS -->
         <div class="form-group">
-            <label>Full Name</label>
+            <label>Full Name *</label>
             <input type="text" id="ownerName" required>
         </div>
         <div class="form-group">
-            <label>Phone</label>
+            <label>Phone *</label>
             <input type="tel" id="ownerPhone" required>
         </div>
         <div class="form-group">
-            <label>Email</label>
+            <label>Email *</label>
             <input type="email" id="ownerEmail" required>
         </div>
         <!-- CAR DETAILS -->
         <div class="form-group">
-            <label>Plate Number</label>
+            <label>Plate Number *</label>
             <input type="text" id="plateNumber" required>
         </div>
         <div class="form-group">
-            <label>Make</label>
+            <label>Make *</label>
             <input type="text" id="carMake" required>
         </div>
         <div class="form-group">
-            <label>Model</label>
+            <label>Model *</label>
             <input type="text" id="carModel" required>
         </div>
         <div class="form-group">
-            <label>Year</label>
+            <label>Year *</label>
             <input type="number" id="carYear" required>
         </div>
         <div class="form-group">
-            <label>Mileage (KM)</label>
+            <label>Mileage (KM) *</label>
             <input type="number" id="mileage" required>
         </div>
         <div class="form-group">
-            <label>Engine (cc)</label>
+            <label>Engine (cc) *</label>
             <input type="number" id="engine" required>
         </div>
         <div class="form-group">
-            <label>Transmission</label>
+            <label>Transmission *</label>
             <select id="transmission" required>
                 <option value="">Select</option>
                 <option>Automatic</option>
@@ -294,7 +290,7 @@
             </select>
         </div>
         <div class="form-group">
-            <label>Fuel Type</label>
+            <label>Fuel Type *</label>
             <select id="fuel" required>
                 <option value="">Select</option>
                 <option>Petrol</option>
@@ -304,7 +300,7 @@
             </select>
         </div>
         <div class="form-group">
-            <label>Body Type</label>
+            <label>Body Type *</label>
             <select id="body" required>
                 <option value="">Select</option>
                 <option>Sedan</option>
@@ -315,33 +311,35 @@
             </select>
         </div>
         <div class="form-group">
-            <label>Condition</label>
-            <select id="condition">
+            <label>Condition *</label>
+            <select id="condition" required>
                 <option value="">Select</option>
                 <option>Used</option>
                 <option>New</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Color</label>
+            <label>Color *</label>
             <input type="text" id="color" required>
         </div>
         <div class="form-group">
-            <label>Location</label>
+            <label>Location *</label>
             <input type="text" id="location" required>
         </div>
         <div class="form-group">
-            <label>Expected Price (KES)</label>
+            <label>Expected Price (KES) *</label>
             <input type="number" id="expectedPrice" required>
         </div>
         <div class="form-group full-width">
-            <label>Description</label>
-            <textarea id="carDescription"></textarea>
+            <label>Description *</label>
+            <textarea id="carDescription" required></textarea>
         </div>
         <div class="form-group full-width">
-            <label>Upload Images</label>
-            <input type="file" id="carImages" multiple accept="image/*">
+            <label>Upload Images *</label>
+            <input type="file" id="carImages" multiple accept="image/*" required>
+            <div id="imagePreview" class="image-preview"></div>
         </div>
+        <small style="color: red;">All fields marked * are required</small>
         <button type="submit" class="auction-btn">
             Submit Car for Review
         </button>
@@ -448,10 +446,10 @@
                 </div>
                 <!-- QUICK ACTIONS -->
                 <div class="quick-actions">
-                    <a href="tel:+254712345678" class="quick-btn call">
+                    <a href="tel:+254110146704" class="quick-btn call">
                         <i class="fas fa-phone"></i> Call Now
                     </a>
-                    <a href="https://wa.me/254712345678?text=Hello%20Amprovans%20Motors,%20I%20would%20like%20to%20inquire%20about%20your%20services." 
+                    <a href="https://wa.me/254110146704?text=Hello%20Amprovans%20Motors,%20I%20would%20like%20to%20inquire%20about%20your%20services." 
                        target="_blank" 
                        class="quick-btn whatsapp">
                         <i class="fab fa-whatsapp"></i> WhatsApp
@@ -460,9 +458,7 @@
             </div>
             <!-- RIGHT: CONTACT FORM -->
             <div class="contact-form-wrapper">
-
                 <h3>Send Us a Message</h3>
-
                 <form id="contactForm" class="contact-form">
                     <div class="form-group">
                         <input type="text" id="contactName" placeholder="Full Name" required>
@@ -471,7 +467,7 @@
                         <input type="email" id="contactEmail" placeholder="Email Address" required>
                     </div>
                     <div class="form-group">
-                        <input type="tel" id="contactPhone" placeholder="Phone Number">
+                        <input type="tel" id="contactPhone" placeholder="Phone Number" required>
                     </div>
                     <div class="form-group">
                         <textarea id="contactMessage" placeholder="Write your message..." required></textarea>
@@ -485,7 +481,7 @@
         </div>
     </div>
     <!-- FLOATING WHATSAPP BUTTON -->
-    <a href="https://wa.me/254712345678?text=Hello%20Amprovans%20Motors,%20I%20just%20visited%20your%20website." 
+    <a href="https://wa.me/254110146704?text=Hello%20Amprovans%20Motors,%20I%20just%20visited%20your%20website.%20I%20I%20would%20like%20to%20inquire%20about%20your%20car%20services" 
        class="floating-whatsapp" 
        target="_blank" 
        id="floatingWhatsapp">

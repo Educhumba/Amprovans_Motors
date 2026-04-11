@@ -28,25 +28,52 @@ function renderCars(cars) {
   const grid = document.getElementById("vehicleGrid");
   grid.innerHTML = "";
 
-  if (cars.length === 0) {
-    grid.innerHTML = "<p>No matching vehicles found.</p>";
+  // 🔥 HANDLE EMPTY STATE PROPERLY
+  if (!cars || cars.length === 0) {
+    const searchText = document.getElementById("searchInput")?.value || "";
+
+    grid.innerHTML = `
+      <div class="no-results">
+        <i class="fa-solid fa-car-side"></i>
+        <h3>No cars found</h3>
+        <p>
+          ${
+            searchText
+              ? `No results for "<strong>${searchText}</strong>"`
+              : "Try adjusting your filters"
+          }
+        </p>
+      </div>
+    `;
     return;
   }
 
+  // 🔥 NORMAL RENDERING
   cars.forEach(car => {
     const card = document.createElement("article");
     card.className = "vehicle-card";
 
     const img = document.createElement("img");
     img.className = "card-image";
-    img.src = car.images && car.images.length 
-      ? `http://localhost:5000${car.images[0].image_path}` 
-      : "images/logo.jpg";
+
+    if (car.images && car.images.length) {
+      const path = car.images[0].image_path;
+
+      img.src = path.startsWith("http")
+        ? path
+        : `http://localhost:5000${path}`;
+    } else {
+      img.src = "images/logo.jpg";
+    }
 
     const badge = document.createElement("div");
-    badge.className = "availability " + 
-      (car.status === "available" ? "avail-available" : 
-      (car.status === "booked" ? "avail-booked" : "avail-sold"));
+    badge.className =
+      "availability " +
+      (car.status === "available"
+        ? "avail-available"
+        : car.status === "booked"
+        ? "avail-booked"
+        : "avail-sold");
     badge.textContent = car.status;
 
     const body = document.createElement("div");
@@ -54,7 +81,9 @@ function renderCars(cars) {
 
     body.innerHTML = `
       <div class="title">${car.make} ${car.model}</div>
-      <div class="meta">${car.mileage} km • ${car.engine}cc • ${car.transmission} • ${car.year}</div>
+      <div class="meta">
+        ${car.mileage} km • ${car.engine}cc • ${car.transmission} • ${car.year}
+      </div>
       <div class="price">KSh ${Number(car.price).toLocaleString()}</div>
     `;
 
