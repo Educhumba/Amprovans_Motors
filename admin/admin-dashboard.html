@@ -445,6 +445,19 @@
           </div>
         </div>
       </section>
+<!-- Suspend Reason Modal -->
+<div id="suspendModal" class="suspend-modal hidden">
+  <div class="suspend-modal-content">
+    <h3>Reason for Suspension</h3>
+
+    <textarea id="suspendReasonInput" placeholder="Enter reason..." rows="4"></textarea>
+
+    <div class="suspend-modal-actions">
+      <button id="confirmSuspendBtn" class="primary-btn">Confirm</button>
+      <button id="cancelSuspendBtn" class="secondary-btn">Cancel</button>
+    </div>
+  </div>
+</div>
 
         <section id="sales" class="tab-section" data-role="admin,agent">
           <h2><i class="fa-solid fa-dollar-sign"></i> Sales Management</h2>
@@ -513,6 +526,15 @@
               <option value="custom">Custom</option>
             </select>
 
+            <select id="reportDetailType">
+              <option value="">Select Detail</option>
+              <option value="totalSales">Total Sales</option>
+              <option value="grossProfit">Gross Profit</option>
+              <option value="netProfit">Net Profit</option>
+              <option value="commission">Total Commission</option>
+              <option value="full">Full Report</option>
+            </select>
+
             <!-- Start & End dates (for custom only) -->
             <input type="date" id="filterStartDate" disabled>
             <input type="date" id="filterEndDate" disabled>
@@ -539,6 +561,7 @@
                   <th>Price</th>
                   <th>Profit</th>
                   <th>Agent</th>
+                  <th>Commission</th>
                   <th>Date</th>
                 </tr>
               </thead>

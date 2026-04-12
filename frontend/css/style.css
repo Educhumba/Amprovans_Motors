@@ -1217,7 +1217,7 @@ border:1px solid #ddd;
 .form-group input:invalid,
 .form-group select:invalid,
 .form-group textarea:invalid{
-border:1px solid #5e5d5d;
+border:1px solid #8e8e8e;
 }
 .form-group input:valid,
 .form-group select:valid,

@@ -60,6 +60,9 @@ async function loadAgents() {
     const selectAgent = document.getElementById("selectAgent");
     const filterAgent = document.getElementById("filterAgent");
 
+    selectAgent.innerHTML = `<option value="">-- Select Agent --</option>`;
+    filterAgent.innerHTML = `<option value="">All Agents</option>`;
+
     allAgents.forEach(agent => {
       const option = document.createElement("option");
       option.value = agent.id;
@@ -119,6 +122,7 @@ function displaySales(sales) {
     const profit = Number(s.profit || 0);
 
     const agentName = s.Agent && s.Agent.name ? s.Agent.name : "Admin";
+    const commission = Number(s.commission || 0);
     const date = s.created_at ? new Date(s.created_at).toLocaleDateString() : "-";
 
     row.innerHTML = `
@@ -126,6 +130,7 @@ function displaySales(sales) {
       <td>KSh ${soldPrice.toLocaleString()}</td>
       <td>KSh ${profit.toLocaleString()}</td>
       <td>${agentName}</td>
+      <td>KSh ${commission.toLocaleString()}</td>
       <td>${date}</td>
     `;
 
@@ -168,9 +173,10 @@ saleForm.addEventListener("submit", async e => {
 
   if (role === "agent") {
     agentId = localStorage.getItem("userId");
+
   } else if (role === "admin") {
     const selectedAgent = document.getElementById("selectAgent").value;
-    agentId = selectedAgent !== "" ? selectedAgent : null; // <-- ensures null if no agent selected
+    agentId = selectedAgent
   }
 
   if (!carId || !price) return alert("Select car and enter price");
@@ -183,7 +189,7 @@ saleForm.addEventListener("submit", async e => {
     const res = await fetch("http://localhost:5000/api/sales", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ car_id: carId, sold_price: price, agent_id: agentId }) // <-- send corrected agentId
+      body: JSON.stringify({ car_id: carId, sold_price: price, agent_id: agentId })
     });
 
     const data = await res.json();
@@ -271,7 +277,35 @@ document.getElementById("exportSalesPDF").addEventListener("click", async () => 
 
   if (!reportType) return alert("Select a report type");
 
+  const today = new Date();
+  const minDate = new Date("2024-01-01");
+
+  if (reportType === "custom") {
+    if (!startDate || !endDate) {
+      return alert("Select start and end dates");
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start > today || end > today) {
+      return alert("Dates cannot be in the future");
+    }
+
+    if (start < minDate || end < minDate) {
+      return alert("Dates cannot be earlier than 2024");
+    }
+
+    if (start > end) {
+      return alert("Start date cannot be after end date");
+    }
+  }
+
   let query = [];
+  if (role === "agent") {
+    const myAgentId = localStorage.getItem("userId");
+    query.push(`agent_id=${myAgentId}`);
+  }
   if (reportType === "custom") {
     if (!startDate || !endDate) return alert("Select start and end dates for custom report");
     query.push(`start_date=${startDate}`);
@@ -289,6 +323,9 @@ document.getElementById("exportSalesPDF").addEventListener("click", async () => 
     query.push(`start_date=${lastMonth.toISOString().split('T')[0]}`);
     query.push(`end_date=${today.toISOString().split('T')[0]}`);
   }
+
+const detailType = document.getElementById("reportDetailType").value;
+if (detailType) query.push(`detail=${detailType}`);
 
   if (agentId) query.push(`agent_id=${agentId}`);
 

@@ -7,7 +7,7 @@ const saleController = {
 
   createSale: async (req, res) => {
     try {
-      const { car_id, sold_price } = req.body;
+      const { car_id, sold_price, agent_id: requestAgentId } = req.body;
       const user = req.user;
 
       // ✅ Validate price
@@ -36,7 +36,7 @@ const saleController = {
       let commission = 0;
       let net_profit = 0;
 
-      const isAgent = user.role === "agent";
+      const hasAgent = user.role === "agent" || req.body.agent_id;
 
       // =========================
       // 💰 BUSINESS LOGIC
@@ -53,7 +53,7 @@ const saleController = {
           });
         }
 
-        if (isAgent) {
+        if (hasAgent) {
           commission = profit * 0.2;
         }
 
@@ -62,7 +62,7 @@ const saleController = {
 
         profit = sold_price;
 
-        if (isAgent) {
+        if (hasAgent) {
           commission = profit * 0.1;
         }
       }
@@ -81,7 +81,7 @@ const saleController = {
 
       // ✅ Admin can assign agent
       if (user.role === "admin") {
-        agent_id = req.body.agent_id || null;
+        agent_id = requestAgentId || null;
       }
 
       const sale = await Sale.create({

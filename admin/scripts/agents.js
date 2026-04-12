@@ -1,6 +1,14 @@
 // ----------------------------
 // AGENTS.JS – UPDATED
 // ----------------------------
+const suspendModal = document.getElementById("suspendModal");
+const suspendReasonInput = document.getElementById("suspendReasonInput");
+const confirmSuspendBtn = document.getElementById("confirmSuspendBtn");
+const cancelSuspendBtn = document.getElementById("cancelSuspendBtn");
+
+let selectedAgentId = null;
+let selectedNewStatus = null;
+
 window.addEventListener("DOMContentLoaded", () => {
   const role = localStorage.getItem("role")?.toLowerCase();
 
@@ -39,6 +47,29 @@ if (role !== "admin") {
     agentFormContainer.classList.add("hidden");
     agentForm.reset();
   });
+
+  
+      // Confirm suspend
+      confirmSuspendBtn?.addEventListener("click", () => {
+        const reason = suspendReasonInput.value.trim();
+
+        if (!reason) {
+          alert("Please provide a reason");
+          return;
+        }
+
+        // Store reason locally (temporary, not backend)
+        localStorage.setItem(`agent_suspend_reason_${selectedAgentId}`, reason);
+
+        toggleStatus(selectedAgentId, selectedNewStatus);
+
+        suspendModal.classList.add("hidden");
+      });
+
+      // Cancel suspend
+      cancelSuspendBtn?.addEventListener("click", () => {
+        suspendModal.classList.add("hidden");
+      });
 
   // ----------------------------
   // CREATE AGENT
@@ -141,6 +172,9 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
     }
 
     agents.forEach(agent => {
+
+      const suspendReason = localStorage.getItem(`agent_suspend_reason_${agent.id}`);
+
       const card = document.createElement("div");
       card.classList.add("agent-card");
 
@@ -151,6 +185,11 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
         <p class="agent-status ${agent.status === "active" ? "status-active" : "status-suspended"}">
           ${agent.status.toUpperCase()}
         </p>
+        ${
+          agent.status === "suspended" && suspendReason
+            ? `<p class="suspend-reason">Reason: ${suspendReason}</p>`
+            : ""
+        }
 
         <div class="agent-actions">
           ${
@@ -166,12 +205,23 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
       // STATUS TOGGLE HANDLERS
       // ----------------------------
       const statusBtn = card.querySelector(".suspend-btn, .activate-btn");
+
       statusBtn?.addEventListener("click", () => {
         const newStatus = agent.status === "active" ? "suspended" : "active";
-        const action = newStatus === "active" ? "activate" : "suspend";
 
-        if (confirm(`Are you sure you want to ${action} this agent?`)) {
-          toggleStatus(agent.id, newStatus);
+        // If suspending → open modal
+        if (newStatus === "suspended") {
+          selectedAgentId = agent.id;
+          selectedNewStatus = newStatus;
+
+          suspendReasonInput.value = "";
+          suspendModal.classList.remove("hidden");
+        } 
+        // If activating → no modal
+        else {
+          if (confirm("Activate this agent?")) {
+            toggleStatus(agent.id, newStatus);
+          }
         }
       });
 

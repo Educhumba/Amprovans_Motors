@@ -1,8 +1,12 @@
 /* ---------------- MOBILE MENU TOGGLE ---------------- */
-function toggleMenu() {
-    let nav = document.getElementById("nav-links");
-    nav.style.display = nav.style.display === "flex" ? "none" : "flex";
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const nav = document.getElementById("nav-links");
+  const hamburger = document.getElementById("hamburgerBtn");
+
+  hamburger.addEventListener("click", () => {
+    nav.classList.toggle("open");
+  });
+});
 
 // AUTO UPDATE FOOTER YEAR
 document.getElementById("year").textContent = new Date().getFullYear();
