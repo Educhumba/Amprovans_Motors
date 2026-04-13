@@ -102,7 +102,7 @@ const carController = {
       const cars = await Car.findAll({
         include: { model: CarImage, as: "images" }
       });
-console.log(JSON.stringify(cars, null, 2)); // 👈 ADD THIS
+
       res.json(cars);
     } catch (err) {
       res.status(500).json({ error: err.message });

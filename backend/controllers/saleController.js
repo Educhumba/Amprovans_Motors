@@ -190,6 +190,11 @@ const saleController = {
             [Sequelize.fn("SUM", Sequelize.col("profit")), "totalProfit"],
             [Sequelize.fn("SUM", Sequelize.col("commission")), "totalCommission"]
           ],
+          where: {
+            agent_id: {
+              [Op.ne]: null
+            }
+          },
           include: [
             { model: User, as: "Agent", attributes: ["name"] }
           ],
@@ -245,7 +250,7 @@ if (ownership) {
         const sales = await Sale.findAll({
           where: whereClause,
           include: [
-            { model: Car, as: "Car", attributes: ["make", "model", "year", "ownership"] },
+            { model: Car, as: "Car", attributes: ["make", "model", "year", "ownership", "plate_number"] },
             { model: User, as: "Agent", attributes: ["name"] }
           ],
           order: [["created_at", "DESC"]]
@@ -263,61 +268,150 @@ if (ownership) {
           totalCommission += Number(s.commission || 0);
         });
         const netProfit = totalProfit - totalCommission;
+        const { detail } = req.query;
 
-        // PDF Generation (same as previous professional table)
-        const doc = new PDFDocument({ margin: 30, size: "A4" });
-        const fileName = `sales-report-${type || "all"}-${Date.now()}.pdf`;
-        res.setHeader("Content-disposition", `attachment; filename=${fileName}`);
-        res.setHeader("Content-type", "application/pdf");
+      // =========================
+      // 📄 PROFESSIONAL PDF
+      // =========================
+      const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
+      const fileName = `sales-report-${type || "all"}-${Date.now()}.pdf`;
 
-        doc.fontSize(20).text("Sales Report", { align: "center" });
-        doc.fontSize(12).text(`Generated: ${moment().format("YYYY-MM-DD HH:mm")}`, { align: "center" });
+      res.setHeader("Content-disposition", `attachment; filename=${fileName}`);
+      res.setHeader("Content-type", "application/pdf");
 
-        if (type === "weekly") {
-          doc.text(`Period: Last 7 days`, { align: "center" });
-        } else if (type === "monthly") {
-          doc.text(`Period: ${moment().startOf('month').format('DD/MM/YYYY')} - ${moment().endOf('month').format('DD/MM/YYYY')}`, { align: "center" });
-        } else if (type === "custom") {
-          doc.text(`Period: ${start_date} - ${end_date}`, { align: "center" });
+      doc.pipe(res);
+
+      // =========================
+      // 🧾 HEADER
+      // =========================
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(20)
+        .text("SALES REPORT", { align: "center" });
+
+      doc.moveDown(0.5);
+
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .text(`Generated: ${moment().format("YYYY-MM-DD HH:mm")}`, { align: "center" });
+
+      if (type === "weekly") {
+        doc.text(`Period: Last 7 Days`, { align: "center" });
+      } else if (type === "monthly") {
+        doc.text(
+          `Period: ${moment().startOf("month").format("DD MMM YYYY")} - ${moment().endOf("month").format("DD MMM YYYY")}`,
+          { align: "center" }
+        );
+      } else if (type === "custom") {
+        doc.text(`Period: ${start_date} - ${end_date}`, { align: "center" });
+      }
+
+      doc.moveDown();
+
+      // Divider
+      doc.moveTo(40, doc.y).lineTo(550, doc.y).stroke();
+
+      doc.moveDown();
+
+      // =========================
+      // 📊 TABLE
+      // =========================
+      const table = {
+        headers: [
+          { label: "Car", property: "car", width: 150 },
+          { label: "Number Plate", property: "plate", width: 85 },
+          { label: "Price (Ksh)", property: "price", width: 85 },
+          { label: "Profit (Ksh)", property: "profit", width: 85 },
+          { label: "Comm.(Ksh)", property: "commission", width: 80 },
+          { label: "Net Profit(Ksh)", property: "netProfit", width: 85 },
+          { label: "Agent", property: "agent", width: 100 },
+          { label: "Date", property: "date", width: 70 }, // ✅ NOW GUARANTEED TO FIT
+        ],
+
+        datas: sales.map((s) => ({
+          car: `${s.Car.make} ${s.Car.model} (${s.Car.year})`,
+          plate: s.Car.plate_number,
+          price: Number(s.sold_price).toLocaleString(),
+          profit: Number(s.profit).toLocaleString(),
+          commission: Number(s.commission).toLocaleString(),
+          netProfit: Number(s.net_profit).toLocaleString(),
+          agent: s.Agent ? s.Agent.name : "Admin",
+          date: moment(s.created_at).format("DD/MM/YY") // shorter = safer
+        }))
+      };
+
+      await doc.table(table, {
+        prepareHeader: () => doc.font("Helvetica-Bold").fontSize(9),
+
+        prepareRow: (row, i) => {
+          doc.font("Helvetica").fontSize(8);
+
+          // subtle highlight for strong rows
+          const net = Number(row.netProfit.replace(/[^0-9]/g, ""));
         }
+      });
 
-        doc.moveDown();
+      doc.moveDown();
 
-        const table = {
-          headers: [
-            { label: "Car", property: "car", width: 150 },
-            { label: "Price", property: "price", width: 80 },
-            { label: "Profit", property: "profit", width: 80 },
-            { label: "Commission", property: "commission", width: 80 },
-            { label: "Net Profit", property: "netProfit", width: 80 },
-            { label: "Agent", property: "agent", width: 100 },
-            { label: "Date", property: "date", width: 80 },
-          ],
-          datas: sales.map(s => ({
-            car: `${s.Car.make} ${s.Car.model} (${s.Car.year})`,
-            price: `KSh ${Number(s.sold_price).toLocaleString()}`,
-            profit: `KSh ${Number(s.profit).toLocaleString()}`,
-            commission: `KSh ${Number(s.commission).toLocaleString()}`,
-            netProfit: `KSh ${Number(s.net_profit).toLocaleString()}`,
-            agent: s.Agent ? s.Agent.name : "Admin",
-            date: moment(s.created_at).format("DD/MM/YYYY")
-          }))
-        };
+      // Divider
+      doc.moveTo(40, doc.y).lineTo(550, doc.y).stroke();
 
-        await doc.table(table, {
-          prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
-          prepareRow: (row, i) => doc.font("Helvetica").fontSize(10)
-        });
+      doc.moveDown(2);
 
-        doc.moveDown();
-        doc.font("Helvetica-Bold").text("Totals:", { align: "right" });
-        doc.font("Helvetica").text(`Total Sales: KSh ${totalSales.toLocaleString()}`, { align: "right" });
-        doc.text(`Total Profit: KSh ${totalProfit.toLocaleString()}`, { align: "right" });
-        doc.text(`Total Commission: KSh ${totalCommission.toLocaleString()}`, { align: "right" });
-        doc.text(`Net Profit: KSh ${netProfit.toLocaleString()}`, { align: "right" });
+      // =========================
+      // 📈 SUMMARY (CENTERED)
+      // =========================
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(14)
+        .text("REPORT SUMMARY", { align: "center" });
 
-        doc.pipe(res);
-        doc.end();
+      doc.moveDown();
+
+      doc.fontSize(11);
+
+      // Helper for centered lines
+      const centerText = (label, value) => {
+        doc
+          .font("Helvetica-Bold")
+          .text(label, { align: "center" });
+        doc
+          .font("Helvetica")
+          .text(value, { align: "center" });
+        doc.moveDown(0.5);
+      };
+
+      if (detail === "totalSales") {
+        centerText("Total Sales", `KSh ${totalSales.toLocaleString()}`);
+
+      } else if (detail === "grossProfit") {
+        centerText("Gross Profit", `KSh ${totalProfit.toLocaleString()}`);
+
+      } else if (detail === "commission") {
+        centerText("Total Commission", `KSh ${totalCommission.toLocaleString()}`);
+
+      } else if (detail === "netProfit") {
+        centerText("Net Profit", `KSh ${netProfit.toLocaleString()}`);
+
+      } else {
+        centerText("Total Sales", `KSh ${totalSales.toLocaleString()}`);
+        centerText("Total Profit", `KSh ${totalProfit.toLocaleString()}`);
+        centerText("Total Commission", `KSh ${totalCommission.toLocaleString()}`);
+        centerText("Net Profit", `KSh ${netProfit.toLocaleString()}`);
+      }
+
+      // =========================
+      // ✅ FOOTER
+      // =========================
+      doc.moveDown(2);
+
+      doc
+        .fontSize(8)
+        .fillColor("gray")
+        .text("Confidential - Company Internal Report", { align: "center" });
+
+      doc.end();
 
       } catch (err) {
         console.error(err);
@@ -439,7 +533,103 @@ if (ownership) {
         console.error(err);
         res.status(500).json({ message: "Failed to generate detailed sales report", error: err.message });
       }
+    },
+
+    generateAgentRankingReport: async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (user.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can generate ranking reports" });
     }
+
+    const { start_date, end_date, ownership } = req.query;
+
+    let whereClause = {
+      agent_id: {
+        [Op.ne]: null
+      }
+    };
+
+    // Date filter
+    if (start_date && end_date) {
+      whereClause.created_at = {
+        [Op.gte]: new Date(start_date),
+        [Op.lte]: new Date(end_date)
+      };
+    }
+
+    // Ownership filter
+    if (ownership) {
+      whereClause['$Car.ownership$'] = ownership;
+    }
+
+    const rankings = await Sale.findAll({
+      attributes: [
+        "agent_id",
+        [Sequelize.fn("SUM", Sequelize.col("sold_price")), "totalSales"],
+        [Sequelize.fn("SUM", Sequelize.col("profit")), "totalProfit"],
+        [Sequelize.fn("SUM", Sequelize.col("commission")), "totalCommission"]
+      ],
+      include: [
+        { model: User, as: "Agent", attributes: ["name"] },
+        { model: Car, as: "Car", attributes: [] }
+      ],
+      where: whereClause,
+      group: ["agent_id", "Agent.id"],
+      order: [[Sequelize.literal("totalProfit"), "DESC"]]
+    });
+
+    if (!rankings.length) {
+      return res.status(404).json({ message: "No ranking data found" });
+    }
+
+    // =========================
+    // 📄 PDF GENERATION
+    // =========================
+    const doc = new PDFDocument({ margin: 30 });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=agent-ranking-${Date.now()}.pdf`);
+
+    doc.pipe(res);
+
+    doc.fontSize(18).text("Agent Performance Ranking", { align: "center" });
+    doc.moveDown();
+
+    if (start_date && end_date) {
+      doc.fontSize(10).text(`Period: ${start_date} → ${end_date}`, { align: "center" });
+    }
+
+    if (ownership) {
+      doc.text(`Ownership: ${ownership}`, { align: "center" });
+    }
+
+    doc.moveDown(2);
+
+    const table = {
+      headers: ["Rank", "Agent", "Total Sales", "Profit", "Commission"],
+      rows: rankings.map((r, index) => [
+        index + 1,
+        r.Agent?.name || "Unknown",
+        `KSh ${Number(r.dataValues.totalSales).toLocaleString()}`,
+        `KSh ${Number(r.dataValues.totalProfit).toLocaleString()}`,
+        `KSh ${Number(r.dataValues.totalCommission).toLocaleString()}`
+      ])
+    };
+
+    await doc.table(table, {
+      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
+      prepareRow: () => doc.font("Helvetica").fontSize(10)
+    });
+
+    doc.end();
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error generating ranking report" });
+  }
+}
 
 };
 

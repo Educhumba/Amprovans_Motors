@@ -50,6 +50,16 @@ reportTypeEl.addEventListener("change", () => {
     startInput.value = "";
     endInput.value = "";
   }
+
+  if (reportTypeEl.value === "ranking") {
+  document.getElementById("filterAgent").disabled = true;
+  document.getElementById("reportDetailType").disabled = true;
+  document.getElementById("salesFilterOwnership").disabled = true;
+} else {
+  document.getElementById("filterAgent").disabled = false;
+  document.getElementById("reportDetailType").disabled = false;
+  document.getElementById("salesFilterOwnership").disabled = false;
+}
 });
 document.getElementById("filterAgent").addEventListener("change", filterSales);
 document.getElementById("salesStartDate").addEventListener("change", () => {
@@ -67,6 +77,7 @@ if (ownershipEl) {
     filterSales();
   });
 }
+document.getElementById("reportDetailType").addEventListener("change", filterSales);
 reportTypeEl.dispatchEvent(new Event("change"));
 function setDateLimits() {
   const startInput = document.getElementById("salesStartDate");
@@ -218,6 +229,7 @@ function updateReportPreview() {
   const type = document.getElementById("reportType").value;
   const ownership = document.getElementById("salesFilterOwnership").value;
   const agent = document.getElementById("filterAgent");
+  const detail = document.getElementById("reportDetailType").value;
 
   let text = "Showing: ";
 
@@ -228,6 +240,8 @@ function updateReportPreview() {
     const name = agent.options[agent.selectedIndex]?.text || "";
     text += ` | Agent: ${name}`;
   }
+
+  if (detail) text += ` | Detail: ${detail}`;
 
   const preview = document.getElementById("reportPreview");
   if (preview) preview.textContent = text;
@@ -415,12 +429,52 @@ function updateStatsFromFilteredData(filtered) {
     totalCommission += Number(s.commission || 0);
   });
 
+  const netProfit = totalProfit - totalCommission;
+
+  const detailType = document.getElementById("reportDetailType").value;
+
+  // =========================
+  // ADMIN VIEW
+  // =========================
   if (role === "admin") {
-    document.getElementById("totalSales").textContent = totalSales.toLocaleString();
-    document.getElementById("grossProfit").textContent = totalProfit.toLocaleString();
-    document.getElementById("totalCommission").textContent = totalCommission.toLocaleString();
-    document.getElementById("netProfit").textContent = (totalProfit - totalCommission).toLocaleString();
+
+    // Hide all first
+    document.getElementById("totalSales").parentElement.style.display = "none";
+    document.getElementById("grossProfit").parentElement.style.display = "none";
+    document.getElementById("totalCommission").parentElement.style.display = "none";
+    document.getElementById("netProfit").parentElement.style.display = "none";
+
+    if (detailType === "totalSales") {
+      document.getElementById("totalSales").textContent = totalSales.toLocaleString();
+      document.getElementById("totalSales").parentElement.style.display = "block";
+
+    } else if (detailType === "grossProfit") {
+      document.getElementById("grossProfit").textContent = totalProfit.toLocaleString();
+      document.getElementById("grossProfit").parentElement.style.display = "block";
+
+    } else if (detailType === "commission") {
+      document.getElementById("totalCommission").textContent = totalCommission.toLocaleString();
+      document.getElementById("totalCommission").parentElement.style.display = "block";
+
+    } else if (detailType === "netProfit") {
+      document.getElementById("netProfit").textContent = netProfit.toLocaleString();
+      document.getElementById("netProfit").parentElement.style.display = "block";
+
+    } else {
+      // FULL
+      document.getElementById("totalSales").textContent = totalSales.toLocaleString();
+      document.getElementById("grossProfit").textContent = totalProfit.toLocaleString();
+      document.getElementById("totalCommission").textContent = totalCommission.toLocaleString();
+      document.getElementById("netProfit").textContent = netProfit.toLocaleString();
+
+      document.getElementById("totalSales").parentElement.style.display = "block";
+      document.getElementById("grossProfit").parentElement.style.display = "block";
+      document.getElementById("totalCommission").parentElement.style.display = "block";
+      document.getElementById("netProfit").parentElement.style.display = "block";
+    }
+
   } else {
+    // AGENT VIEW (same logic simplified)
     document.getElementById("mySales").textContent = totalSales.toLocaleString();
     document.getElementById("myProfit").textContent = totalProfit.toLocaleString();
     document.getElementById("myCommission").textContent = totalCommission.toLocaleString();
@@ -442,7 +496,7 @@ async function loadAgentRanking() {
   list.innerHTML = "";
 
   data.sort((a, b) => b.totalProfit - a.totalProfit);
-  data.forEach((a, index) => {
+  data.filter(a => a.agent_id !== null).forEach((a, index) => {
     const li = document.createElement("li");
     const name = a.Agent?.name || "Unknown Agent";
     li.textContent = `${index + 1}. ${name} - KSh ${Number(a.totalProfit).toLocaleString()}`;
@@ -484,6 +538,46 @@ document.getElementById("exportSalesPDF").addEventListener("click", async () => 
     }
   }
 
+// ✅ Special handling for ranking
+if (reportType === "ranking") {
+  let query = [];
+
+  const startDate = document.getElementById("salesStartDate").value;
+  const endDate = document.getElementById("salesEndDate").value;
+  const ownership = document.getElementById("salesFilterOwnership").value;
+
+  if (startDate && endDate) {
+    query.push(`start_date=${startDate}`);
+    query.push(`end_date=${endDate}`);
+  }
+
+  if (ownership) {
+    query.push(`ownership=${ownership}`);
+  }
+
+  const url = `http://localhost:5000/api/sales/report/ranking?${query.join("&")}`;
+
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error("Failed to generate ranking report");
+
+    const blob = await res.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `agent-ranking-${Date.now()}.pdf`;
+    link.click();
+
+  } catch (err) {
+    console.error(err);
+    alert("Error generating ranking report");
+  }
+
+  return; // 🚨 STOP normal report flow
+}
+
   let query = [];
   if (role === "agent") {
     const myAgentId = localStorage.getItem("userId");
@@ -511,6 +605,14 @@ const detailType = document.getElementById("reportDetailType").value;
 if (detailType) query.push(`detail=${detailType}`);
 
   if (agentId) query.push(`agent_id=${agentId}`);
+
+  if (reportType) {
+    query.push(`type=${reportType}`);
+  }
+  const ownership = document.getElementById("salesFilterOwnership").value;
+  if (ownership) {
+    query.push(`ownership=${ownership}`);
+  }
 
   const url = `http://localhost:5000/api/sales/report/pdf?${query.join('&')}`;
 
