@@ -8,15 +8,34 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
+
   <!-- Header -->
   <header class="header">
     <div class="header-inner">
+
       <div class="brand">
         <i class="fa-solid fa-car"></i> Car Admin
       </div>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <!-- USER PROFILE DROPDOWN -->
+      <div class="user-profile" onclick="toggleDropdown()">
+        
+        <div class="profile-info">
+          <i class="fa-solid fa-user-circle profile-icon"></i>
+          <div class="user-meta">
+            <span id="userNameDisplay"></span>
+            <small id="userRoleDisplay"></small>
+          </div>
+        </div>
+        <i id="dropdownArrow" class="fa-solid fa-chevron-down arrow"></i>
+        <!-- DROPDOWN -->
+        <div id="dropdownMenu" class="dropdown-menu">
+          <button onclick="logout(event)">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </div>
     </div>
-  </header>
+</header>
 
   <div class="dashboard-container">
     <!-- Sidebar -->
@@ -587,6 +606,9 @@
   </div>
 
   <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      setupUserProfile();
+    });
     // ----------------------------
     // AUTH & ROLE MANAGEMENT
     // ----------------------------
@@ -653,11 +675,45 @@ function handleSalesUIByRole() {
     if (filters) filters.style.display = "block";
   }
 }
+// ----------------------------
+// USER PROFILE HEADER SETUP
+// ----------------------------
+function setupUserProfile() {
+  const name = localStorage.getItem("userName");
+  const role = localStorage.getItem("role");
 
-    function logout() {
-      localStorage.removeItem("token");
-      window.location.href = "./login/admin-login.html";
-    }
+  const nameEl = document.getElementById("userNameDisplay");
+  const roleEl = document.getElementById("userRoleDisplay");
+
+  if (!nameEl || !roleEl) return;
+
+  if (name) {
+    nameEl.textContent = name;
+  }
+
+  if (role) {
+    roleEl.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+  }
+}
+
+function toggleDropdown() {
+  const profile = document.querySelector(".user-profile");
+  profile.classList.toggle("active");
+}
+
+// close dropdown when clicking outside
+document.addEventListener("click", function (e) {
+  const profile = document.querySelector(".user-profile");
+
+  if (!profile.contains(e.target)) {
+    profile.classList.remove("active");
+  }
+});
+function logout(event) {
+  if (event) event.stopPropagation(); // prevent dropdown close issue
+  localStorage.clear();
+  window.location.href = "./login/admin-login.html";
+}
 
     applyRoleAccess();
     handleSalesUIByRole();

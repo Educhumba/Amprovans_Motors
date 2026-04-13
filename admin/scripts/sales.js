@@ -118,6 +118,13 @@ function validateDateRange() {
     endInput.value = "";
   }
 }
+  const exportBtn = document.getElementById("exportSalesPDF");
+
+  if (role === "agent") {
+    exportBtn.style.display = "inline-block"; // or block
+  } else {
+    exportBtn.style.display = "inline-block"; // admin also sees it
+  }
 });
 
 function enforceDateLimits(input) {

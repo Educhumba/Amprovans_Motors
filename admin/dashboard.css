@@ -31,13 +31,101 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   z-index:100;
 }
 .header .brand { font-weight:800; color: var(--primary); font-size:1.2rem; }
-.logout-btn {
-  background: var(--delete);
-  color: #fff;
-  border:none;
-  padding:8px 12px;
-  border-radius:8px;
-  cursor:pointer;
+
+/* Header inner alignment */
+.header-inner {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* User profile container */
+.user-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+.user-profile:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* profile layout */
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-icon {
+  font-size: 28px;
+  color: var(--deep-blue);
+}
+
+/* name + role stacked */
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.user-meta span {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.user-meta small {
+  font-size: 0.75rem;
+  color: gray;
+  text-transform: capitalize;
+}
+
+/* arrow animation */
+.arrow {
+  transition: transform 0.3s ease;
+}
+
+/* dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: white;
+  box-shadow: var(--shadow);
+  border-radius: 10px;
+  overflow: hidden;
+  display: none;
+  min-width: 140px;
+  z-index: 999;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.dropdown-menu button:hover {
+  background: var(--section-bg);
+}
+
+/* active states */
+.user-profile.active .dropdown-menu {
+  display: block;
+}
+
+.user-profile.active .arrow {
+  transform: rotate(180deg);
 }
 
 /* Dashboard Layout */

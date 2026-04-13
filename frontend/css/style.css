@@ -1556,3 +1556,137 @@ cursor:not-allowed;
     font-size: 13px;
     color: #777;
 }
+
+
+
+
+
+
+
+/* HELP TAB */
+.help-tab {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: #ffffff;
+  padding: 14px 8px;
+  cursor: pointer;
+  writing-mode: vertical-rl;
+  border-radius: 10px 0 0 10px;
+  font-weight: bold;
+  z-index: 9999;
+  transition: 0.3s;
+}
+
+.help-tab:hover {
+  padding-right: 12px;
+}
+
+/* PANEL */
+.help-panel {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 380px;
+  height: 100%;
+  background: #e0e0e0;
+  box-shadow: -6px 0 25px rgba(0,0,0,0.15);
+  transition: 0.4s ease;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+}
+
+.help-panel.open {
+  right: 0;
+}
+
+/* HEADER */
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+}
+
+.help-header h3 {
+  font-size: 18px;
+}
+
+.help-header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* BODY */
+.help-body {
+  padding: 16px;
+  overflow-y: auto;
+  animation: fadeIn 0.4s ease;
+}
+
+/* SWITCH */
+.help-switch {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.help-switch button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background: #f0f0f0;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.help-switch button.active {
+  background: #007bff;
+  color: white;
+}
+
+/* CONTENT */
+.help-content {
+  animation: fadeIn 0.4s ease;
+}
+
+.help-card {
+  background: #f9f9f9;
+  border-left: 4px solid #007bff;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.help-card:hover {
+  transform: translateX(5px);
+}
+
+.help-card h4 {
+  margin-bottom: 6px;
+  font-size: 15px;
+  color: #007bff
+}
+.help-card p, .help-card ul{
+    font-size: 15px;
+    color: var(--brand-green);
+}
+.hidden {
+  display: none;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

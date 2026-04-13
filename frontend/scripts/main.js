@@ -189,3 +189,181 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const helpTab = document.getElementById("helpTab");
+  const helpPanel = document.getElementById("helpPanel");
+  const closeHelp = document.getElementById("closeHelp");
+
+  const contextHelp = document.getElementById("contextHelp");
+  const allHelp = document.getElementById("allHelp");
+
+  const contextBtn = document.getElementById("contextHelpBtn");
+  const allBtn = document.getElementById("allHelpBtn");
+
+  // OPEN PANEL
+  helpTab.addEventListener("click", () => {
+    helpPanel.classList.add("open");
+    updateContextHelp(); // 🔥 FORCE LOAD CONTENT
+  });
+
+  closeHelp.addEventListener("click", () => {
+    helpPanel.classList.remove("open");
+  });
+
+  // SWITCH
+  contextBtn.addEventListener("click", () => {
+    contextBtn.classList.add("active");
+    allBtn.classList.remove("active");
+    contextHelp.classList.remove("hidden");
+    allHelp.classList.add("hidden");
+    updateContextHelp();
+  });
+
+  allBtn.addEventListener("click", () => {
+    allBtn.classList.add("active");
+    contextBtn.classList.remove("active");
+    allHelp.classList.remove("hidden");
+    contextHelp.classList.add("hidden");
+  });
+
+  // DETECT SECTION (IMPROVED)
+  function getCurrentSection() {
+    const sections = document.querySelectorAll("section");
+    let current = "home";
+
+    let scrollY = window.scrollY;
+
+    sections.forEach(section => {
+      const top = section.offsetTop - 200;
+      const height = section.offsetHeight;
+
+      if (scrollY >= top && scrollY < top + height) {
+        current = section.id;
+      }
+    });
+
+    return current;
+  }
+
+  // UPDATE CONTENT
+  function updateContextHelp() {
+  const section = getCurrentSection();
+
+  let html = "";
+
+  switch(section) {
+
+    // ================= VEHICLES / BUY =================
+    case "vehicles":
+      html = `
+        <div class="help-card">
+          <h4><i class="fas fa-search"></i> Finding a Car</h4>
+          <p>Use the search bar to find vehicles by name, engine type, transmission, or price.</p>
+          <p>You can also scroll through available listings and click any vehicle card to view full details.</p>
+        </div>
+
+        <div class="help-card">
+          <h4><i class="fas fa-filter"></i> Using Filters</h4>
+          <p>Select <strong>Make → Model → Year</strong> and adjust the price range to narrow down results.</p>
+          <p>Filters help you quickly find cars that match your exact preference.</p>
+        </div>
+
+        <div class="help-card">
+          <h4><i class="fas fa-car"></i> Viewing Car Details</h4>
+          <p>Click on any car card to open a detailed view with images, specifications, and contact options.</p>
+        </div>
+      `;
+      break;
+
+    // ================= HIRE =================
+    case "hire":
+      html = `
+        <div class="help-card">
+          <h4><i class="fas fa-key"></i> How Car Hire Works</h4>
+          <p>Select a vehicle, choose your rental dates, and submit your request.</p>
+          <p>Our team will confirm availability and finalize the booking.</p>
+        </div>
+
+        <div class="help-card">
+          <h4><i class="fas fa-calculator"></i> Pricing Explained</h4>
+          <p>The daily hire rate is automatically calculated as <strong>0.7% of the car’s value</strong>.</p>
+          <p>Total cost depends on the number of days selected.</p>
+        </div>
+
+        <div class="help-card">
+          <h4><i class="fas fa-exclamation-triangle"></i> Late Return Policy</h4>
+          <p>Late returns attract a <strong>20% penalty of the daily hire rate per extra day</strong>.</p>
+        </div>
+      `;
+      break;
+
+    // ================= SELL =================
+    case "sell":
+      html = `
+        <div class="help-card">
+          <h4><i class="fas fa-tag"></i> Expected Price</h4>
+          <p>This is your <strong>asking price</strong> — the amount you hope to sell the car for.</p>
+          <p>It helps buyers understand your expectations.</p>
+        </div>
+
+        <div class="help-card">
+          <h4><i class="fas fa-upload"></i> Uploading Images</h4>
+          <p>You can upload up to <strong>10 images</strong>, each not exceeding <strong>7MB</strong>.</p>
+          <p>Clear photos increase your chances of attracting buyers.</p>
+        </div>
+
+        <div class="help-card">
+          <h4><i class="fas fa-check-circle"></i> Listing Approval</h4>
+          <p>Your car submission will be reviewed before it is published on the platform.</p>
+        </div>
+      `;
+      break;
+
+    // ================= CONTACT =================
+    case "contact":
+      html = `
+        <div class="help-card">
+          <h4><i class="fas fa-envelope"></i> Contact Form</h4>
+          <p>Fill in your name, email, and message to reach our team directly.</p>
+        </div>
+
+        <div class="help-card">
+          <h4><i class="fab fa-whatsapp"></i> WhatsApp Support</h4>
+          <p>Use the WhatsApp button for faster, real-time communication.</p>
+        </div>
+      `;
+      break;
+
+    // ================= HOME / LANDING =================
+    default:
+      html = `
+        <div class="help-card">
+          <h4><i class="fas fa-compass"></i> Navigating the Website</h4>
+          <p>The homepage provides quick access to key services:</p>
+          <ul>
+            <li><strong>Buy a Car</strong> – Takes you to available vehicles for purchase</li>
+            <li><strong>Hire a Car</strong> – Opens the car rental section</li>
+            <li><strong>Sell Your Car</strong> – Lets you submit your vehicle for listing</li>
+          </ul>
+        </div>
+
+        <div class="help-card">
+          <h4><i class="fas fa-mouse-pointer"></i> Important Tip</h4>
+          <p>Items like <strong>"Buy a Car"</strong>, <strong>"Hire a Car"</strong>, and <strong>"Sell Your Car"</strong> are clickable links that take you to their respective sections.</p>
+        </div>
+      `;
+  }
+
+  contextHelp.innerHTML = html || "<p>Help not available</p>";
+}
+
+  // AUTO UPDATE ON SCROLL
+  window.addEventListener("scroll", () => {
+    if (!contextHelp.classList.contains("hidden")) {
+      updateContextHelp();
+    }
+  });
+
+});
