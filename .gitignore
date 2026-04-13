@@ -1,1 +1,18 @@
+# Environment files
 .env
+
+# Dependencies
+node_modules/
+
+# Images
+images/
+uploads/
+cars/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+
+# Logs
+*.log
