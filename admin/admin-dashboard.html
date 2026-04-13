@@ -490,34 +490,13 @@
               </button>
             </form>
           </div>
-
-          <!-- ========================= -->
-          <!-- ADMIN FULL STATS -->
-          <!-- ========================= -->
-          <div class="sales-stats admin-only">
-            <h3><i class="fa-solid fa-chart-line"></i> Full Business Stats</h3>
-            <p>Total Sales: <span id="totalSales">0</span></p>
-            <p>Gross Profit: <span id="grossProfit">0</span></p>
-            <p>Commission: <span id="totalCommission">0</span></p>
-            <p>Net Profit: <span id="netProfit">0</span></p>
-          </div>
-
-          <!-- ========================= -->
-          <!-- AGENT PERSONAL STATS -->
-          <!-- ========================= -->
-          <div class="sales-stats agent-only">
-            <h3><i class="fa-solid fa-user"></i> My Performance</h3>
-            <p>My Sales: <span id="mySales">0</span></p>
-            <p>My Profit: <span id="myProfit">0</span></p>
-            <p>My Commission: <span id="myCommission">0</span></p>
-          </div>
-
+          
           <!-- ========================= -->
           <!-- FILTERS (ADMIN ONLY) -->
           <!-- ========================= -->
-          <div class="sales-filters admin-only">
+          <div class="sales-filters">
             <select id="filterAgent"></select>
-
+            
             <!-- Report type selector -->
             <select id="reportType">
               <option value="">Select Report Type</option>
@@ -525,7 +504,13 @@
               <option value="monthly">Monthly</option>
               <option value="custom">Custom</option>
             </select>
-
+            
+            <select id="salesFilterOwnership">
+              <option value="">All Ownership</option>
+              <option value="company">Company</option>
+              <option value="client">Client</option>
+            </select>
+            
             <select id="reportDetailType">
               <option value="">Select Detail</option>
               <option value="totalSales">Total Sales</option>
@@ -536,28 +521,50 @@
             </select>
 
             <!-- Start & End dates (for custom only) -->
-            <input type="date" id="filterStartDate" disabled>
-            <input type="date" id="filterEndDate" disabled>
+            <input type="date" id="salesStartDate" disabled>
+            <input type="date" id="salesEndDate" disabled>
             
             <button id="resetSalesFilters" class="secondary-btn">
               <i class="fa-solid fa-rotate-right"></i> Reset Filters
             </button>
             <button id="exportSalesPDF" class="secondary-btn">
-              <i class="fa-solid fa-file-pdf"></i> Generate PDF
-            </button>
-            <button id="exportDetailedSalesPDF" class="secondary-btn">
-              <i class="fa-solid fa-file-pdf"></i> Export Detailed PDF
+              <i class="fa-solid fa-file-pdf"></i> Generate PDF Report
             </button>
           </div>
 
           <!-- ========================= -->
+          <!-- ADMIN FULL STATS -->
+          <!-- ========================= -->
+          <div class="sales-stats admin-only">
+            <h3><i class="fa-solid fa-chart-line" style="text-align: center; text-decoration: underline;"></i> Full Business Stats</h3>
+            <p>Total Sales: <span id="totalSales">0</span></p>
+            <p>Gross Profit: <span id="grossProfit">0</span></p>
+            <p>Commission: <span id="totalCommission">0</span></p>
+            <p>Net Profit: <span id="netProfit">0</span></p>
+          </div>
+<p id="reportPreview"></p>
+
+<!-- ========================= -->
+<!-- AGENT PERSONAL STATS -->
+<!-- ========================= -->
+          <div class="sales-stats agent-only">
+            <h3><i class="fa-solid fa-user"></i> My Performance</h3>
+            <p>My Sales: <span id="mySales">0</span></p>
+            <p>My Profit: <span id="myProfit">0</span></p>
+            <p>My Commission: <span id="myCommission">0</span></p>
+          </div>
+          
+          <!-- ========================= -->
           <!-- SALES TABLE -->
           <!-- ========================= -->
+          
+          <h3 style="text-align: center; text-decoration: underline;">Sales Details</h3><br>
           <div class="sales-table-container">
             <table class="sales-table">
               <thead>
                 <tr>
                   <th>Car</th>
+                  <th>Ownership</th>
                   <th>Price</th>
                   <th>Profit</th>
                   <th>Agent</th>
@@ -567,7 +574,13 @@
               </thead>
               <tbody id="salesTableBody"></tbody>
             </table>
+          </div><br>
+
+          <div class="agent-ranking admin-only">
+            <h3>Agents performance Ranking</h3>
+            <ul id="agentRankingList"></ul>
           </div>
+
         </section>
     </main>
   </div>

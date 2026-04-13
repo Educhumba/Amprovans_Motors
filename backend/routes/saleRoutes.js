@@ -10,5 +10,6 @@ router.get("/", authenticate, authorize(["admin","agent"]), saleController.getAl
 router.get("/summary", authenticate, authorize(["admin","agent"]), saleController.getSalesSummary);
 router.get("/report/pdf", authenticate, authorize(["admin"]), saleController.generateSalesReport);
 router.get("/report/detailed", authenticate, authorize(["admin"]), saleController.generateDetailedSalesReport);
+router.get("/ranking", authenticate, authorize (["admin"]), saleController.getAgentRanking);
 
 module.exports = router;

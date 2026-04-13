@@ -6,7 +6,6 @@
 let allCarsForSales = [];
 let allAgents = [];
 let allSales = [];
-let commissionRate = 0.05; // 5% commission for agents
 
 const role = localStorage.getItem("role");
 const token = localStorage.getItem("token");
@@ -16,11 +15,127 @@ document.addEventListener("DOMContentLoaded", () => {
   if (role === "admin") {
     loadAgents();
   }
+  if (role === "admin") {
+    loadAgentRanking();
+  }
   loadSales();
   loadSummary();
 
   // Show agent select only for admin
   if (role === "admin") document.getElementById("agentSelectGroup").style.display = "block";
+
+  const reportTypeEl = document.getElementById("reportType");
+  const startInput = document.getElementById("salesStartDate");
+  const endInput = document.getElementById("salesEndDate");
+
+  if (!reportTypeEl || !startInput || !endInput) {
+    console.error("Report elements missing");
+    return;
+  }
+
+reportTypeEl.addEventListener("change", () => {
+
+  const startInput = document.getElementById("salesStartDate");
+  const endInput = document.getElementById("salesEndDate");
+
+  if (reportTypeEl.value === "custom") {
+    startInput.disabled = false;
+    endInput.disabled = false;
+
+    setDateLimits();
+  } else {
+    startInput.disabled = true;
+    endInput.disabled = true;
+
+    startInput.value = "";
+    endInput.value = "";
+  }
+});
+document.getElementById("filterAgent").addEventListener("change", filterSales);
+document.getElementById("salesStartDate").addEventListener("change", () => {
+  validateDateRange();
+  filterSales();
+});
+document.getElementById("salesEndDate").addEventListener("change", () => {
+  validateDateRange();
+  filterSales();
+});
+const ownershipEl = document.getElementById("salesFilterOwnership");
+
+if (ownershipEl) {
+  ownershipEl.addEventListener("change", () => {
+    filterSales();
+  });
+}
+reportTypeEl.dispatchEvent(new Event("change"));
+function setDateLimits() {
+  const startInput = document.getElementById("salesStartDate");
+  const endInput = document.getElementById("salesEndDate");
+
+  const today = new Date().toISOString().split("T")[0];
+  const minDate = "2026-01-01";
+
+  startInput.min = minDate;
+  startInput.max = today;
+
+  endInput.min = minDate;
+  endInput.max = today;
+}
+function validateDateRange() {
+  const startInput = document.getElementById("salesStartDate");
+  const endInput = document.getElementById("salesEndDate");
+
+  const minDate = new Date("2026-01-01");
+  const today = new Date();
+
+  const start = new Date(startInput.value);
+  const end = new Date(endInput.value);
+
+  if (startInput.value && start < minDate) {
+    alert("Start date cannot be before 2026");
+    startInput.value = "";
+  }
+
+  if (endInput.value && end > today) {
+    alert("End date cannot be in the future");
+    endInput.value = "";
+  }
+
+  if (startInput.value && endInput.value && start > end) {
+    alert("Start date cannot be after end date");
+    startInput.value = "";
+    endInput.value = "";
+  }
+}
+});
+
+function enforceDateLimits(input) {
+  const min = new Date("2026-01-01");
+  const max = new Date();
+
+  const val = new Date(input.value);
+
+  if (!input.value) return;
+
+  if (val < min) {
+    input.value = "";
+    input.setCustomValidity("Invalid date range");
+    input.reportValidity();
+  }
+
+  if (val > max) {
+    input.value = "";
+    input.setCustomValidity("Invalid date range");
+    input.reportValidity();
+  }
+}
+
+document.getElementById("salesStartDate").addEventListener("input", (e) => {
+  enforceDateLimits(e.target);
+});
+
+document.getElementById("salesEndDate").addEventListener("input", (e) => {
+  enforceDateLimits(e.target);
 });
 
 // ----------------------------
@@ -92,17 +207,30 @@ async function loadSales() {
 
     let filteredSales = allSales;
 
-    if (role === "agent") {
-      const myAgentId = localStorage.getItem("userId");
-
-      filteredSales = allSales.filter(s => String(s.agent_id) === String(myAgentId));
-    }
-
     displaySales(filteredSales);
 
   } catch (err) {
     console.error("Error loading sales:", err);
   }
+}
+
+function updateReportPreview() {
+  const type = document.getElementById("reportType").value;
+  const ownership = document.getElementById("salesFilterOwnership").value;
+  const agent = document.getElementById("filterAgent");
+
+  let text = "Showing: ";
+
+  if (type) text += `${type} report`;
+  if (ownership) text += ` | ${ownership} cars`;
+
+  if (agent && agent.value) {
+    const name = agent.options[agent.selectedIndex]?.text || "";
+    text += ` | Agent: ${name}`;
+  }
+
+  const preview = document.getElementById("reportPreview");
+  if (preview) preview.textContent = text;
 }
 
 // ----------------------------
@@ -117,7 +245,7 @@ function displaySales(sales) {
 
     const car = s.Car || {};
     const carName = `${car.make || "N/A"} ${car.model || ""} (${car.year || ""})`;
-
+    const ownership = car.ownership || "N/A";
     const soldPrice = Number(s.sold_price || 0);
     const profit = Number(s.profit || 0);
 
@@ -127,6 +255,7 @@ function displaySales(sales) {
 
     row.innerHTML = `
       <td>${carName}</td>
+      <td>${ownership}</td>
       <td>KSh ${soldPrice.toLocaleString()}</td>
       <td>KSh ${profit.toLocaleString()}</td>
       <td>${agentName}</td>
@@ -209,31 +338,58 @@ saleForm.addEventListener("submit", async e => {
 // ----------------------------
 // Filter Sales
 // ----------------------------
-document.getElementById("filterAgent").addEventListener("change", filterSales);
-document.getElementById("filterStartDate").addEventListener("change", filterSales);
-document.getElementById("filterEndDate").addEventListener("change", filterSales);
 document.getElementById("resetSalesFilters").addEventListener("click", () => {
-  document.getElementById("filterAgent").value = "";
-  document.getElementById("filterStartDate").value = "";
-  document.getElementById("filterEndDate").value = "";
+
+  const agent = document.getElementById("filterAgent");
+  const ownership = document.getElementById("salesFilterOwnership");
+  const reportType = document.getElementById("reportType");
+  const detailType = document.getElementById("reportDetailType");
+  const start = document.getElementById("salesStartDate");
+  const end = document.getElementById("salesEndDate");
+
+  if (agent) agent.value = "";
+  if (ownership) {ownership.value = "";ownership.dispatchEvent(new Event("change"));}
+  if (reportType) reportType.value = "";
+  if (detailType) detailType.value = "";
+
+  if (start) {
+    start.value = "";
+    start.disabled = true;
+  }
+
+  if (end) {
+    end.value = "";
+    end.disabled = true;
+  }
+
+  filterSales();
   loadSales();
+  loadSummary();
+
 });
 
 function filterSales() {
-  if (role === "agent") {
-    // Agents should NEVER filter others
-    return;
-  }
+  let filtered = allSales;
+
+if (role === "agent") {
+  // Only filter their own sales
+  filtered = filtered.filter(s => s.agent_id == localStorage.getItem("userId"));
+}
 
   const agentId = document.getElementById("filterAgent").value;
-  const startDate = document.getElementById("filterStartDate").value;
-  const endDate = document.getElementById("filterEndDate").value;
-
-  let filtered = allSales;
+  const startDate = document.getElementById("salesStartDate").value;
+  const endDate = document.getElementById("salesEndDate").value;
+  const ownership = document.getElementById("salesFilterOwnership").value;
 
   if (agentId) {
     filtered = filtered.filter(s => s.agent_id == agentId);
   }
+
+  if (ownership) {
+  filtered = filtered.filter(
+    s => (s.Car?.ownership || "").toLowerCase() === ownership.toLowerCase()
+  );
+}
 
   if (startDate) {
     filtered = filtered.filter(s => new Date(s.created_at) >= new Date(startDate));
@@ -244,35 +400,62 @@ function filterSales() {
   }
 
   displaySales(filtered);
+  updateStatsFromFilteredData(filtered);
+  updateReportPreview();
+}
+
+function updateStatsFromFilteredData(filtered) {
+  let totalSales = 0;
+  let totalProfit = 0;
+  let totalCommission = 0;
+
+  filtered.forEach(s => {
+    totalSales += Number(s.sold_price || 0);
+    totalProfit += Number(s.profit || 0);
+    totalCommission += Number(s.commission || 0);
+  });
+
+  if (role === "admin") {
+    document.getElementById("totalSales").textContent = totalSales.toLocaleString();
+    document.getElementById("grossProfit").textContent = totalProfit.toLocaleString();
+    document.getElementById("totalCommission").textContent = totalCommission.toLocaleString();
+    document.getElementById("netProfit").textContent = (totalProfit - totalCommission).toLocaleString();
+  } else {
+    document.getElementById("mySales").textContent = totalSales.toLocaleString();
+    document.getElementById("myProfit").textContent = totalProfit.toLocaleString();
+    document.getElementById("myCommission").textContent = totalCommission.toLocaleString();
+  }
 }
 
 // ----------------------------
 // Export PDF
 // ----------------------------
 // Enable/disable date inputs based on report type
-document.getElementById("reportType").addEventListener("change", e => {
-  const type = e.target.value;
-  const startInput = document.getElementById("filterStartDate");
-  const endInput = document.getElementById("filterEndDate");
 
-  if (type === "custom") {
-    startInput.disabled = false;
-    endInput.disabled = false;
-  } else {
-    startInput.disabled = true;
-    endInput.disabled = true;
-    startInput.value = "";
-    endInput.value = "";
-  }
-});
+async function loadAgentRanking() {
+  const res = await fetch("http://localhost:5000/api/sales/ranking", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
 
+  const data = await res.json();
+  const list = document.getElementById("agentRankingList");
+  list.innerHTML = "";
+
+  data.sort((a, b) => b.totalProfit - a.totalProfit);
+  data.forEach((a, index) => {
+    const li = document.createElement("li");
+    const name = a.Agent?.name || "Unknown Agent";
+    li.textContent = `${index + 1}. ${name} - KSh ${Number(a.totalProfit).toLocaleString()}`;
+    list.appendChild(li);
+  });
+}
 // ----------------------------
 // Export PDF using backend
 // ----------------------------
 document.getElementById("exportSalesPDF").addEventListener("click", async () => {
   const reportType = document.getElementById("reportType").value;
-  const startDate = document.getElementById("filterStartDate").value;
-  const endDate = document.getElementById("filterEndDate").value;
+  const startDate = document.getElementById("salesStartDate").value;
+  const endDate = document.getElementById("salesEndDate").value;
   const agentId = document.getElementById("filterAgent").value;
 
   if (!reportType) return alert("Select a report type");
@@ -345,53 +528,6 @@ if (detailType) query.push(`detail=${detailType}`);
   } catch (err) {
     console.error(err);
     alert("Error generating PDF report");
-  }
-});
-
-document.getElementById("exportDetailedSalesPDF").addEventListener("click", async () => {
-  const startDate = document.getElementById("filterStartDate").value;
-  const endDate = document.getElementById("filterEndDate").value;
-  const agentId = document.getElementById("filterAgent").value;
-
-  // Optional: validate date inputs
-  if ((startDate && !endDate) || (!startDate && endDate)) {
-    return alert("Please select both start and end dates for the report");
-  }
-
-  // Construct query string
-  let query = [];
-  if (startDate) query.push(`start_date=${startDate}`);
-  if (endDate) query.push(`end_date=${endDate}`);
-  if (agentId) query.push(`agent_id=${agentId}`);
-
-  const url = `http://localhost:5000/api/sales/report/detailed?${query.join("&")}`;
-
-  try {
-    const token = localStorage.getItem("token"); // make sure you have the JWT stored
-    if (!token) return alert("You must be logged in to download reports");
-
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    if (!res.ok) {
-      if (res.status === 403) alert("You are not authorized to generate this report");
-      else if (res.status === 404) alert("No sales found for the selected period");
-      else throw new Error("Failed to generate report");
-      return;
-    }
-
-    const blob = await res.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `detailed-sales-report-${Date.now()}.pdf`;
-    link.click();
-
-  } catch (err) {
-    console.error(err);
-    alert("Error generating detailed PDF report");
   }
 });
 })();

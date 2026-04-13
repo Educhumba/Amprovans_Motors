@@ -1,6 +1,6 @@
 const PDFDocument = require("pdfkit-table");
 const moment = require("moment");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const { Car, Sale, User } = require("../models");
 
 const saleController = {
@@ -54,17 +54,21 @@ const saleController = {
         }
 
         if (hasAgent) {
-          commission = profit * 0.2;
+          commission = profit * 0.05;
         }
 
       } else {
-        // client-owned
+        const companyCommissionRate = 0.08; // 8%
+        const agentShareRate = 0.05; // 5% of company commission
 
-        profit = sold_price;
+        const companyCommission = sold_price * companyCommissionRate;
 
         if (hasAgent) {
-          commission = profit * 0.1;
+          commission = companyCommission * agentShareRate;
+        } else {
+          commission = 0;
         }
+        profit = companyCommission;
       }
 
       net_profit = profit - commission;
@@ -117,35 +121,31 @@ const saleController = {
   // =========================
   // GET ALL SALES
   // =========================
-    getAllSales: async (req, res) => {
+  getAllSales: async (req, res) => {
     try {
-        const user = req.user;
-        let sales;
+      const user = req.user;
 
-        if (user.role === "admin") {
-        sales = await Sale.findAll({
-          order: [["created_at", "DESC"]],
-          include: [
-            { model: Car, as: 'Car' },
-            { model: User, as: "Agent", attributes: ["id", "name"] }
-          ]
-        });
-        } else {
-        sales = await Sale.findAll({
-          order: [["created_at", "DESC"]],
-          include: [
-            { model: Car, as: 'Car' },
-            { model: User, as: "Agent", attributes: ["id", "name"] }
-          ]
-        });
-        }
+      let whereClause = {};
 
-        res.json(sales);
+      // 🔒 Agents only see their sales
+      if (user.role === "agent") {
+        whereClause.agent_id = user.id;
+      }
+
+      const sales = await Sale.findAll({
+        where: whereClause,
+        order: [["created_at", "DESC"]],
+        include: [
+          { model: Car, as: 'Car' },
+          { model: User, as: "Agent", attributes: ["id", "name"] }
+        ]
+      });
+
+      res.json(sales);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error", error: err.message });
+      res.status(500).json({ message: "Server error" });
     }
-    },
+  },
 
     getSalesSummary: async (req, res) => {
       try {
@@ -181,18 +181,48 @@ const saleController = {
       }
     },
 
+    getAgentRanking: async (req, res) => {
+      try {
+        const rankings = await Sale.findAll({
+          attributes: [
+            "agent_id",
+            [Sequelize.fn("SUM", Sequelize.col("sold_price")), "totalSales"],
+            [Sequelize.fn("SUM", Sequelize.col("profit")), "totalProfit"],
+            [Sequelize.fn("SUM", Sequelize.col("commission")), "totalCommission"]
+          ],
+          include: [
+            { model: User, as: "Agent", attributes: ["name"] }
+          ],
+          group: ["agent_id", "Agent.id"],
+          order: [[Sequelize.literal("totalProfit"), "DESC"]]
+        });
+
+        res.json(rankings);
+      } catch (err) {
+        res.status(500).json({ message: "Error ranking agents" });
+      }
+    },
+
     generateSalesReport: async (req, res) => {
       try {
         const user = req.user;
 
-        if (user.role !== "admin") {
-          return res.status(403).json({ message: "Only admins can generate reports" });
+        if (!["admin", "agent"].includes(user.role)) {
+          return res.status(403).json({ message: "Unauthorized" });
         }
 
-        const { type, start_date, end_date } = req.query;
+        const { type, start_date, end_date, agent_id, ownership } = req.query;
 
         let whereClause = {};
         const now = new Date();
+
+        if (user.role === "agent") {
+          whereClause.agent_id = user.id;
+        }
+        // Admin filtering by agent
+        if (user.role === "admin" && agent_id) {
+          whereClause.agent_id = agent_id;
+        }
 
         if (type === "weekly") {
           const lastWeek = new Date();
@@ -209,10 +239,13 @@ const saleController = {
           whereClause.created_at = { [Op.gte]: new Date(start_date), [Op.lte]: new Date(end_date) };
         } // default: all sales if type not specified
 
+if (ownership) {
+  whereClause['$Car.ownership$'] = ownership;
+}
         const sales = await Sale.findAll({
           where: whereClause,
           include: [
-            { model: Car, as: "Car", attributes: ["make", "model", "year"] },
+            { model: Car, as: "Car", attributes: ["make", "model", "year", "ownership"] },
             { model: User, as: "Agent", attributes: ["name"] }
           ],
           order: [["created_at", "DESC"]]
@@ -295,8 +328,11 @@ const saleController = {
     generateDetailedSalesReport: async (req, res) => {
       try {
         const { start_date, end_date, agent_id } = req.query;
+        const { ownership } = req.query;
 
-        let filter = {};
+        if (ownership) {
+          filter['$Car.ownership$'] = ownership;
+        }
         if (start_date && end_date) {
           filter.created_at = { [Op.gte]: new Date(start_date), [Op.lte]: new Date(end_date) };
         } else if (start_date) {
@@ -309,7 +345,7 @@ const saleController = {
         const sales = await Sale.findAll({
           where: filter,
           include: [
-            { model: Car, as: "Car", attributes: ["make", "model", "year"] },
+            { model: Car, as: "Car", attributes: ["make", "model", "year", "ownership"] },
             { model: User, as: "Agent", attributes: ["id", "name"] }
           ],
           order: [["created_at", "DESC"]]
@@ -318,6 +354,10 @@ const saleController = {
         if (!sales.length) {
           return res.status(404).json({ message: "No sales found for the selected period" });
         }
+
+        if (ownership) {
+  whereClause['$Car.ownership$'] = ownership;
+}
 
         // Totals
         let totalSales = 0, totalProfit = 0, totalCommission = 0;
