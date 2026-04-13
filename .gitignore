@@ -5,14 +5,9 @@
 node_modules/
 
 # Images
-images/
 uploads/
 cars/
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.webp
+images/
 
 # Logs
 *.log
