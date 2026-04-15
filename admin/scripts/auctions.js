@@ -1,7 +1,9 @@
 // ----------------------------
 // CAR AUCTIONS SCRIPT
 // ----------------------------
+const exportAuctionBtn = document.getElementById("exportAuctionPdfBtn");
 
+exportAuctionBtn.addEventListener("click", exportAuctionPDF);
 const pendingContainer = document.getElementById("pendingAuctions");
 const auctionCounter = document.getElementById("auctionCounter");
 
@@ -110,6 +112,38 @@ function fetchPendingAuctions() {
     .catch(err => {
       console.error("Error fetching auctions:", err);
     });
+}
+// ----------------------------
+// EXPORT AUCTION PDF
+// ----------------------------
+async function exportAuctionPDF() {
+  try {
+    const res = await fetch("http://localhost:5000/api/auctions/admin/export", {
+      method: "GET"
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to generate PDF");
+    }
+
+    const blob = await res.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `auction-requests-report.pdf`;
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to export auction report");
+  }
 }
 
 // Initial fetch and auto-refresh every 30s

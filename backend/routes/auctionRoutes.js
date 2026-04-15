@@ -6,7 +6,8 @@ const {
     submitCar,
     getPendingCars,
     approveCar,
-    rejectCar
+    rejectCar,
+    generateAuctionReport
 } = require("../controllers/auctionController");
 
 // Submit car
@@ -20,5 +21,8 @@ router.patch("/admin/:id/approve", approveCar);
 
 // Admin: reject
 router.patch("/admin/:id/reject", rejectCar);
+
+// EXPORT AUCTION REPORT
+router.get("/admin/export", generateAuctionReport);
 
 module.exports = router;

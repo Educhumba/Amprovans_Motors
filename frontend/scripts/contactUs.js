@@ -2,7 +2,7 @@
 
 const form = document.getElementById("contactForm");
 const statusText = document.getElementById("contactStatus");
-const submitBtn = form.querySelector(".contact-btn");
+const ContactsubmitBtn = form.querySelector(".contact-btn");
 
 const contactName = document.getElementById("contactName");
 const contactEmail = document.getElementById("contactEmail");
@@ -10,7 +10,7 @@ const contactPhone = document.getElementById("contactPhone");
 const contactMessage = document.getElementById("contactMessage");
 
 // start disabled
-submitBtn.disabled = true;
+ContactsubmitBtn.disabled = true;
 
 
 /* ================= NAME ================= */
@@ -62,7 +62,7 @@ contactEmail.checkValidity() &&
 contactPhone.value.replace(/\D/g,"").length >= 10 &&
 contactMessage.value.trim().length >= 5;
 
-submitBtn.disabled = !valid;
+ContactsubmitBtn.disabled = !valid;
 
 }
 
@@ -93,8 +93,8 @@ timestamp: new Date().toISOString()
 };
 
 // UI state
-submitBtn.disabled = true;
-submitBtn.innerHTML =
+ContactsubmitBtn.disabled = true;
+ContactsubmitBtn.innerHTML =
 `<i class="fas fa-spinner fa-spin"></i> Sending...`;
 
 statusText.innerText = "";
@@ -114,7 +114,7 @@ if (res.ok) {
 statusText.innerText = "Message sent successfully!";
 statusText.style.color = "green";
 form.reset();
-submitBtn.disabled = true;
+ContactsubmitBtn.disabled = true;
 } else {
 throw new Error("Failed to send");
 }
@@ -128,11 +128,11 @@ statusText.innerText =
 
 statusText.style.color = "red";
 
-submitBtn.disabled = false;
+ContactsubmitBtn.disabled = false;
 
 } finally {
 
-submitBtn.innerHTML =
+ContactsubmitBtn.innerHTML =
 `<i class="fas fa-paper-plane"></i> Send Message`;
 
 }

@@ -8,10 +8,22 @@ let currentFilter = "all";
 // INIT
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("exportPdfBtn").addEventListener("click", exportPDF);
   fetchHires();
   setupFilters();
 });
 
+// ===============================
+// HELPERS
+// ===============================
+function formatDate(date) {
+  return new Date(date).toLocaleDateString();
+}
+
+function truncateText(text, max) {
+  if (text.length <= max) return text;
+  return text.substring(0, max) + "...";
+}
 // ===============================
 // FETCH HIRES
 // ===============================
@@ -216,13 +228,37 @@ function updateCounter() {
 }
 
 // ===============================
-// HELPERS
+// EXPORT PDF
 // ===============================
-function formatDate(date) {
-  return new Date(date).toLocaleDateString();
-}
+async function exportPDF() {
+  try {
+    const filter = currentFilter; // all | pending | approved | rejected
 
-function truncateText(text, max) {
-  if (text.length <= max) return text;
-  return text.substring(0, max) + "...";
+    const res = await fetch(`http://localhost:5000/api/car-hire/admin/export?status=${filter}`, {
+      method: "GET"
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to generate PDF");
+    }
+
+    const blob = await res.blob();
+
+    // Create download link
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `car-hire-${filter}-report.pdf`;
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to export PDF");
+  }
 }

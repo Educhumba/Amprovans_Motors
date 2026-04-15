@@ -66,8 +66,14 @@
     <main class="main-content">
       <!-- Car Listings -->
       <section id="car-listings" class="tab-section" data-role="admin">
-        <h2>Car Listing Management</h2>
-        <form id="carForm">
+        <h2><i class="fa-solid fa-car"></i> Car Listing Management</h2>
+
+        <button id="toggleCarForm" class="primary-btn ">
+          <i class="fa-solid fa-plus"></i> List Car
+        </button>
+
+        <div id="carFormContainer" class="collapsed">
+          <form id="carForm">
 
           <!-- Make and Model -->
           <div class="form-group">
@@ -232,12 +238,13 @@
 
           <!-- Submit Button -->
           <div class="form-group">
-            <button type="submit" id="submitCar">Add / Update Car</button>
+            <button type="submit" id="submitCar"><i class="fa-solid fa-check"></i> List Car</button>
           </div>
 
         </form>
+        </div>
 
-        <h3>All Cars</h3>
+        <h2><i class="fa-solid fa-list"></i> All Cars</h2>
 
         <!-- Filters -->
         <div class="filters">
@@ -265,8 +272,8 @@
           <input type="date" id="filterStartDate">
           <input type="date" id="filterEndDate">
 
-          <button id="resetFilters">Reset Filters</button>
-          <button onclick="generateReport()">Export PDF</button>
+          <button id="resetFilters"><i class="fa-solid fa-rotate"></i> Reset Filters</button>
+          <button onclick="generateReport()"><i class="fa-solid fa-file-pdf"></i>Export PDF</button>
         </div>
 
         <div class="search-container">
@@ -288,6 +295,10 @@
           <button class="filter-btn" data-filter="pending">Pending</button>
           <button class="filter-btn" data-filter="approved">Approved</button>
           <button class="filter-btn" data-filter="rejected">Rejected</button>
+
+          <button id="exportPdfBtn" class="export-btn">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF
+          </button>
         </div>
 
         <!-- TABLE -->
@@ -335,7 +346,12 @@
     <section id="car-auction" class="tab-section" data-role="admin,agent">
       <h2><i class="fa-solid fa-gavel"></i> Car Auction Requests</h2>
       <p>Review and approve/reject submitted cars from clients.</p>
-
+      <!-- EXPORT BUTTON -->
+      <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+        <button id="exportAuctionPdfBtn" class="export-btn">
+          <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </button>
+      </div>
       <!-- Scrollable Table Container -->
       <div class="auction-table-container">
         <table class="auction-table">
@@ -543,14 +559,16 @@
             <!-- Start & End dates (for custom only) -->
             <input type="date" id="salesStartDate" disabled>
             <input type="date" id="salesEndDate" disabled>
-            
-            <button id="resetSalesFilters" class="secondary-btn">
-              <i class="fa-solid fa-rotate-right"></i> Reset Filters
-            </button>
-            <button id="exportSalesPDF" class="secondary-btn">
-              <i class="fa-solid fa-file-pdf"></i> Generate PDF Report
-            </button>
-          </div>
+            <div class="sales-filter-actions">
+              <button id="resetSalesFilters" class="secondary-btn">
+                <i class="fa-solid fa-rotate-right"></i> Reset Filters
+              </button>
+
+              <button id="exportSalesPDF" class="secondary-btn">
+                <i class="fa-solid fa-file-pdf"></i> Generate PDF Report
+              </button>
+            </div>
+            </div>
 
           <!-- ========================= -->
           <!-- ADMIN FULL STATS -->
@@ -609,6 +627,17 @@
     window.addEventListener("DOMContentLoaded", () => {
       setupUserProfile();
     });
+    const toggleBtn = document.getElementById("toggleCarForm");
+    const formContainer = document.getElementById("carFormContainer");
+    toggleBtn.addEventListener("click", () => {
+      formContainer.classList.toggle("collapsed");
+      if (formContainer.classList.contains("collapsed")) {
+        toggleBtn.innerHTML = `<i class="fa-solid fa-plus"></i> List Car`;
+      } else {
+        toggleBtn.innerHTML = `<i class="fa-solid fa-minus"></i> Close Form`;
+      }
+    });
+
     // ----------------------------
     // AUTH & ROLE MANAGEMENT
     // ----------------------------
@@ -861,6 +890,10 @@ function logout(event) {
           alert(editingCarId ? "Car updated successfully" : "Car added successfully");
           editingCarId = null;
           carForm.reset();
+          document.getElementById("submitCar").innerHTML =
+            `<i class="fa-solid fa-check"></i> List Car`;
+          formContainer.classList.add("collapsed");
+          toggleBtn.innerHTML = `<i class="fa-solid fa-plus"></i> List Car`;
           carModelSelect.disabled = true;
           selectedFiles = [];
           imagePreviewDiv.innerHTML = "";
@@ -990,7 +1023,7 @@ function logout(event) {
               <option value="sold" ${car.status === "sold" ? "selected" : ""}>Sold</option>
             </select>
             <button class="edit-btn" onclick="editCar(${car.id})">Edit</button>
-            <button class="delete-btn" onclick="deleteCar(${car.id})">Delete</button>
+            <button class="delete-btn" onclick="deleteCar(${car.id})">Delist Car</button>
           </div>`;
       });
     }
@@ -1015,6 +1048,8 @@ function logout(event) {
     });
 
     async function editCar(id) {
+      formContainer.classList.remove("collapsed");
+      toggleBtn.innerHTML = `<i class="fa-solid fa-pen"></i> Editing Car`;
       try {
         const res = await fetch("http://localhost:5000/api/cars", { headers: { Authorization: `Bearer ${token}` } });
         const cars = await res.json();
@@ -1041,6 +1076,8 @@ function logout(event) {
         document.getElementById("carStatus").value = car.status;
         document.getElementById("carOwnership").value = car.ownership || "";
         document.getElementById("carDescription").value = car.description || "";
+        document.getElementById("submitCar").innerHTML =
+          `<i class="fa-solid fa-pen"></i> Update Car`;
 
         imagePreviewDiv.innerHTML = "";
         selectedFiles = [];

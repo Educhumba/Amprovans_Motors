@@ -5,7 +5,8 @@ const {
     submitHire,
     getAllHires,
     approveHire,
-    rejectHire
+    rejectHire,
+    generateHireReport
 } = require("../controllers/carHireController");
 
 // Submit hire request
@@ -15,5 +16,7 @@ router.post("/", submitHire);
 router.get("/admin", getAllHires);
 router.patch("/admin/:id/approve", approveHire);
 router.patch("/admin/:id/reject", rejectHire);
+// EXPORT PDF REPORT
+router.get("/admin/export", generateHireReport);
 
 module.exports = router;

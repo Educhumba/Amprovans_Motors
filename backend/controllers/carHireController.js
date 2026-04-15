@@ -1,5 +1,7 @@
 const { CarHire, Car } = require("../models");
 const sendMail = require("../config/mail");
+const PDFDocument = require("pdfkit-table");
+const moment = require("moment");
 
 const carHireController = {
 
@@ -208,6 +210,176 @@ const carHireController = {
         } catch (err) {
             console.error(err);
             res.status(500).json({ message: "Failed to reject hire", error: err.message });
+        }
+    },
+
+    // =========================
+    // GENERATE HIRE REPORT
+    // =========================
+    generateHireReport: async (req, res) => {
+        try {
+            const { status } = req.query;
+
+            const where = {};
+
+            // Filter by status
+            if (status && status !== "all") {
+                where.status = status;
+            }
+
+            const hires = await CarHire.findAll({
+                where,
+                order: [["createdAt", "DESC"]]
+            });
+
+            // ======================
+            // CALCULATIONS
+            // ======================
+            const totalRequests = hires.length;
+
+            const totalRevenue = hires
+                .filter(h => h.status === "approved")
+                .reduce((sum, h) => sum + Number(h.total_cost || 0), 0);
+
+            const pendingCount = hires.filter(h => h.status === "pending").length;
+            const approvedCount = hires.filter(h => h.status === "approved").length;
+            const rejectedCount = hires.filter(h => h.status === "rejected").length;
+
+            // ======================
+            // PDF SETUP
+            // ======================
+            const doc = new PDFDocument({
+                margin: 30,
+                size: "A4",
+                layout: "landscape"
+            });
+
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader(
+                "Content-Disposition",
+                `attachment; filename=car-hire-report-${Date.now()}.pdf`
+            );
+
+            doc.pipe(res);
+
+            // ======================
+            // TITLE
+            // ======================
+            doc.fontSize(18).text("Car Hire Requests Report", { align: "center" });
+
+            doc.moveDown();
+
+            doc
+                .fontSize(10)
+                .text(`Generated: ${moment().format("YYYY-MM-DD HH:mm")}`);
+
+            doc.moveDown();
+
+            // ======================
+            // FILTER INFO
+            // ======================
+            doc.fontSize(12).text("Filtered as:");
+            doc.fontSize(10);
+
+            doc.text(`Status: ${status || "All"}`);
+
+            doc.moveDown();
+
+            // ======================
+            // TABLE
+            // ======================
+            doc.fontSize(14).text("Hire Requests", { underline: true });
+            doc.moveDown();
+
+            const table = {
+                headers: [
+                    "Name",
+                    "Phone",
+                    "Car",
+                    "Days",
+                    "Daily Rate(KSh)",
+                    "Total Cost(KSh)",
+                    "Pickup Date",
+                    "Return Date",
+                    "Location",
+                    "Status"
+                ],
+
+                rows: hires.map(h => [
+                    h.full_name,
+                    h.phone,
+                    h.car_name,
+                    h.total_days,
+                    Number(h.daily_rate).toLocaleString(),
+                    Number(h.total_cost).toLocaleString(),
+                    moment(h.pickup_date).format("YYYY-MM-DD"),
+                    moment(h.return_date).format("YYYY-MM-DD"),
+                    h.pickup_location,
+                    h.status
+                ])
+            };
+
+            // Totals row
+            table.rows.push([
+                "TOTAL",
+                "",
+                "",
+                "",
+                "",
+                totalRevenue.toLocaleString(),
+                "",
+                "",
+                "",
+                ""
+            ]);
+
+            doc.table(table, {
+                columnsSize: [100, 80, 120, 40, 80, 80, 90, 90, 80, 90],
+                prepareHeader: () =>
+                    doc.font("Helvetica-Bold").fontSize(9),
+
+                prepareRow: (row, i) => {
+                    doc.font("Helvetica").fontSize(8);
+
+                    // Bold last row (totals)
+                    if (i === table.rows.length - 1) {
+                        doc.font("Helvetica-Bold");
+                    }
+                }
+            });
+
+            // ======================
+            // SUMMARY
+            // ======================
+            doc.moveDown(2);
+
+            doc.font("Helvetica-Bold").fontSize(12).text("Summary");
+            doc.moveDown();
+
+            doc.font("Helvetica").fontSize(10);
+
+            doc.font("Helvetica-Bold").text("Total Requests: ", { continued: true })
+                .font("Helvetica").text(totalRequests);
+
+            doc.font("Helvetica-Bold").text("Pending: ", { continued: true })
+                .font("Helvetica").text(pendingCount);
+
+            doc.font("Helvetica-Bold").text("Approved: ", { continued: true })
+                .font("Helvetica").text(approvedCount);
+
+            doc.font("Helvetica-Bold").text("Rejected: ", { continued: true })
+                .font("Helvetica").text(rejectedCount);
+
+            doc.moveDown();
+
+            doc.font("Helvetica-Bold").text("Total Revenue (Approved Only): ", { continued: true })
+                .font("Helvetica").text(`KSh ${totalRevenue.toLocaleString()}`);
+
+            doc.end();
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: "Failed to generate hire report" });
         }
     }
 };

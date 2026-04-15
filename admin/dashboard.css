@@ -11,6 +11,58 @@
   --shadow: 0 4px 20px rgba(0,0,0,0.1);
   --radius: 16px;
 }
+/* ========================= */
+/* GLOBAL BUTTON SYSTEM */
+/* ========================= */
+button {
+  font-family: inherit;
+}
+
+.btn {
+  border: none;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.25s ease;
+}
+
+/* primary */
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--secondary);
+}
+/* secondary */
+.btn-secondary {
+  background: var(--deep-blue);
+  color: #fff;
+}
+.btn-secondary:hover {
+  background: var(--secondary);
+}
+/* danger */
+.btn-danger {
+  background: var(--delete);
+  color: #fff;
+}
+.btn-danger:hover {
+  background: #cc0000;
+}
+/* outline */
+.btn-outline {
+  background: #fff;
+  border: 1px solid #ccc;
+}
+.btn-outline:hover {
+  background: var(--section-bg);
+}
 
 /* Reset */
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
@@ -28,18 +80,15 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   align-items:center;
   padding:0 20px;
   box-shadow: var(--shadow);
-  z-index:100;
+  z-index:2000;
 }
 .header .brand { font-weight:800; color: var(--primary); font-size:1.2rem; }
-
-/* Header inner alignment */
 .header-inner {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 /* User profile container */
 .user-profile {
   position: relative;
@@ -51,46 +100,35 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   border-radius: 10px;
   transition: 0.2s;
 }
-
 .user-profile:hover {
   background: rgba(0,0,0,0.05);
 }
-
-/* profile layout */
 .profile-info {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .profile-icon {
   font-size: 28px;
   color: var(--deep-blue);
 }
-
-/* name + role stacked */
 .user-meta {
   display: flex;
   flex-direction: column;
   line-height: 1.1;
 }
-
 .user-meta span {
   font-weight: 600;
   font-size: 0.95rem;
 }
-
 .user-meta small {
   font-size: 0.75rem;
   color: gray;
   text-transform: capitalize;
 }
-
-/* arrow animation */
 .arrow {
   transition: transform 0.3s ease;
 }
-
 /* dropdown menu */
 .dropdown-menu {
   position: absolute;
@@ -104,7 +142,6 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   min-width: 140px;
   z-index: 999;
 }
-
 .dropdown-menu button {
   width: 100%;
   padding: 10px;
@@ -114,33 +151,29 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   cursor: pointer;
   font-size: 0.9rem;
 }
-
 .dropdown-menu button:hover {
   background: var(--section-bg);
 }
-
-/* active states */
 .user-profile.active .dropdown-menu {
   display: block;
 }
-
 .user-profile.active .arrow {
   transform: rotate(180deg);
 }
 
 /* Dashboard Layout */
-.dashboard-container { display:flex; flex:1; min-height:0; }
-
-/* Sidebar */
+.dashboard-container { display:block; }
 .sidebar {
-  width:220px;
+  position: fixed;
+  top: 60px; /* below header */
+  left: 0;
+  width: 220px;
+  height: calc(100vh - 60px);
   background: var(--muted);
-  padding:20px;
+  padding: 20px;
   border-right: 1px solid var(--deep-blue);
-  height:100vh;
-  position:sticky;
-  top:60px;
-  overflow-y:auto;
+  overflow-y: auto;
+  z-index: 1000;
 }
 .sidebar h2 { font-size:1.1rem; margin-bottom:15px; color: var(--deep-blue); }
 .sidebar ul { list-style:none; }
@@ -154,13 +187,39 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   transition:0.3s;
 }
 .sidebar ul li.active, .sidebar ul li:hover { background: var(--primary); color:#fff; }
-
 /* Main Content */
-.main-content { flex:1; padding:20px; margin-left:220px; }
+.main-content {
+  margin-left: 220px;
+  padding: 20px;
+  width: calc(100% - 220px);
+}
 .tab-section { display:none; }
 .tab-section.active { display:block; }
 
-/* Car Card */
+
+/* ========================= */
+/* SECTION HEADINGS */
+/* ========================= */
+.section-title,
+h2 {
+  text-align: center;
+  margin: 20px 0 25px 0;
+  color: var(--deep-blue);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.tab-section {
+  padding: 10px 0 30px 0;
+}
+.sub-heading {
+  text-align: center;
+  margin: 25px 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* ---------------- ADMIN CAR FORM AND LISTINGS---------------- */
 .car-card {
   background:#fff;
   padding:12px;
@@ -172,9 +231,6 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   gap: 8px;
 }
 .car-card select { padding:6px; border-radius:8px; width: 100px; }
-.delete-btn { background: var(--delete); color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; align-self: flex-start; }
-
-/* ---------------- ADMIN CAR FORM ---------------- */
 #adminCarForm {
   background: #fff;
   padding: 20px;
@@ -182,31 +238,30 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   box-shadow: var(--shadow);
   margin-bottom: 20px;
 }
-
 #adminCarForm h2 {
   margin-bottom: 20px;
   color: var(--deep-blue);
   font-size: 1.5rem;
 }
-
-/* Form Layout - vertical stacking for clarity */
 #carForm {
   display: grid;
   grid-template-columns: 1fr;
   gap: 15px;
 }
-
+#carFormContainer.collapsed { display: none;}
+#toggleCarForm {
+  margin-bottom: 100px;
+  text-align: center;
+}
 .form-group {
   display: flex;
   flex-direction: column;
 }
-
 .form-group label {
   margin-bottom: 6px;
   font-weight: 600;
   font-size: 0.95rem;
 }
-
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -217,20 +272,16 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   outline: none;
   transition: 0.2s;
 }
-
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 5px rgba(64, 147, 71, 0.3);
 }
-
 textarea {
   resize: vertical;
   min-height: 80px;
 }
-
-/* File input styling */
 .form-group input[type="file"] {
   padding: 6px;
   border-radius: 8px;
@@ -238,14 +289,12 @@ textarea {
   cursor: pointer;
   background: #f9f9f9;
 }
-
 .image-preview {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 10px;
 }
-
 .image-preview img {
   width: 100px;
   height: 70px;
@@ -253,11 +302,9 @@ textarea {
   border-radius: 8px;
   border: 1px solid #ccc;
 }
-
 .preview-item {
   position: relative;
 }
-
 .preview-item img {
   width: 120px;
   height: 90px;
@@ -265,7 +312,6 @@ textarea {
   border-radius: 6px;
   border: 1px solid #ccc;
 }
-
 .remove-btn {
   position: absolute;
   top: -8px;
@@ -279,7 +325,6 @@ textarea {
   height: 20px;
   font-size: 12px;
 }
-
 #submitCar {
   background: var(--primary);
   color: #fff;
@@ -290,25 +335,42 @@ textarea {
   cursor: pointer;
   transition: 0.3s;
 }
-
 #submitCar:hover {
   background: var(--secondary);
 }
-
-/* Responsive adjustments */
+.delete-btn {
+  background: var(--delete);
+  color:#fff;
+  border:none;
+  width: 150px;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  align-self: flex-start;
+}
+.edit-btn {
+  background: var(--deep-blue);
+  color: #fff;
+  border: none;
+  width: 150px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.edit-btn:hover {
+  background: var(--secondary);
+}
 @media(max-width: 768px) {
   .main-content { margin-left: 0; padding: 15px; }
   #carForm { grid-template-columns: 1fr; }
 }
-
-/* ---------------- Filters & Search Buttons ---------------- */
 .filters, .search-container {
   display: flex;
   gap: 10px;
   margin: 15px 0;
   flex-wrap: wrap;
 }
-
 .filters select, .search-container input {
   padding: 8px 10px;
   border-radius: 8px;
@@ -317,12 +379,10 @@ textarea {
   outline: none;
   transition: 0.2s;
 }
-
 .filters select:focus, .search-container input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 5px rgba(64, 147, 71, 0.3);
 }
-
 .filters button, .search-container button {
   background: var(--primary);
   color: #fff;
@@ -333,18 +393,13 @@ textarea {
   font-size: 0.95rem;
   transition: 0.3s;
 }
-
 .filters button:hover, .search-container button:hover {
   background: var(--secondary);
 }
-
-/* Make search input expand nicely on larger screens */
 .search-container input {
   flex: 1;
   min-width: 200px;
 }
-
-/* Optional: make car cards grid nicely spaced */
 .cars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -354,7 +409,19 @@ textarea {
 
 
 
-
+.export-btn {
+  margin-left: auto;
+  background: var(--deep-blue);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 500;
+}
+.export-btn:hover {
+  background: var(--secondary);
+}
 
 
 
@@ -368,15 +435,12 @@ textarea {
   box-shadow: var(--shadow);
   margin-bottom: 20px;
 }
-
-/* FILTER BAR */
 .filter-bar {
   display: flex;
   gap: 10px;
   margin: 15px 0;
   flex-wrap: wrap;
 }
-
 .filter-btn {
   padding: 6px 12px;
   border-radius: var(--radius);
@@ -386,31 +450,26 @@ textarea {
   font-size: 0.9rem;
   transition: 0.2s;
 }
-
 .filter-btn:hover {
   background: var(--secondary);
   color: #fff;
 }
-
 .filter-btn.active {
   background: var(--primary);
   color: #fff;
   border: none;
 }
-
 /* TABLE CONTAINER */
 .hire-table-container {
   overflow-x: auto;
   width: 100%;
+  position: relative;
 }
-
-/* TABLE */
 .hire-table {
-  min-width: 1200px; /* more columns than auction */
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
 }
-
 .hire-table th,
 .hire-table td {
   text-align: left;
@@ -419,17 +478,13 @@ textarea {
   font-size: 0.9rem;
   white-space: nowrap;
 }
-
 .hire-table th {
   background: var(--primary);
   color: #fff;
 }
-
 .hire-table tr:hover {
   background: rgba(64,147,71,0.05);
 }
-
-/* NOTES COLUMN */
 .notes-cell {
   max-width: 150px;
   overflow: hidden;
@@ -437,25 +492,20 @@ textarea {
   white-space: nowrap;
   cursor: pointer;
 }
-
-/* STATUS BADGES */
 .status {
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: bold;
 }
-
 .status.pending {
   background: #fff3cd;
   color: #856404;
 }
-
 .status.approved {
   background: #d4edda;
   color: #155724;
 }
-
 .status.rejected {
   background: #f8d7da;
   color: #721c24;
@@ -474,26 +524,21 @@ textarea {
   align-items: center;
   justify-content: center;
 }
-
 .approve-btn {
   background: var(--primary);
   color: #fff;
 }
-
 .approve-btn:hover {
   background: var(--secondary);
 }
-
 .reject-btn {
   background: var(--delete);
   color: #fff;
 }
-
 .reject-btn:hover {
   background: #cc0000;
 }
 
-/* COUNTER BADGE (same as auction) */
 #hireCounter {
   background: var(--delete);
   color: #fff;
@@ -501,16 +546,6 @@ textarea {
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 12px;
-}
-
-/* HEADER COUNTER */
-#hireCounterHeader {
-  background: var(--primary);
-  color: #fff;
-  font-size: 0.8rem;
-  padding: 3px 8px;
-  border-radius: 12px;
-  margin-left: 5px;
 }
 /* MODAL BACKDROP */
 .modal {
@@ -525,13 +560,9 @@ textarea {
   justify-content: center;
   z-index: 9999;
 }
-
-/* HIDDEN STATE */
 .hidden {
   display: none;
 }
-
-/* MODAL BOX */
 .modal-content {
   background: #fff;
   padding: 20px;
@@ -540,8 +571,6 @@ textarea {
   max-width: 400px;
   box-shadow: var(--shadow);
 }
-
-/* TEXTAREA */
 .modal-content textarea {
   width: 100%;
   height: 100px;
@@ -558,7 +587,6 @@ textarea {
   justify-content: flex-end;
   gap: 10px;
 }
-/* RESPONSIVE */
 @media(max-width:768px){
   .hire-table th,
   .hire-table td {
@@ -593,19 +621,15 @@ textarea {
   box-shadow: var(--shadow);
   margin-bottom: 20px;
 }
-
-/* Scrollable table behind sidebar */
 .auction-table-container {
   overflow-x: auto;
   width: 100%;
 }
-
 .auction-table {
-  min-width: 1000px; /* ensures horizontal scroll on narrow screens */
+  min-width: 1000px;
   border-collapse: collapse;
   margin-top: 15px;
 }
-
 .auction-table th,
 .auction-table td {
   text-align: left;
@@ -613,16 +637,13 @@ textarea {
   border-bottom: 1px solid #ccc;
   font-size: 0.95rem;
 }
-
 .auction-table th {
   background: var(--primary);
   color: #fff;
 }
-
 .auction-table tr:hover {
   background: rgba(64,147,71,0.05);
 }
-
 /* Thumbnail Images */
 .auction-table img.thumbnail {
   width: 60px;
@@ -632,8 +653,6 @@ textarea {
   cursor: pointer;
   border: 1px solid #ccc;
 }
-
-/* Modal */
 #imageModal {
   display: none;
   position: fixed;
@@ -646,14 +665,12 @@ textarea {
   overflow: auto;
   background-color: rgba(0,0,0,0.8);
 }
-
 #imageModal img {
   margin: auto;
   display: block;
   max-width: 90%;
   max-height: 80%;
 }
-
 #imageModal .close {
   position: absolute;
   top: 20px;
@@ -663,7 +680,6 @@ textarea {
   font-weight: bold;
   cursor: pointer;
 }
-
 /* Action Inputs + Buttons */
 .auction-table .action-group {
   display: flex;
@@ -671,7 +687,6 @@ textarea {
   flex-wrap: nowrap;
   align-items: center;
 }
-
 .auction-table .action-group input {
   flex: 1 1 auto;
   min-width: 80px;
@@ -682,12 +697,10 @@ textarea {
   outline: none;
   transition: 0.2s;
 }
-
 .auction-table .action-group input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 5px rgba(64, 147, 71, 0.3);
 }
-
 /* Approve / Reject Buttons */
 .auction-action-btn {
   padding: 6px 10px;
@@ -699,13 +712,10 @@ textarea {
   align-items: center;
   gap: 4px;
 }
-
 .approve-btn { background: var(--primary); color:#fff; }
 .approve-btn:hover { background: var(--secondary); }
 .reject-btn { background: var(--delete); color:#fff; }
 .reject-btn:hover { background: #cc0000; }
-
-/* Auction Counter Badge */
 #auctionCounter {
   background: var(--delete);
   color: #fff;
@@ -714,7 +724,6 @@ textarea {
   padding: 2px 6px;
   border-radius: 12px;
 }
-
 /* Responsive adjustments */
 @media(max-width:768px){
   .auction-table th, .auction-table td {
@@ -729,6 +738,8 @@ textarea {
 
 
 
+
+
 /* ========================= */
 /* MESSAGES SECTION */
 /* ========================= */
@@ -739,15 +750,12 @@ textarea {
   box-shadow: var(--shadow);
   margin-bottom: 20px;
 }
-
-/* FILTER BAR */
 #messages .filter-bar {
   display: flex;
   gap: 10px;
   margin: 15px 0;
   flex-wrap: wrap;
 }
-
 #messages .filter-btn {
   padding: 6px 12px;
   border-radius: var(--radius);
@@ -757,31 +765,24 @@ textarea {
   font-size: 0.9rem;
   transition: 0.2s;
 }
-
 #messages .filter-btn:hover {
   background: var(--secondary);
   color: #fff;
 }
-
 #messages .filter-btn.active {
   background: var(--primary);
   color: #fff;
   border: none;
 }
-
-/* TABLE CONTAINER */
 .messages-table-container {
   overflow-x: auto;
   width: 100%;
 }
-
-/* TABLE */
 .messages-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
-
 .messages-table th,
 .messages-table td {
   text-align: left;
@@ -790,17 +791,13 @@ textarea {
   font-size: 0.9rem;
   white-space: nowrap;
 }
-
 .messages-table th {
   background: var(--primary);
   color: #fff;
 }
-
 .messages-table tr:hover {
   background: rgba(64, 147, 71, 0.05);
 }
-
-/* MESSAGE CELL */
 .message-cell {
   max-width: 200px;
   overflow: hidden;
@@ -808,26 +805,20 @@ textarea {
   white-space: nowrap;
   cursor: pointer;
 }
-
-/* STATUS BADGES */
 #messages .status {
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: bold;
 }
-
 #messages .status.pending {
   background: #fff3cd;
   color: #856404;
 }
-
 #messages .status.resolved {
   background: #d4edda;
   color: #155724;
 }
-
-/* ACTION BUTTONS */
 #messages .resolve-btn {
   padding: 6px 10px;
   border-radius: var(--radius);
@@ -840,12 +831,9 @@ textarea {
   background: var(--primary);
   color: #fff;
 }
-
 #messages .resolve-btn:hover {
   background: var(--secondary);
 }
-
-/* COUNTER BADGE */
 #messagesCounter {
   background: var(--delete);
   color: #fff;
@@ -854,17 +842,6 @@ textarea {
   padding: 2px 6px;
   border-radius: 12px;
 }
-
-/* HEADER COUNTER */
-#messageCounterHeader {
-  background: var(--primary);
-  color: #fff;
-  font-size: 0.8rem;
-  padding: 3px 8px;
-  border-radius: 12px;
-  margin-left: 5px;
-}
-
 /* RESPONSIVE */
 @media(max-width:768px){
   .messages-table th,
@@ -872,12 +849,10 @@ textarea {
     font-size: 0.8rem;
     padding: 8px;
   }
-
   #messages .filter-bar {
     flex-direction: column;
     align-items: flex-start;
   }
-
   #messages .resolve-btn {
     margin-bottom: 4px;
   }
@@ -896,7 +871,6 @@ textarea {
   align-items: center;
   margin-bottom: 15px;
 }
-
 .primary-btn {
   background: var(--primary);
   color: #fff;
@@ -907,12 +881,11 @@ textarea {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-weight: 500;
 }
-
 .primary-btn:hover {
   background: var(--secondary);
 }
-
 .secondary-btn {
   background: #ccc;
   color: #333;
@@ -920,8 +893,8 @@ textarea {
   padding: 10px 14px;
   border-radius: var(--radius);
   cursor: pointer;
+  font-weight: 500;
 }
-
 .agent-form-container {
   background: #fff;
   padding: 20px;
@@ -929,25 +902,19 @@ textarea {
   box-shadow: var(--shadow);
   margin-bottom: 20px;
 }
-
 .hidden {
   display: none;
 }
-
 .form-actions {
   display: flex;
   gap: 10px;
   margin-top: 10px;
 }
-
-/* Agents Grid */
 .agents-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 15px;
 }
-
-/* Agent Card */
 .agent-card {
   background: #fff;
   padding: 15px;
@@ -957,29 +924,23 @@ textarea {
   flex-direction: column;
   gap: 8px;
 }
-
 .agent-card h4 {
   color: var(--deep-blue);
 }
-
 .agent-status {
   font-weight: bold;
 }
-
 .status-active {
   color: green;
 }
-
 .status-suspended {
   color: red;
 }
-
 .agent-actions {
   display: flex;
   gap: 8px;
   margin-top: 10px;
 }
-
 .suspend-btn {
   background: orange;
   color: #fff;
@@ -988,7 +949,6 @@ textarea {
   border-radius: 6px;
   cursor: pointer;
 }
-
 .activate-btn {
   background: var(--primary);
   color: #fff;
@@ -997,7 +957,6 @@ textarea {
   border-radius: 6px;
   cursor: pointer;
 }
-
 .delete-agent-btn {
   background: var(--delete);
   color: #fff;
@@ -1018,29 +977,26 @@ textarea {
   justify-content: center;
   z-index: 999;
 }
-
 .suspend-modal.hidden {
   display: none;
 }
-
 .suspend-modal-content {
   background: #fff;
   padding: 20px;
   border-radius: 10px;
   width: 350px;
 }
-
 .suspend-modal-content textarea {
   width: 100%;
   margin-top: 10px;
   padding: 10px;
 }
-
 .suspend-modal-actions {
   margin-top: 15px;
   display: flex;
   justify-content: space-between;
 }
+
 
 
 
@@ -1052,8 +1008,6 @@ textarea {
   box-shadow: var(--shadow);
   margin-bottom: 20px;
 }
-
-/* Section Heading */
 #sales h2 {
   color: var(--deep-blue);
   margin-bottom: 15px;
@@ -1062,16 +1016,13 @@ textarea {
   align-items: center;
   gap: 10px;
 }
-
-/* Sale Entry Form */
 .sale-entry-form {
   background: var(--section-bg);
   padding: 15px 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
-
 .sale-entry-form h3 {
   font-size: 1.2rem;
   margin-bottom: 12px;
@@ -1080,18 +1031,15 @@ textarea {
   align-items: center;
   gap: 8px;
 }
-
 .sale-entry-form form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
-
 .sale-entry-form .form-group {
   display: flex;
   flex-direction: column;
 }
-
 .sale-entry-form input,
 .sale-entry-form select {
   padding: 10px 12px;
@@ -1101,26 +1049,22 @@ textarea {
   outline: none;
   transition: 0.2s;
 }
-
 .sale-entry-form input:focus,
 .sale-entry-form select:focus {
   border-color: var(--primary);
   box-shadow: 0 0 5px rgba(64, 147, 71, 0.3);
 }
-
 .primary-btn {
   grid-column: span 2;
   justify-self: start;
 }
-
-/* Sales Stats Cards */
 .sales-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
   margin-bottom: 20px;
+   margin: 20px 0;
 }
-
 .sales-stats p {
   background: var(--section-bg);
   padding: 12px 15px;
@@ -1131,15 +1075,24 @@ textarea {
   justify-content: space-between;
   align-items: center;
 }
-
-/* Filters Section */
 .sales-filters {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   margin-bottom: 15px;
+  margin: 20px 0;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
-
+.sales-filter-actions {
+  margin-top: 30px;
+  margin-left: auto;
+  display: flex;
+  gap: 20px;
+}
 .sales-filters select,
 .sales-filters input {
   padding: 8px 12px;
@@ -1148,33 +1101,24 @@ textarea {
   outline: none;
   transition: 0.2s;
 }
-
 .sales-filters select:focus,
 .sales-filters input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 5px rgba(64, 147, 71, 0.3);
 }
-
-.sales-filters button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Sales Table */
 .sales-table-container {
+  margin-top: 20px;
   overflow-x: auto;
   background: var(--section-bg);
   padding: 10px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-
 .sales-table {
   width: 100%;
   border-collapse: collapse;
+  margin-bottom: 100px;
 }
-
 .sales-table th,
 .sales-table td {
   text-align: left;
@@ -1182,39 +1126,36 @@ textarea {
   border-bottom: 1px solid #ccc;
   font-size: 0.95rem;
 }
-
-.sales-table th {
+.sales-table thead tr {
   background: var(--primary);
-  color: #fff;
-  border-radius: var(--radius);
 }
-
+.sales-table th {
+  color: #fff;
+  border: none;
+}
+.sales-table thead tr th:first-child {
+  border-radius: 8px 0 0 8px;
+}
+.sales-table thead tr th:last-child {
+  border-radius: 0 8px 8px 0;
+}
 .sales-table tr:hover {
   background: rgba(64, 147, 71, 0.05);
 }
-
-/* Responsive adjustments */
 @media(max-width: 768px) {
   .sale-entry-form form {
     grid-template-columns: 1fr;
   }
-
   .primary-btn {
     grid-column: span 1;
   }
-
   .sales-stats {
     grid-template-columns: 1fr;
   }
-
   .sales-filters {
     flex-direction: column;
   }
 }
-
-/* ------------------------ */
-/* Sales Filters Styling */
-/* ------------------------ */
 .sales-filters select,
 .sales-filters input[type="date"] {
   padding: 8px 12px;
@@ -1223,16 +1164,52 @@ textarea {
   border-radius: var(--radius);
   font-size: 14px;
 }
-
-.sales-filters button {
-  margin-right: 8px;
-}
-
 .sales-filters input[type="date"]:disabled {
   background-color: #e0e0e0;
   cursor: not-allowed;
 }
+#reportType {min-width: 120px;}
 
-#reportType {
-  min-width: 120px;
+/* AGENT RANKING */
+#agentRankingList {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#agentRankingList li {
+  background: var(--section-bg);
+  padding: 12px 15px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-weight: 500;
+}
+#agentRankingList li:nth-child(1) {
+  background: #fff7cc;
+  border-left: 5px solid gold;
+}
+
+#agentRankingList li:nth-child(2) {
+  background: #f2f2f2;
+  border-left: 5px solid silver;
+}
+
+#agentRankingList li:nth-child(3) {
+  background: #fff1e6;
+  border-left: 5px solid #cd7f32;
+}
+#agentRankingSection {
+  margin-top: 25px;
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
