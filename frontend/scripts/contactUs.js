@@ -78,7 +78,13 @@ contactName.value.trim().length < 3 ||
 contactPhone.value.replace(/\D/g,"").length < 10 ||
 contactMessage.value.trim().length < 5
 ){
-statusText.innerText = "Please fill all fields correctly";
+Swal.fire({
+  icon: "warning",
+  title: "Invalid Input",
+  text: "Please fill all fields correctly",
+  timer: 2000,
+  showConfirmButton: false
+});
 statusText.style.color = "red";
 return;
 }
@@ -111,7 +117,13 @@ body: JSON.stringify(data)
 );
 
 if (res.ok) {
-statusText.innerText = "Message sent successfully!";
+Swal.fire({
+  icon: "success",
+  title: "Message Sent!",
+  text: "We’ll get back to you shortly.",
+  timer: 2500,
+  showConfirmButton: false
+});
 statusText.style.color = "green";
 form.reset();
 ContactsubmitBtn.disabled = true;
@@ -123,8 +135,13 @@ throw new Error("Failed to send");
 
 console.error(err);
 
-statusText.innerText =
-"Failed to send. Please try again.";
+Swal.fire({
+  icon: "error",
+  title: "Failed",
+  text: "Please try again later",
+  timer: 2500,
+  showConfirmButton: false
+});
 
 statusText.style.color = "red";
 

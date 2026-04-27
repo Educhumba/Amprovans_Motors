@@ -160,7 +160,9 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
 .user-profile.active .arrow {
   transform: rotate(180deg);
 }
-
+.swal2-container.swal2-top-end {
+  top: 80px !important;
+}
 /* Dashboard Layout */
 .dashboard-container { display:block; }
 .sidebar {

@@ -1,7 +1,11 @@
 (function() {
-// ----------------------------
-// SALES MANAGEMENT LOGIC
-// ----------------------------
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 2500,
+  timerProgressBar: true,
+});
 
 let allCarsForSales = [];
 let allAgents = [];
@@ -333,7 +337,11 @@ saleForm.addEventListener("submit", async e => {
 
   const car = allCarsForSales.find(c => c.id == carId);
   if (!car) return alert("Car not found");
-  if (price < car.cost) return alert("Sold price cannot be less than cost");
+  if (price < car.cost) return Swal.fire({
+                                  icon: "warning",
+                                  title: "Invalid Price",
+                                  text: "Sold price cannot be less than cost"
+                                });
 
   try {
     const res = await fetch("http://localhost:5000/api/sales", {
@@ -345,14 +353,24 @@ saleForm.addEventListener("submit", async e => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to record sale");
 
-    alert("Sale recorded successfully!");
+    Swal.fire({
+      icon: "success",
+      title: "Success",
+      text: "Sale recorded successfully!",
+      timer: 2000,
+      showConfirmButton: false
+    });
     loadAvailableCarsForSales();
     loadSales();
     loadSummary();
     saleForm.reset();
   } catch (err) {
     console.error(err);
-    alert("Error recording sale");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to record sale"
+    });
   }
 });
 
@@ -519,7 +537,12 @@ document.getElementById("exportSalesPDF").addEventListener("click", async () => 
   const endDate = document.getElementById("salesEndDate").value;
   const agentId = document.getElementById("filterAgent").value;
 
-  if (!reportType) return alert("Select a report type");
+  if (!reportType) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Select a report type"
+    });
+  }
 
   const today = new Date();
   const minDate = new Date("2024-01-01");
@@ -579,7 +602,11 @@ if (reportType === "ranking") {
 
   } catch (err) {
     console.error(err);
-    alert("Error generating ranking report");
+    Swal.fire({
+      icon: "error",
+      title: "PDF Error",
+      text: "Failed to generate ranking report"
+    });
   }
 
   return; // 🚨 STOP normal report flow
@@ -636,7 +663,11 @@ if (detailType) query.push(`detail=${detailType}`);
     link.click();
   } catch (err) {
     console.error(err);
-    alert("Error generating PDF report");
+    Swal.fire({
+      icon: "error",
+      title: "PDF Error",
+      text: "Failed to generate PDF report"
+    });
   }
 });
 })();

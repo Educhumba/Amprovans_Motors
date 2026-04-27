@@ -1,0 +1,69 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Use Case Diagram">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- System Boundary -->
+        <mxCell id="system" value="Amprovans Motors System" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="50" width="600" height="400" as="geometry"/>
+        </mxCell>
+
+        <!-- Actors -->
+        <mxCell id="admin" value="Admin" style="shape=umlActor;" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="50" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="agent" value="Agent" style="shape=umlActor;" vertex="1" parent="1">
+          <mxGeometry x="50" y="250" width="50" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="customer" value="Customer" style="shape=umlActor;" vertex="1" parent="1">
+          <mxGeometry x="850" y="180" width="50" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases -->
+        <mxCell id="login" value="Login" style="ellipse;whiteSpace=wrap;" vertex="1" parent="system">
+          <mxGeometry x="250" y="80" width="120" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="manageCars" value="Manage Cars" style="ellipse;" vertex="1" parent="system">
+          <mxGeometry x="230" y="150" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sales" value="Record Sales" style="ellipse;" vertex="1" parent="system">
+          <mxGeometry x="420" y="150" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="hire" value="Manage Hire" style="ellipse;" vertex="1" parent="system">
+          <mxGeometry x="230" y="230" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="reports" value="View Reports" style="ellipse;" vertex="1" parent="system">
+          <mxGeometry x="420" y="230" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="submitCar" value="Submit Car" style="ellipse;" vertex="1" parent="system">
+          <mxGeometry x="420" y="300" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="viewCars" value="View Cars" style="ellipse;" vertex="1" parent="system">
+          <mxGeometry x="230" y="300" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Connections -->
+        <mxCell edge="1" parent="1" source="admin" target="login"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell edge="1" parent="1" source="admin" target="manageCars"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell edge="1" parent="1" source="admin" target="sales"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell edge="1" parent="1" source="agent" target="login"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell edge="1" parent="1" source="agent" target="sales"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell edge="1" parent="1" source="customer" target="viewCars"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell edge="1" parent="1" source="customer" target="submitCar"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

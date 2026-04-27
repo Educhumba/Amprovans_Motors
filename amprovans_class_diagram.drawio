@@ -1,0 +1,165 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Amprovans Class Diagram">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- ================= FRONTEND ================= -->
+
+        <mxCell id="AdminDashboard" value="AdminDashboard
+-----------------------
++loadStats()
++loadCars()
++loadSales()
++approveClientCar()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="220" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="InventoryPage" value="InventoryPage
+-----------------------
++loadCars()
++renderCars()
++filterCars()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="220" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="CarForm" value="CarForm
+-----------------------
++submitCar()
++uploadImages()
++validate()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="380" width="220" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- ================= CONTROLLERS ================= -->
+
+        <mxCell id="CarsController" value="CarsController
+-----------------------
++getAllCars()
++createCar()
++updateCar()
++deleteCar()
++approveClientCar()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="60" width="240" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="SalesController" value="SalesController
+-----------------------
++createSale()
++getSales()
++generateReport()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="260" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="HireController" value="HireController
+-----------------------
++createHire()
++approveHire()
++rejectHire()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="440" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- ================= SERVICES ================= -->
+
+        <mxCell id="CarService" value="CarService
+-----------------------
++createCar()
++updateCar()
++approveClientCar()
++saveImages()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="60" width="240" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="SalesService" value="SalesService
+-----------------------
++recordSale()
++calculateProfit()
++calculateCommission()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="260" width="240" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="HireService" value="HireService
+-----------------------
++createHire()
++approveHire()
++updateStatus()" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="440" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- ================= MODELS ================= -->
+
+        <mxCell id="User" value="User
+-----------------------
+id
+name
+email
+role
+status" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="40" width="220" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="Car" value="Car
+-----------------------
+id
+plateNumber
+make
+model
+price
+status" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="200" width="220" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="Sale" value="Sale
+-----------------------
+id
+soldPrice
+profit
+commission
+netProfit" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="380" width="220" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ClientCar" value="ClientCar
+-----------------------
+ownerName
+plateNumber
+expectedPrice
+status" style="shape=umlClass;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="560" width="220" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- ================= RELATIONSHIPS ================= -->
+
+        <mxCell id="r1" style="endArrow=open;dashed=1;" edge="1" parent="1" source="AdminDashboard" target="CarsController">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r2" style="endArrow=open;dashed=1;" edge="1" parent="1" source="InventoryPage" target="CarsController">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r3" style="endArrow=open;" edge="1" parent="1" source="CarsController" target="CarService">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r4" style="endArrow=diamond;" edge="1" parent="1" source="Car" target="Sale">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r5" style="endArrow=open;" edge="1" parent="1" source="SalesController" target="SalesService">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r6" style="endArrow=open;" edge="1" parent="1" source="HireController" target="HireService">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r7" style="endArrow=diamond;" edge="1" parent="1" source="User" target="Sale">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

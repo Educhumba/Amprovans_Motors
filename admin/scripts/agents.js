@@ -1,6 +1,8 @@
 // ----------------------------
 // AGENTS.JS – UPDATED
 // ----------------------------
+
+
 const suspendModal = document.getElementById("suspendModal");
 const suspendReasonInput = document.getElementById("suspendReasonInput");
 const confirmSuspendBtn = document.getElementById("confirmSuspendBtn");
@@ -54,8 +56,11 @@ if (role !== "admin") {
         const reason = suspendReasonInput.value.trim();
 
         if (!reason) {
-          alert("Please provide a reason");
-          return;
+          return Swal.fire({
+            icon: "warning",
+            title: "Missing reason",
+            text: "Please provide a suspension reason"
+          });
         }
 
         // Store reason locally (temporary, not backend)
@@ -99,7 +104,10 @@ if (role !== "admin") {
 
       if (!res.ok) throw new Error(data.error || "Failed to create agent");
 
-      alert("Agent created successfully. Email sent.");
+      Toast.fire({
+        icon: "success",
+        title: "Agent created successfully. Email sent."
+      });
 
       agentForm.reset();
       agentFormContainer.classList.add("hidden");
@@ -108,7 +116,11 @@ if (role !== "admin") {
 
     } catch (err) {
       console.error(err);
-      alert(err.message);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.message
+      });
     }
   });
 
@@ -219,9 +231,17 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
         } 
         // If activating → no modal
         else {
-          if (confirm("Activate this agent?")) {
-            toggleStatus(agent.id, newStatus);
-          }
+          Swal.fire({
+            title: "Activate agent?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, activate",
+          }).then(result => {
+            if (result.isConfirmed) {
+              toggleStatus(agent.id, newStatus);
+            }
+          });
+          return;
         }
       });
 
@@ -252,12 +272,20 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || "Failed to update status");
+      Toast.fire({
+        icon: "success",
+        title: "Agent status updated"
+      });
 
       loadAgents();
 
     } catch (err) {
       console.error(err);
-      alert(err.message);
+      Swal.fire({
+        icon: "error",
+        title: "Update failed",
+        text: err.message
+      });
     }
   }
 
@@ -265,7 +293,15 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
   // DELETE AGENT
   // ----------------------------
   async function deleteAgent(id) {
-    if (!confirm("Delete this agent permanently?")) return;
+    const result = await Swal.fire({
+      title: "Delete agent?",
+      text: "This action cannot be undone",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete"
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/${id}`, {
@@ -277,6 +313,10 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
         const data = await res.json();
         throw new Error(data.error || "Failed to delete agent");
       }
+      Toast.fire({
+        icon: "success",
+        title: "Agent deleted successfully"
+      });
 
       loadAgents();
 
@@ -314,7 +354,11 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
 
     } catch (err) {
       console.error(err);
-      alert(err.message);
+      Swal.fire({
+        icon: "error",
+        title: "Export failed",
+        text: err.message
+      });
     }
   });
 

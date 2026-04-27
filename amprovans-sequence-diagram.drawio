@@ -1,0 +1,136 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Amprovans Sequence Diagram">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+<!-- ACTORS -->
+<mxCell id="client" value="Client" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+<mxGeometry x="40" y="40" width="40" height="80" as="geometry"/>
+</mxCell>
+
+<mxCell id="admin" value="Admin" style="shape=umlActor;" vertex="1" parent="1">
+<mxGeometry x="200" y="40" width="40" height="80" as="geometry"/>
+</mxCell>
+
+<!-- SYSTEM COMPONENTS -->
+
+<mxCell id="frontend" value="Frontend UI" style="shape=rectangle;" vertex="1" parent="1">
+<mxGeometry x="340" y="40" width="140" height="60" as="geometry"/>
+</mxCell>
+
+<mxCell id="controller" value="Cars Controller" style="shape=rectangle;" vertex="1" parent="1">
+<mxGeometry x="540" y="40" width="140" height="60" as="geometry"/>
+</mxCell>
+
+<mxCell id="service" value="Car Service" style="shape=rectangle;" vertex="1" parent="1">
+<mxGeometry x="740" y="40" width="140" height="60" as="geometry"/>
+</mxCell>
+
+<mxCell id="db" value="Database" style="shape=cylinder;" vertex="1" parent="1">
+<mxGeometry x="940" y="40" width="120" height="60" as="geometry"/>
+</mxCell>
+
+<!-- LIFELINES -->
+
+<mxCell id="l1" style="shape=line;dashed=1;" vertex="1" parent="1">
+<mxGeometry x="60" y="120" width="1" height="900" as="geometry"/>
+</mxCell>
+
+<mxCell id="l2" style="shape=line;dashed=1;" vertex="1" parent="1">
+<mxGeometry x="220" y="120" width="1" height="900" as="geometry"/>
+</mxCell>
+
+<mxCell id="l3" style="shape=line;dashed=1;" vertex="1" parent="1">
+<mxGeometry x="410" y="120" width="1" height="900" as="geometry"/>
+</mxCell>
+
+<mxCell id="l4" style="shape=line;dashed=1;" vertex="1" parent="1">
+<mxGeometry x="610" y="120" width="1" height="900" as="geometry"/>
+</mxCell>
+
+<mxCell id="l5" style="shape=line;dashed=1;" vertex="1" parent="1">
+<mxGeometry x="810" y="120" width="1" height="900" as="geometry"/>
+</mxCell>
+
+<mxCell id="l6" style="shape=line;dashed=1;" vertex="1" parent="1">
+<mxGeometry x="1000" y="120" width="1" height="900" as="geometry"/>
+</mxCell>
+
+<!-- FLOW 1 CLIENT SUBMIT CAR -->
+
+<mxCell id="m1" value="submit car details" style="endArrow=block;" edge="1" parent="1" source="client" target="frontend">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m2" value="POST /client-cars" style="endArrow=block;" edge="1" parent="1" source="frontend" target="controller">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m3" value="save client car" style="endArrow=block;" edge="1" parent="1" source="controller" target="service">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m4" value="INSERT client_cars" style="endArrow=block;" edge="1" parent="1" source="service" target="db">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<!-- ADMIN APPROVES -->
+
+<mxCell id="m5" value="approve client car" style="endArrow=block;" edge="1" parent="1" source="admin" target="frontend">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m6" value="PUT /approve" style="endArrow=block;" edge="1" parent="1" source="frontend" target="controller">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m7" value="create car" style="endArrow=block;" edge="1" parent="1" source="controller" target="service">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m8" value="INSERT cars" style="endArrow=block;" edge="1" parent="1" source="service" target="db">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<!-- SALE FLOW -->
+
+<mxCell id="m9" value="sell car" style="endArrow=block;" edge="1" parent="1" source="admin" target="frontend">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m10" value="POST /sales" style="endArrow=block;" edge="1" parent="1" source="frontend" target="controller">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m11" value="calculate profit" style="endArrow=block;" edge="1" parent="1" source="controller" target="service">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m12" value="INSERT sales" style="endArrow=block;" edge="1" parent="1" source="service" target="db">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<!-- HIRE FLOW -->
+
+<mxCell id="m13" value="hire car" style="endArrow=block;" edge="1" parent="1" source="client" target="frontend">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m14" value="POST /hire" style="endArrow=block;" edge="1" parent="1" source="frontend" target="controller">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m15" value="save hire" style="endArrow=block;" edge="1" parent="1" source="controller" target="service">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<mxCell id="m16" value="INSERT car_hires" style="endArrow=block;" edge="1" parent="1" source="service" target="db">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

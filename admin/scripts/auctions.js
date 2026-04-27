@@ -1,6 +1,8 @@
 // ----------------------------
 // CAR AUCTIONS SCRIPT
 // ----------------------------
+
+
 const exportAuctionBtn = document.getElementById("exportAuctionPdfBtn");
 
 exportAuctionBtn.addEventListener("click", exportAuctionPDF);
@@ -70,41 +72,81 @@ function fetchPendingAuctions() {
         });
         // Approve button
         row.querySelector(".approve-btn").addEventListener("click", function() {
-          const price = row.querySelector(".agreedPriceInput").value;
-          if (!price) return alert("Enter agreed price");
+        const price = row.querySelector(".agreedPriceInput").value;
 
-          fetch(`http://localhost:5000/api/auctions/admin/${car.id}/approve`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ agreedPrice: Number(price), adminId: 1 })
+        if (!price) {
+          Swal.fire({
+            icon: "warning",
+            title: "Missing price",
+            text: "Please enter the agreed price before approving."
+          });
+          return;
+        }
+
+        fetch(`http://localhost:5000/api/auctions/admin/${car.id}/approve`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agreedPrice: Number(price), adminId: 1 })
+        })
+          .then(res => res.json())
+          .then(result => {
+            Toast.fire({
+              icon: "success",
+              title: result.message || "Auction approved"
+            });
+
+            row.remove();
+            auctionCounter.textContent =
+              parseInt(auctionCounter.textContent) - 1;
           })
-            .then(res => res.json())
-            .then(result => {
-              alert(result.message);
-              row.remove();
-              auctionCounter.textContent = parseInt(auctionCounter.textContent) - 1;
-            })
-            .catch(err => { console.error(err); alert("Failed to approve"); });
-        });
+          .catch(err => {
+            console.error(err);
+
+            Toast.fire({
+              icon: "error",
+              title: "Failed to approve auction"
+            });
+          });
+      });
 
         // Reject button
         row.querySelector(".reject-btn").addEventListener("click", function() {
-          const reason = row.querySelector(".rejectionReasonInput").value;
-          if (!reason) return alert("Enter rejection reason");
+        const reason = row.querySelector(".rejectionReasonInput").value;
 
-          fetch(`http://localhost:5000/api/auctions/admin/${car.id}/reject`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ rejectionReason: reason, adminId: 1 })
+        if (!reason) {
+          Swal.fire({
+            icon: "warning",
+            title: "Missing reason",
+            text: "Please provide a rejection reason."
+          });
+          return;
+        }
+
+        fetch(`http://localhost:5000/api/auctions/admin/${car.id}/reject`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rejectionReason: reason, adminId: 1 })
+        })
+          .then(res => res.json())
+          .then(result => {
+            Toast.fire({
+              icon: "success",
+              title: result.message || "Auction rejected"
+            });
+
+            row.remove();
+            auctionCounter.textContent =
+              parseInt(auctionCounter.textContent) - 1;
           })
-            .then(res => res.json())
-            .then(result => {
-              alert(result.message);
-              row.remove();
-              auctionCounter.textContent = parseInt(auctionCounter.textContent) - 1;
-            })
-            .catch(err => { console.error(err); alert("Failed to reject"); });
-        });
+          .catch(err => {
+            console.error(err);
+
+            Toast.fire({
+              icon: "error",
+              title: "Failed to reject auction"
+            });
+          });
+      });
 
         pendingContainer.appendChild(row);
       });
@@ -142,7 +184,11 @@ async function exportAuctionPDF() {
 
   } catch (err) {
     console.error(err);
-    alert("Failed to export auction report");
+    Swal.fire({
+      icon: "error",
+      title: "Export Failed",
+      text: "Could not generate auction report PDF"
+    });
   }
 }
 

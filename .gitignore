@@ -7,7 +7,6 @@ node_modules/
 # Images
 uploads/
 cars/
-images/
 
 # Logs
 *.log

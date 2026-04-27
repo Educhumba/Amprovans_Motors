@@ -126,7 +126,7 @@ CREATE TABLE client_cars (
   reviewed_at DATETIME,
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  admin_notes TEXT
+  admin_notes TEXT,
   FOREIGN KEY (car_id) REFERENCES cars(id)
 );
 

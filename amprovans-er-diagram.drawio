@@ -1,0 +1,116 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Amprovans ER Diagram">
+    <mxGraphModel dx="1680" dy="1020" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+<!-- USERS -->
+<mxCell id="users" value="USERS
+PK id
+name
+email
+phone
+password
+role
+status
+created_at
+updated_at" style="shape=rectangle;whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+<mxGeometry x="40" y="40" width="220" height="220" as="geometry"/>
+</mxCell>
+
+<!-- CARS -->
+<mxCell id="cars" value="CARS
+PK id
+plate_number
+make
+model
+year
+price
+cost
+status
+createdAt" style="shape=rectangle;whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+<mxGeometry x="420" y="40" width="240" height="240" as="geometry"/>
+</mxCell>
+
+<!-- CAR IMAGES -->
+<mxCell id="car_images" value="CAR_IMAGES
+PK id
+FK car_id
+image_path" style="shape=rectangle;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+<mxGeometry x="760" y="40" width="200" height="140" as="geometry"/>
+</mxCell>
+
+<!-- SALES -->
+<mxCell id="sales" value="SALES
+PK id
+FK car_id
+FK agent_id
+sold_price
+profit
+commission
+net_profit" style="shape=rectangle;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+<mxGeometry x="420" y="360" width="240" height="200" as="geometry"/>
+</mxCell>
+
+<!-- CLIENT CARS -->
+<mxCell id="client_cars" value="CLIENT_CARS
+PK id
+owner_name
+plate_number
+expected_price
+status
+FK car_id" style="shape=rectangle;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+<mxGeometry x="40" y="360" width="260" height="220" as="geometry"/>
+</mxCell>
+
+<!-- CAR HIRES -->
+<mxCell id="car_hires" value="CAR_HIRES
+PK id
+FK car_id
+full_name
+pickup_date
+return_date
+status" style="shape=rectangle;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+<mxGeometry x="760" y="360" width="240" height="200" as="geometry"/>
+</mxCell>
+
+<!-- CLIENT MESSAGES -->
+<mxCell id="messages" value="CLIENT_MESSAGES
+PK id
+name
+email
+message
+status" style="shape=rectangle;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+<mxGeometry x="760" y="640" width="220" height="180" as="geometry"/>
+</mxCell>
+
+<!-- RELATION: CARS -> IMAGES -->
+<mxCell id="rel1" style="endArrow=ERmany;startArrow=ERone;endFill=1;startFill=1;" edge="1" parent="1" source="cars" target="car_images">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<!-- RELATION: CARS -> SALES -->
+<mxCell id="rel2" style="endArrow=ERmany;startArrow=ERone;" edge="1" parent="1" source="cars" target="sales">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<!-- RELATION: USERS -> SALES -->
+<mxCell id="rel3" style="endArrow=ERmany;startArrow=ERone;dashed=1;" edge="1" parent="1" source="users" target="sales">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<!-- RELATION: CLIENT_CARS -> CARS -->
+<mxCell id="rel4" style="endArrow=ERone;startArrow=ERone;dashed=1;" edge="1" parent="1" source="client_cars" target="cars">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+<!-- RELATION: CARS -> HIRES -->
+<mxCell id="rel5" style="endArrow=ERmany;startArrow=ERone;" edge="1" parent="1" source="cars" target="car_hires">
+<mxGeometry relative="1" as="geometry"/>
+</mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

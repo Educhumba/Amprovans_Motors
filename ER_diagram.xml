@@ -1,0 +1,49 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="ER Diagram">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Entities -->
+        <mxCell id="user" value="User&#xa;PK user_id&#xa;name&#xa;email&#xa;password&#xa;role" style="rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="50" width="200" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="car" value="Car&#xa;PK car_id&#xa;make&#xa;model&#xa;price&#xa;status" style="rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="50" width="200" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sale" value="Sale&#xa;PK sale_id&#xa;FK car_id&#xa;FK user_id&#xa;sold_price" style="rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="50" width="200" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="hire" value="Hire&#xa;PK hire_id&#xa;FK car_id&#xa;customer_name&#xa;total_cost" style="rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="250" width="200" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="clientcar" value="ClientCar&#xa;PK client_car_id&#xa;owner_name&#xa;status" style="rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="250" width="200" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationships -->
+        <mxCell edge="1" parent="1" source="user" target="sale" value="1:M">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell edge="1" parent="1" source="car" target="sale" value="1:1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell edge="1" parent="1" source="car" target="hire" value="1:M">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell edge="1" parent="1" source="clientcar" target="car" value="1:1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

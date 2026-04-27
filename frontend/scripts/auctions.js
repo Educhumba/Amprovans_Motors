@@ -23,6 +23,11 @@ const color = document.getElementById("color");
 const location = document.getElementById("location");
 const expectedPrice = document.getElementById("expectedPrice");
 const carImages = document.getElementById("carImages");
+const transmission = document.getElementById("transmission");
+const fuel = document.getElementById("fuel");
+const body = document.getElementById("body");
+const condition = document.getElementById("condition");
+const carDescription = document.getElementById("carDescription");
 
 
 /* ================= NAME ================= */
@@ -120,16 +125,20 @@ toggleSubmit();
 
 /* ================= PRICE ================= */
 expectedPrice.addEventListener("input", () => {
-let value = expectedPrice.value.replace(/\D/g,"");
-if(!value){
-expectedPrice.value="";
-return;
-}
-expectedPrice.dataset.raw = value;
-expectedPrice.value = "KSh " + Number(value).toLocaleString();
-toggleSubmit();
-});
+  let value = expectedPrice.value.replace(/[^0-9]/g, "");
 
+  if (!value) {
+    expectedPrice.value = "";
+    toggleSubmit();
+    return;
+  }
+
+  expectedPrice.dataset.raw = value;
+
+  expectedPrice.value = Number(value).toLocaleString();
+
+  toggleSubmit();
+});
 
 /* ================= IMAGES ================= */
 carImages.addEventListener("change", toggleSubmit);
@@ -138,13 +147,25 @@ carImages.addEventListener("change", () => {
 preview.innerHTML = "";
 const files = Array.from(carImages.files);
 if(files.length > 10){
-alert("Maximum 10 images allowed");
+Swal.fire({
+  icon: "warning",
+  title: "Too Many Images",
+  text: "Maximum 10 images allowed",
+  timer: 2500,
+  showConfirmButton: false
+});
 carImages.value="";
 return;
 }
 files.forEach(file => {
 if(file.size > 7 * 1024 * 1024){
-alert(file.name + " is too large (max 7MB)");
+Swal.fire({
+  icon: "warning",
+  title: "File Too Large",
+  text: file.name + " exceeds 7MB",
+  timer: 2500,
+  showConfirmButton: false
+});
 carImages.value="";
 preview.innerHTML="";
 return;
@@ -175,7 +196,7 @@ carYear.value &&
 mileage.value &&
 color.value &&
 location.value &&
-expectedPrice.value &&
+expectedPrice.dataset.raw &&
 carImages.files.length > 0;
 
 submitBtn.disabled = !valid;
@@ -211,7 +232,7 @@ formData.append("body", body.value);
 formData.append("condition", condition.value);
 formData.append("color", color.value);
 formData.append("location", location.value);
-formData.append("expectedPrice", expectedPrice.value);
+formData.append("expectedPrice", expectedPrice.dataset.raw);
 formData.append("description", carDescription.value);
 
 const images = carImages.files;
@@ -228,15 +249,30 @@ body:formData
 const data = await res.json();
 
 if(res.ok){
-status.textContent="✅ Submitted successfully. Await approval.";
+Swal.fire({
+  icon: "success",
+  title: "Auction Request Submitted!",
+  text: "Await admin approval.",
+  timer: 2500,
+  showConfirmButton: false
+});
 form.reset();
-submitBtn.disabled=false;
+expectedPrice.dataset.raw = "";
+preview.innerHTML = "";
+submitBtn.disabled = true;
+status.textContent = "";
 }else{
 throw new Error();
 }
 
 }catch(err){
-status.textContent="❌ Submission failed";
+Swal.fire({
+  icon: "error",
+  title: "Submission Failed",
+  text: "Please try again",
+  timer: 2500,
+  showConfirmButton: false
+});
 submitBtn.disabled=false;
 }
 

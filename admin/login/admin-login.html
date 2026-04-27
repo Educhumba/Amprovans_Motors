@@ -91,15 +91,20 @@ async function login() {
     if (res.ok && data.token) {
       // Save authentication data
       localStorage.setItem("token", data.token);
-
-      // Save role
       localStorage.setItem("role", data.user.role);
-
-      // Save user info
       localStorage.setItem("userName", data.user.name);
 
-      // Redirect to dashboard
-      window.location.href = "../admin-dashboard.html";
+      // SweetAlert success message
+      Swal.fire({
+        icon: "success",
+        title: "Login Successful",
+        text: "Redirecting to dashboard...",
+        timer: 2000,
+        showConfirmButton: false,
+        willClose: () => {
+          window.location.href = "../admin-dashboard.html";
+        }
+      });
 
     } else {
       errorMsg.textContent = data.error || "Login failed. Check credentials.";
@@ -111,5 +116,6 @@ async function login() {
   }
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

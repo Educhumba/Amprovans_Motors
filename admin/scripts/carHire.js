@@ -4,6 +4,8 @@
 let allHires = [];
 let currentFilter = "all";
 
+
+
 // ===============================
 // INIT
 // ===============================
@@ -125,7 +127,17 @@ function getActionButtons(hire) {
 // APPROVE
 // ===============================
 async function approveHire(id) {
-  if (!confirm("Approve this hire request?")) return;
+  const result = await Swal.fire({
+  title: "Approve Request?",
+  text: "This will confirm the car hire booking.",
+  icon: "question",
+  showCancelButton: true,
+  confirmButtonColor: "#28a745",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, approve"
+});
+
+if (!result.isConfirmed) return;
 
   try {
     await fetch(`http://localhost:5000/api/car-hire/admin/${id}/approve`, {
@@ -137,13 +149,21 @@ async function approveHire(id) {
     // Update locally
     const hire = allHires.find(h => h.id === id);
     hire.status = "approved";
-
+    
     renderHires();
     updateCounter();
 
+    Toast.fire({
+      icon: "success",
+      title: "Hire request approved"
+    });
+
   } catch (err) {
     console.error(err);
-    alert("Failed to approve");
+    Toast.fire({
+      icon: "error",
+      title: "Failed to approve request"
+    });
   }
 }
 
@@ -170,7 +190,11 @@ async function submitRejection() {
   const reason = document.getElementById("rejectReasonInput").value;
 
   if (!reason) {
-    alert("Please enter a rejection reason");
+    Swal.fire({
+      icon: "warning",
+      title: "Missing reason",
+      text: "Please enter a rejection reason"
+    });
     return;
   }
 
@@ -191,9 +215,17 @@ async function submitRejection() {
     renderHires();
     updateCounter();
 
+    Toast.fire({
+      icon: "success",
+      title: "Hire request rejected"
+    });
+
   } catch (err) {
     console.error(err);
-    alert("Failed to reject");
+    Toast.fire({
+      icon: "error",
+      title: "Failed to reject request"
+    });
   }
 }
 
@@ -259,6 +291,10 @@ async function exportPDF() {
 
   } catch (err) {
     console.error(err);
-    alert("Failed to export PDF");
+    Swal.fire({
+      icon: "error",
+      title: "Export Failed",
+      text: "Unable to generate PDF report"
+    });
   }
 }

@@ -321,13 +321,25 @@ if (email.value && !validateEmail(email.value)) return alert("Invalid email");
   .then(res => res.json())
   .then(response => {
     console.log("Server response:", response);
-    alert("Hire request submitted successfully!");
+    Swal.fire({
+      icon: "success",
+      title: "Hire Request Submitted!",
+      text: "You will be notified once processed.",
+      timer: 2500,
+      showConfirmButton: false
+    });
     document.getElementById("hireForm").reset();
     submitBtn.disabled = false;
   })
   .catch(err => {
     console.error("Error:", err);
-    alert("Failed to submit hire request");
+    Swal.fire({
+      icon: "error",
+      title: "Submission Failed",
+      text: "Please try again",
+      timer: 2500,
+      showConfirmButton: false
+    });
     submitBtn.disabled = false;
   });
 

@@ -48,7 +48,7 @@
             <i class="fa-solid fa-car-side"></i> Car Hire
             <span id="hireCounter" class="counter">0</span>
           </li>
-          <li data-tab="car-auction" data-role="admin,agent">
+          <li data-tab="car-auction" data-role="admin">
             <i class="fa-solid fa-gavel"></i> Car Auction
             <span id="auctionCounter" class="counter">0</span>
           </li>
@@ -622,7 +622,7 @@
         </section>
     </main>
   </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       setupUserProfile();
@@ -645,10 +645,23 @@
     let role = localStorage.getItem("role");
 
     if (!token) {
-      alert("You must login first");
-      window.location.href = "./login/admin-login.html";
+      Swal.fire({
+        icon: "warning",
+        title: "Session Expired",
+        text: "Please login first",
+        timer: 2000,
+        showConfirmButton: false
+      }).then(() => {
+        window.location.href = "./login/admin-login.html";
+      });
     }
-
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true
+});
     let allCars = []; // store all cars globally
     let editingCarId = null;
 
@@ -739,9 +752,19 @@ document.addEventListener("click", function (e) {
   }
 });
 function logout(event) {
-  if (event) event.stopPropagation(); // prevent dropdown close issue
-  localStorage.clear();
-  window.location.href = "./login/admin-login.html";
+  if (event) event.stopPropagation();
+
+  Swal.fire({
+    title: "Logout?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, logout"
+  }).then(result => {
+    if (result.isConfirmed) {
+      localStorage.clear();
+      window.location.href = "./login/admin-login.html";
+    }
+  });
 }
 
     applyRoleAccess();
@@ -885,9 +908,13 @@ function logout(event) {
           body: formData
         });
         const data = await res.json();
-        // console.log("UPDATE RESPONSE:", data);
         if (res.ok) {
-          alert(editingCarId ? "Car updated successfully" : "Car added successfully");
+          Swal.fire({
+            icon: "success",
+            title: editingCarId ? "Car Updated Successfully" : "Car Added Successfully",
+            timer: 2000,
+            showConfirmButton: false
+          });
           editingCarId = null;
           carForm.reset();
           document.getElementById("submitCar").innerHTML =
@@ -898,10 +925,23 @@ function logout(event) {
           selectedFiles = [];
           imagePreviewDiv.innerHTML = "";
           loadCars();
-        } else alert("Error: " + data.error);
+        } else 
+        Swal.fire({
+                  icon: "error",
+                  title: "Error",
+                  text: data.error || "Something went wrong",
+                  timer: 2500,
+                  showConfirmButton: false
+                });
       } catch (err) {
         console.error(err);
-        alert("Unexpected error occurred");
+        Swal.fire({
+          icon: "error",
+          title: "Unexpected Error Occurred",
+          text: "Please try again",
+          timer: 2500,
+          showConfirmButton: false
+        });
       }
       // for (let pair of formData.entries()) {
       //   console.log(pair[0], pair[1]);
@@ -1143,7 +1183,17 @@ function logout(event) {
     }
 
     async function deleteCar(id) {
-      if (!confirm("Delete this car permanently?")) return;
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "This will permanently delete the car",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it"
+      });
+
+      if (!result.isConfirmed) return;
 
       try {
         const res = await fetch(`http://localhost:5000/api/cars/${id}`, {
@@ -1196,6 +1246,7 @@ function logout(event) {
     // Initial load
     window.addEventListener('DOMContentLoaded', () => loadCars());
   </script>
+
 
   <script src="./scripts/agents.js"></script>
   <script src="./scripts/sales.js"></script>
