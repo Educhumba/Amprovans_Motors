@@ -152,6 +152,40 @@ const auctionController = {
 
             await clientCar.save();
 
+            // ======================
+            // SEND APPROVAL EMAIL
+            // ======================
+            if (clientCar.owner_email) {
+                try {
+                    await sendMail(
+                        clientCar.owner_email,
+                        "Your Car Has Been Approved for Listing – Amprovans Motors",
+                        `
+                        <h2>Great News! Your Car Has Been Approved 🎉</h2>
+
+                        <p>Dear ${clientCar.owner_name},</p>
+
+                        <p>
+                        We are pleased to inform you that your vehicle 
+                        <strong>${clientCar.make} ${clientCar.model}</strong> 
+                        (Plate: <strong>${clientCar.plate_number}</strong>) 
+                        has been <strong>successfully approved</strong> for listing.
+                        </p>
+
+                        <p><strong>Agreed Listing Price:</strong> KSh ${Number(agreedPrice).toLocaleString()}</p>
+
+                        <p>Your car will now be listed and visible to potential buyers.</p>
+
+                        <br>
+
+                        <p>Best regards,<br><strong>Amprovans Motors Team</strong></p>
+                        `
+                    );
+                } catch (err) {
+                    console.error("Approval email failed:", err.message);
+                }
+            }
+
             res.status(200).json({ message: "Car approved and listed successfully", car: newCar });
 
         } catch (err) {
@@ -175,6 +209,43 @@ const auctionController = {
             clientCar.reviewed_at = new Date();
 
             await clientCar.save();
+
+            // ======================
+            // SEND REJECTION EMAIL
+            // ======================
+            if (clientCar.owner_email) {
+                try {
+                    await sendMail(
+                        clientCar.owner_email,
+                        "Update on Your Car Submission – Amprovans Motors",
+                        `
+                        <h2>Update on Your Car Submission</h2>
+
+                        <p>Dear ${clientCar.owner_name},</p>
+
+                        <p>
+                        Thank you for submitting your vehicle 
+                        <strong>${clientCar.make} ${clientCar.model}</strong> 
+                        (Plate: <strong>${clientCar.plate_number}</strong>).
+                        </p>
+
+                        <p>
+                        After review, we regret to inform you that your car was not approved.
+                        </p>
+
+                        <p><strong>Reason:</strong> ${rejectionReason}</p>
+
+                        <p>You are welcome to improve and resubmit in the future.</p>
+
+                        <br>
+
+                        <p>Kind regards,<br><strong>Amprovans Motors Team</strong></p>
+                        `
+                    );
+                } catch (err) {
+                    console.error("Rejection email failed:", err.message);
+                }
+            }
 
             res.status(200).json({ message: "Car rejected successfully" });
         } catch (err) {

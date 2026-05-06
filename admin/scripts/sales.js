@@ -1,4 +1,17 @@
 (function() {
+  function formatMoney(value) {
+  if (value === null || value === undefined) return "";
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function removeCommas(value) {
+  return value ? value.toString().replace(/,/g, "") : "";
+}
+
+function onlyNumbers(value) {
+  return value.replace(/[^0-9]/g, "");
+}
+
 const Toast = Swal.mixin({
   toast: true,
   position: "top-end",
@@ -129,6 +142,24 @@ function validateDateRange() {
   } else {
     exportBtn.style.display = "inline-block"; // admin also sees it
   }
+
+  const salePriceInput = document.getElementById("salePrice");
+const MAX_DIGITS = 8;
+if (salePriceInput) {
+  salePriceInput.addEventListener("input", (e) => {
+    let raw = onlyNumbers(e.target.value);
+
+    raw = raw.slice(0, MAX_DIGITS)
+    raw = raw.replace(/^0+/, "");
+
+    if (!raw) {
+      e.target.value = "";
+      return;
+    }
+
+    e.target.value = formatMoney(raw);
+  });
+}
 });
 
 function enforceDateLimits(input) {
@@ -152,13 +183,20 @@ function enforceDateLimits(input) {
   }
 }
 
-document.getElementById("salesStartDate").addEventListener("input", (e) => {
-  enforceDateLimits(e.target);
-});
+const startEl = document.getElementById("salesStartDate");
+const endEl = document.getElementById("salesEndDate");
 
-document.getElementById("salesEndDate").addEventListener("input", (e) => {
-  enforceDateLimits(e.target);
-});
+if (startEl) {
+  startEl.addEventListener("input", (e) => {
+    enforceDateLimits(e.target);
+  });
+}
+
+if (endEl) {
+  endEl.addEventListener("input", (e) => {
+    enforceDateLimits(e.target);
+  });
+}
 
 // ----------------------------
 // Load Cars
@@ -177,7 +215,7 @@ async function loadAvailableCarsForSales() {
     allCarsForSales.forEach(car => {
       const option = document.createElement("option");
       option.value = car.id;
-      option.textContent = `${car.make} ${car.model} (${car.year}) - KSh ${Number(car.price).toLocaleString()}`;
+      option.textContent = `${car.make} ${car.model} (${car.plate_number}) - KSh ${Number(car.price).toLocaleString()}`;
       selectCar.appendChild(option);
     });
   } catch (err) {
@@ -322,7 +360,8 @@ saleForm.addEventListener("submit", async e => {
   e.preventDefault();
 
   const carId = document.getElementById("selectCar").value;
-  const price = parseFloat(document.getElementById("salePrice").value);
+  const priceInput = document.getElementById("salePrice").value;
+  const price = Number(removeCommas(priceInput));
   let agentId = null;
 
   if (role === "agent") {
@@ -333,11 +372,11 @@ saleForm.addEventListener("submit", async e => {
     agentId = selectedAgent
   }
 
-  if (!carId || !price) return alert("Select car and enter price");
+  if (!carId || !price || isNaN(price)) {return alert("Select car and enter valid price");}
 
   const car = allCarsForSales.find(c => c.id == carId);
   if (!car) return alert("Car not found");
-  if (price < car.cost) return Swal.fire({
+  if (car.ownership === "company" && price < car.cost) return Swal.fire({
                                   icon: "warning",
                                   title: "Invalid Price",
                                   text: "Sold price cannot be less than cost"
@@ -408,10 +447,9 @@ document.getElementById("resetSalesFilters").addEventListener("click", () => {
 });
 
 function filterSales() {
-  let filtered = allSales;
+  let filtered = [...allSales];
 
 if (role === "agent") {
-  // Only filter their own sales
   filtered = filtered.filter(s => s.agent_id == localStorage.getItem("userId"));
 }
 
@@ -420,16 +458,15 @@ if (role === "agent") {
   const endDate = document.getElementById("salesEndDate").value;
   const ownership = document.getElementById("salesFilterOwnership").value;
 
-  if (agentId) {
-    filtered = filtered.filter(s => s.agent_id == agentId);
-  }
-
-  if (ownership) {
-  filtered = filtered.filter(
-    s => (s.Car?.ownership || "").toLowerCase() === ownership.toLowerCase()
-  );
+  if (role === "admin" && agentId && agentId !== "undefined" && agentId !== "null") {
+  filtered = filtered.filter(s => s.agent_id === Number(agentId));
 }
 
+  if (ownership) {
+  filtered = filtered.filter(s => {
+    return (s.Car?.ownership || "").toLowerCase() === ownership.toLowerCase();
+  });
+}
   if (startDate) {
     filtered = filtered.filter(s => new Date(s.created_at) >= new Date(startDate));
   }
@@ -503,6 +540,10 @@ function updateStatsFromFilteredData(filtered) {
     document.getElementById("mySales").textContent = totalSales.toLocaleString();
     document.getElementById("myProfit").textContent = totalProfit.toLocaleString();
     document.getElementById("myCommission").textContent = totalCommission.toLocaleString();
+
+    document.getElementById("mySales").parentElement.style.display = "block";
+    document.getElementById("myProfit").parentElement.style.display = "block";
+    document.getElementById("myCommission").parentElement.style.display = "block";
   }
 }
 

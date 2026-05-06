@@ -1,7 +1,34 @@
 // ----------------------------
 // AGENTS.JS – UPDATED
 // ----------------------------
+function onlyLetters(value) {
+  return value.replace(/[^a-zA-Z\s]/g, "");
+}
 
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function formatKenyanPhone(value) {
+  let phone = value.replace(/[^0-9+]/g, "");
+
+  // convert 07XXXXXXXX → +2547XXXXXXXX
+  if (phone.startsWith("07")) {
+    phone = "+254" + phone.substring(1);
+  }
+
+  // convert 01XXXXXXXX → +2541XXXXXXXX
+  else if (phone.startsWith("01")) {
+    phone = "+254" + phone.substring(1);
+  }
+
+  // enforce +254 format max length (13 chars total)
+  if (phone.startsWith("+254")) {
+    phone = phone.slice(0, 13);
+  }
+
+  return phone;
+}
 
 const suspendModal = document.getElementById("suspendModal");
 const suspendReasonInput = document.getElementById("suspendReasonInput");
@@ -76,6 +103,33 @@ if (role !== "admin") {
         suspendModal.classList.add("hidden");
       });
 
+const nameInput = document.getElementById("agentName");
+const emailInput = document.getElementById("agentEmail");
+const phoneInput = document.getElementById("agentPhone");
+
+// NAME → letters only
+nameInput.addEventListener("input", (e) => {
+  e.target.value = onlyLetters(e.target.value);
+});
+
+// PHONE
+phoneInput.addEventListener("input", (e) => {
+  let value = e.target.value;
+  // allow digits and optional leading +
+  value = value.replace(/[^0-9+]/g, "");
+  // only allow + at the start
+  if (value.indexOf("+") > 0) {
+    value = value.replace(/\+/g, "");
+  }
+  // enforce max length (Kenya max realistic length = 13 incl +254 OR 10–12 digits local)
+  if (value.startsWith("+")) {
+    value = value.slice(0, 13);
+  } else {
+    value = value.slice(0, 10);
+  }
+  e.target.value = value;
+});
+
   // ----------------------------
   // CREATE AGENT
   // ----------------------------
@@ -86,8 +140,32 @@ if (role !== "admin") {
     const email = document.getElementById("agentEmail").value.trim();
     const phone = document.getElementById("agentPhone").value.trim();
 
-    if (!name || !email || !phone) {
-      return alert("All fields are required");
+    // NAME validation
+    if (!/^[a-zA-Z\s]+$/.test(name)) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Invalid Name",
+        text: "Name can only contain letters"
+      });
+    }
+
+    // EMAIL validation
+    if (!validateEmail(email)) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Invalid Email",
+        text: "Enter a valid email address"
+      });
+    }
+
+    // PHONE validation (Kenya format)
+    const phoneRegex = /^(\+?\d{9,13})$/;
+    if (!phoneRegex.test(phone)) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Invalid Phone Number",
+        text: "Use format 07XXXXXXXX or +2547XXXXXXXX"
+      });
     }
 
     try {

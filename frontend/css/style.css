@@ -147,7 +147,7 @@ body {
     bottom: 5%;
     transform: translateX(-50%);
     display: flex;
-    gap: 12px;
+    gap: 100px;
     z-index: 6;
 }
 .cta-link {
@@ -163,6 +163,13 @@ body {
     gap: 8px;
     opacity: 0;
     animation: fadeInBG 5.5s ease forwards;
+    border-radius: var(--radius-lg);
+}
+.cta-link.buy{
+    border: 1px solid var(--brand-green);
+}
+.cta-link.sell{
+    border: 1px solid var(--brand-red);
 }
 .cta-link.buy:hover  {
     color: var(--brand-green);
@@ -178,7 +185,7 @@ body {
 /* ---------------- HIRE CTA ---------------- */
 .hire-cta-text {
     position: absolute;
-    top: -40px;
+    top: -90px;
     text-align: center;
     width: 100%;
 }
@@ -186,12 +193,13 @@ body {
 .hire-link {
     font-size: 28px;
     color: var(--brand-accent-green);
-    text-decoration: none;
+    text-decoration: underline;
     font-weight: 600;
 }
 
 .hire-link:hover {
     color: var(--brand-green);
+    transform: translateY(-3px);
 }
 
 
@@ -1160,6 +1168,7 @@ cursor:not-allowed;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     text-align: left;
+    margin-top: 20px;
 }
 .auction-form .form-group {
     display: flex;

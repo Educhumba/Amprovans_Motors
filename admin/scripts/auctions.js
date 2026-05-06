@@ -1,7 +1,14 @@
 // ----------------------------
 // CAR AUCTIONS SCRIPT
 // ----------------------------
+function formatMoney(value) {
+  if (value === null || value === undefined || value === "") return "";
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
+function removeCommas(value) {
+  return value.replace(/,/g, "");
+}
 
 const exportAuctionBtn = document.getElementById("exportAuctionPdfBtn");
 
@@ -48,12 +55,12 @@ function fetchPendingAuctions() {
           <td>${car.owner_name}<br>${car.owner_phone}</td>
           <td>${car.owner_email}</td>
           <td>${car.mileage || 'N/A'} km / ${car.transmission} / ${car.fuel_type}</td>
-          <td>KSh ${car.expected_price}</td>
+          <td>KSh ${formatMoney(car.expected_price)}</td>
           <td>${car.description}</td>
           <td>${thumbnails}</td>
           <td>
             <div class="action-group">
-              <input type="number" placeholder="Agreed Price" class="agreedPriceInput"/>
+              <input type="text" placeholder="Agreed Price" class="agreedPriceInput"/>
               <button class="auction-action-btn approve-btn">Approve</button>
             </div>
             <div class="action-group" style="margin-top:6px;">
@@ -70,9 +77,26 @@ function fetchPendingAuctions() {
             modalImg.src = img.src;
           });
         });
+
+        const agreedInput = row.querySelector(".agreedPriceInput");
+        // format while typing + enforce numbers only
+        agreedInput.addEventListener("input", (e) => {
+          let raw = e.target.value;
+
+          // keep only digits
+          raw = raw.replace(/[^0-9]/g, "");
+
+          if (raw === "") {
+            e.target.value = "";
+            return;
+          }
+
+          e.target.value = formatMoney(raw);
+        });
         // Approve button
         row.querySelector(".approve-btn").addEventListener("click", function() {
-        const price = row.querySelector(".agreedPriceInput").value;
+        const priceInput = row.querySelector(".agreedPriceInput").value;
+        const price = removeCommas(priceInput);
 
         if (!price) {
           Swal.fire({

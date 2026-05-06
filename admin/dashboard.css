@@ -66,7 +66,14 @@ button {
 
 /* Reset */
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-body { display:flex; flex-direction:column; min-height:100vh; background: var(--section-bg); color: var(--text); }
+body {
+   display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    background: var(--section-bg);
+    color: var(--text);
+   -webkit-font-smoothing: antialiased;
+  }
 
 /* Header */
 .header {
@@ -172,28 +179,56 @@ body { display:flex; flex-direction:column; min-height:100vh; background: var(--
   width: 220px;
   height: calc(100vh - 60px);
   background: var(--muted);
-  padding: 20px;
   border-right: 1px solid var(--deep-blue);
   overflow-y: auto;
   z-index: 1000;
 }
 .sidebar h2 { font-size:1.1rem; margin-bottom:15px; color: var(--deep-blue); }
-.sidebar ul { list-style:none; }
-.sidebar ul li {
-  padding:10px;
-  cursor:pointer;
-  border-radius:8px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  transition:0.3s;
+.sidebar ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.sidebar ul li.active, .sidebar ul li:hover { background: var(--primary); color:#fff; }
+.sidebar ul li {
+  width: 100%;
+  padding: 20px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.25s ease;
+  font-size: 1rem;
+  border-bottom: 2px solid #d4dcdf;
+  padding-bottom: 10px;
+}
+.sidebar-header {
+  background-color: #acc9d2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  padding: 20px;
+}
+.sidebar-header i {
+  font-size: 1.3rem;
+  color: var(--text);
+}
+.sidebar ul li:hover {
+  background: var(--deep-blue);
+  color: var(--bg);
+}
+.sidebar ul li.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
 /* Main Content */
 .main-content {
-  margin-left: 220px;
-  padding: 20px;
-  width: calc(100% - 220px);
+  margin-left: 200px;
+  padding: 30px 35px;
+  width: calc(100% - 240px);
 }
 .tab-section { display:none; }
 .tab-section.active { display:block; }
@@ -227,10 +262,15 @@ h2 {
   padding:12px;
   border-radius:12px;
   margin-bottom:10px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  transition: 0.25s ease;
   display:flex;
   flex-direction: column;
   gap: 8px;
+}
+.car-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 .car-card select { padding:6px; border-radius:8px; width: 100px; }
 #adminCarForm {
@@ -387,7 +427,7 @@ textarea {
 }
 .filters button, .search-container button {
   background: var(--primary);
-  color: #fff;
+  color: var(--bg);
   border: none;
   padding: 8px 14px;
   border-radius: var(--radius);
@@ -414,7 +454,7 @@ textarea {
 .export-btn {
   margin-left: auto;
   background: var(--deep-blue);
-  color: #fff;
+  color: #ffffff;
   border: none;
   padding: 8px 14px;
   border-radius: var(--radius);
@@ -589,6 +629,17 @@ textarea {
   justify-content: flex-end;
   gap: 10px;
 }
+.export-btn{
+  background: var(--primary);
+  color: var(--bg);
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: 0.3s;
+}
+
 @media(max-width:768px){
   .hire-table th,
   .hire-table td {
@@ -885,17 +936,43 @@ textarea {
   gap: 8px;
   font-weight: 500;
 }
+#addAgentBtn{
+  margin: 20px;
+  
+}
 .primary-btn:hover {
   background: var(--secondary);
 }
 .secondary-btn {
-  background: #ccc;
-  color: #333;
+  background: var(--primary);
+  color: var(--bg);
   border: none;
   padding: 10px 14px;
   border-radius: var(--radius);
   cursor: pointer;
   font-weight: 500;
+}
+.secondary-btn:hover{
+  background: var(--secondary);
+
+}
+.agents-title {
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+.add-agent-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.agents-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  margin-right: 20px;
 }
 .agent-form-container {
   background: #fff;
@@ -903,6 +980,15 @@ textarea {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   margin-bottom: 20px;
+}
+.agent-form-container h3{
+  color: var(--primary);
+  padding: 20px;
+}
+.agents-list-container h3{
+  color: var(--primary);
+  padding: 20px;
+  text-align: center;
 }
 .hidden {
   display: none;
@@ -1012,11 +1098,11 @@ textarea {
 }
 #sales h2 {
   color: var(--deep-blue);
-  margin-bottom: 15px;
+  margin-bottom: 25px;
+  margin-top: 15px;
   font-size: 1.5rem;
-  display: flex;
-  align-items: center;
   gap: 10px;
+  text-align: center;
 }
 .sale-entry-form {
   background: var(--section-bg);
@@ -1058,7 +1144,10 @@ textarea {
 }
 .primary-btn {
   grid-column: span 2;
-  justify-self: start;
+  justify-self: center;
+}
+.complete-sale{
+  padding: 15px;
 }
 .sales-stats {
   display: grid;
@@ -1076,6 +1165,10 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.sales-stats h3{
+  color: var(--primary);
+  padding: 20px;
 }
 .sales-filters {
   display: flex;
@@ -1110,11 +1203,17 @@ textarea {
 }
 .sales-table-container {
   margin-top: 20px;
+  margin-bottom: 40px;
   overflow-x: auto;
   background: var(--section-bg);
   padding: 10px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+.sales-table-container h3{
+  text-align: left;
+  text-decoration: none;
+  color: var(--primary);
 }
 .sales-table {
   width: 100%;
@@ -1173,6 +1272,10 @@ textarea {
 #reportType {min-width: 120px;}
 
 /* AGENT RANKING */
+.agent-ranking h3{
+  color: var(--primary);
+  padding: 15px 10px;
+}
 #agentRankingList {
   list-style: none;
   padding: 0;

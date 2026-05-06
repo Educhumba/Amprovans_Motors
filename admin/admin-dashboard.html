@@ -40,10 +40,13 @@
   <div class="dashboard-container">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <h2>Admin Panel</h2>
+        <div class="sidebar-header">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Admin Panel</span>
+        </div>
       <nav>
         <ul>
-          <li class="active" data-tab="car-listings"><i class="fa-solid fa-list"></i> Car Listings</li>
+          <li class="active" data-tab="car-listings" data-role="admin"><i class="fa-solid fa-list"></i> Car Listings</li>
           <li data-tab="car-hire" data-role="admin,agent">
             <i class="fa-solid fa-car-side"></i> Car Hire
             <span id="hireCounter" class="counter">0</span>
@@ -175,7 +178,7 @@
           <!-- Mileage -->
           <div class="form-group">
             <label for="carMileage">Mileage (km)</label>
-            <input type="number" id="carMileage" name="mileage" placeholder="e.g. 78000" required>
+            <input type="text" id="carMileage" name="mileage" placeholder="e.g. 78000" required>
           </div>
 
           <!-- Engine -->
@@ -193,13 +196,13 @@
           <!-- Cost -->
           <div class="form-group">
             <label for="carCost">Cost (KSh)</label>
-            <input type="number" id="carCost" name="cost" placeholder="e.g. 900000" required>
+            <input type="text" id="carCost" name="cost" placeholder="e.g. 900000" required>
           </div>
 
           <!-- Price -->
           <div class="form-group">
             <label for="carPrice">Price (KSh)</label>
-            <input type="number" id="carPrice" name="price" placeholder="e.g. 1250000" required>
+            <input type="text" id="carPrice" name="price" placeholder="e.g. 1250000" required>
           </div>
 
           <!-- Status -->
@@ -267,6 +270,12 @@
             <option value="">All Ownership</option>
             <option value="company">Company</option>
             <option value="client">Client</option>
+          </select>
+
+          <select id="sortPrice">
+            <option value="">Sort by Price</option>
+            <option value="low-high">Lowest First</option>
+            <option value="high-low">Highest First</option>
           </select>
 
           <input type="date" id="filterStartDate">
@@ -416,32 +425,15 @@
     </section>
 
       <section id="sales-agents" class="tab-section" data-role="admin">
-        <div class="agents-header">
-          <h2>Sales Agents Management</h2>
 
-          <div class="agents-controls">
-            <button id="addAgentBtn" class="primary-btn">
-              <i class="fa-solid fa-user-plus"></i> Add Agent
-            </button>
+        <!-- TITLE -->
+        <h2 class="agents-title">Sales Agents Management</h2>
 
-
-            <!-- Status Filter -->
-            <select id="statusFilter">
-              <option value="all">All Agents</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-            </select>
-            <!-- Verified Filter -->
-            <select id="verifiedFilter">
-              <option value="all">All</option>
-              <option value="verified">Verified</option>
-              <option value="unverified">Unverified</option>
-            </select>
-
-            <button id="generateAgentReportBtn" class="secondary-btn">
-              <i class="fa-solid fa-file-pdf"></i> Generate Report
-            </button>
-          </div>
+        <!-- ADD BUTTON (OWN ROW) -->
+        <div class="add-agent-wrapper">
+          <button id="addAgentBtn" class="primary-btn">
+            <i class="fa-solid fa-user-plus"></i> Add Agent
+          </button>
         </div>
 
         <!-- Add Agent Form (Hidden by default) -->
@@ -471,13 +463,30 @@
           </form>
         </div>
 
-        <!-- Agents List -->
+        <!-- ALL AGENTS SECTION -->
         <div class="agents-list-container">
           <h3>All Agents</h3>
 
-          <div id="agentsList" class="agents-grid">
-            <!-- Agents will load here dynamically -->
+          <!-- FILTERS NOW LIVE HERE -->
+          <div class="agents-controls">
+            <select id="statusFilter">
+              <option value="all">All Agents</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+            </select>
+
+            <select id="verifiedFilter">
+              <option value="all">All</option>
+              <option value="verified">Verified</option>
+              <option value="unverified">Unverified</option>
+            </select>
+
+            <button id="generateAgentReportBtn" class="secondary-btn">
+              <i class="fa-solid fa-file-pdf"></i> Export PDF
+            </button>
           </div>
+
+          <div id="agentsList" class="agents-grid"></div>
         </div>
       </section>
 <!-- Suspend Reason Modal -->
@@ -511,7 +520,7 @@
 
               <div class="form-group">
                 <label for="salePrice">Sold Price (KSh)</label>
-                <input type="number" id="salePrice" required>
+                <input type="text" id="salePrice" required>
               </div>
 
               <!-- ONLY ADMIN -->
@@ -520,7 +529,7 @@
                 <select id="selectAgent"></select>
               </div>
 
-              <button type="submit" class="primary-btn">
+              <button type="submit" class="primary-btn complete-sale">
                 <i class="fa-solid fa-check"></i> Complete Sale
               </button>
             </form>
@@ -530,35 +539,39 @@
           <!-- FILTERS (ADMIN ONLY) -->
           <!-- ========================= -->
           <div class="sales-filters">
-            <select id="filterAgent"></select>
-            
-            <!-- Report type selector -->
-            <select id="reportType">
-              <option value="">Select Report Type</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="custom">Custom</option>
-              <option value="ranking">Agent Ranking</option>
-            </select>
-            
-            <select id="salesFilterOwnership">
-              <option value="">All Ownership</option>
-              <option value="company">Company</option>
-              <option value="client">Client</option>
-            </select>
-            
-            <select id="reportDetailType">
-              <option value="">Select Detail</option>
-              <option value="totalSales">Total Sales</option>
-              <option value="grossProfit">Gross Profit</option>
-              <option value="netProfit">Net Profit</option>
-              <option value="commission">Total Commission</option>
-              <option value="full">Full Report</option>
-            </select>
 
-            <!-- Start & End dates (for custom only) -->
-            <input type="date" id="salesStartDate" disabled>
-            <input type="date" id="salesEndDate" disabled>
+            <!-- FILTER INPUTS (hide for agents) -->
+            <div class="sales-filter-inputs">
+              <select id="filterAgent"></select>
+              
+              <select id="reportType">
+                <option value="">Select Report Type</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="custom">Custom</option>
+                <option value="ranking">Agent Ranking</option>
+              </select>
+              
+              <select id="salesFilterOwnership">
+                <option value="">All Ownership</option>
+                <option value="company">Company</option>
+                <option value="client">Client</option>
+              </select>
+              
+              <select id="reportDetailType">
+                <option value="">Select Detail</option>
+                <option value="totalSales">Total Sales</option>
+                <option value="grossProfit">Gross Profit</option>
+                <option value="netProfit">Net Profit</option>
+                <option value="commission">Total Commission</option>
+                <option value="full">Full Report</option>
+              </select>
+
+              <input type="date" id="salesStartDate" disabled>
+              <input type="date" id="salesEndDate" disabled>
+            </div>
+
+            <!-- ACTION BUTTONS (VISIBLE TO ALL) -->
             <div class="sales-filter-actions">
               <button id="resetSalesFilters" class="secondary-btn">
                 <i class="fa-solid fa-rotate-right"></i> Reset Filters
@@ -568,7 +581,8 @@
                 <i class="fa-solid fa-file-pdf"></i> Generate PDF Report
               </button>
             </div>
-            </div>
+
+          </div>
 
           <!-- ========================= -->
           <!-- ADMIN FULL STATS -->
@@ -596,8 +610,8 @@
           <!-- SALES TABLE -->
           <!-- ========================= -->
           
-          <h3 style="text-align: center; text-decoration: underline;">Sales Details</h3><br>
           <div class="sales-table-container">
+            <h3><i class="fa-solid fa-table"></i>  Sales Details</h3><br>
             <table class="sales-table">
               <thead>
                 <tr>
@@ -615,7 +629,7 @@
           </div><br>
 
           <div class="agent-ranking admin-only">
-            <h3>Agents performance Ranking</h3>
+            <h3><i class="fa-solid fa-user"></i>  Agents performance Ranking</h3>
             <ul id="agentRankingList"></ul>
           </div>
 
@@ -664,6 +678,7 @@ const Toast = Swal.mixin({
 });
     let allCars = []; // store all cars globally
     let editingCarId = null;
+    let currentSort = ""; 
 
     function applyRoleAccess() {
       const menuItems = document.querySelectorAll(".sidebar ul li");
@@ -698,23 +713,39 @@ const Toast = Swal.mixin({
 
 function handleSalesUIByRole() {
   if (role === "agent") {
-    // Hide all admin-only elements
+
+    // Hide admin-only
     document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
 
-    // Show agent-only elements
+    // Show agent-only
     document.querySelectorAll(".agent-only").forEach(el => el.style.display = "block");
 
-    // Hide sales filters completely
-    const filters = document.querySelector(".sales-filters");
-    if (filters) filters.style.display = "none";
+
+    // Hide agent selector ONLY
+    document.getElementById("filterAgent").style.display = "none";
+
+    // Remove "ranking" option
+    const reportType = document.getElementById("reportType");
+    [...reportType.options].forEach(option => {
+      if (option.value === "ranking") {
+        option.remove();
+      }
+    });
+
+    // Set default
+    reportType.value = "monthly";
+
+    // Ensure filters are visible
+    document.querySelector(".sales-filter-inputs").style.display = "flex";
+    document.querySelector(".sales-filter-actions").style.display = "flex";
 
   } else if (role === "admin") {
-    // Admin sees everything
+
     document.querySelectorAll(".admin-only").forEach(el => el.style.display = "block");
     document.querySelectorAll(".agent-only").forEach(el => el.style.display = "none");
 
-    const filters = document.querySelector(".sales-filters");
-    if (filters) filters.style.display = "block";
+    document.querySelector(".sales-filter-inputs").style.display = "flex";
+    document.querySelector(".sales-filter-actions").style.display = "flex";
   }
 }
 // ----------------------------
@@ -897,6 +928,23 @@ function logout(event) {
     const carForm = document.getElementById("carForm");
     carForm.addEventListener("submit", async e => {
       e.preventDefault();
+const plate = document.getElementById("carPlate").value.trim();
+
+const plateRegex = /^[A-Z]{3} \d{3}[A-Z]$/;
+
+if (!plateRegex.test(plate)) {
+  return Swal.fire({
+    icon: "warning",
+    title: "Invalid Plate Number",
+    text: "Use format: KAA 123A"
+  });
+}
+
+// Remove commas before sending
+document.getElementById("carMileage").value = removeCommas(document.getElementById("carMileage").value);
+document.getElementById("carCost").value = removeCommas(document.getElementById("carCost").value);
+document.getElementById("carPrice").value = removeCommas(document.getElementById("carPrice").value);
+
       const formData = new FormData(e.target);
       const url = editingCarId ? `http://localhost:5000/api/cars/${editingCarId}` : "http://localhost:5000/api/cars";
       const method = editingCarId ? "PUT" : "POST";
@@ -917,6 +965,9 @@ function logout(event) {
           });
           editingCarId = null;
           carForm.reset();
+          handleNumberInput(document.getElementById("carMileage"));
+          handleNumberInput(document.getElementById("carCost"));
+          handleNumberInput(document.getElementById("carPrice"));
           document.getElementById("submitCar").innerHTML =
             `<i class="fa-solid fa-check"></i> List Car`;
           formContainer.classList.add("collapsed");
@@ -952,6 +1003,16 @@ function logout(event) {
       try {
         const res = await fetch("http://localhost:5000/api/cars", { headers: { Authorization: `Bearer ${token}` } });
         allCars = await res.json();
+        if (allCars.length > 0) {
+          let mostExpensive = allCars.reduce((max, car) =>
+            Number(car.price) > Number(max.price) ? car : max
+          );
+          let leastExpensive = allCars.reduce((min, car) =>
+            Number(car.price) < Number(min.price) ? car : min
+          );
+          console.log("Most Expensive:", mostExpensive);
+          console.log("Least Expensive:", leastExpensive);
+        }
         populateFilters(allCars);
         displayCars(allCars);
       } catch (err) {
@@ -1050,7 +1111,17 @@ function logout(event) {
         return;
       }
 
-      filteredCars.forEach(car => {
+      let sortedCars = [...filteredCars];
+
+      if (currentSort === "low-high") {
+        sortedCars.sort((a, b) => Number(a.price) - Number(b.price));
+      }
+
+      if (currentSort === "high-low") {
+        sortedCars.sort((a, b) => Number(b.price) - Number(a.price));
+      }
+
+      sortedCars.forEach(car => {
         div.innerHTML += `
           <div class="car-card">
             <h4>${car.make} ${car.model} (${car.year})</h4>
@@ -1074,6 +1145,7 @@ function logout(event) {
     document.getElementById("filterOwnership").addEventListener("change", () => displayCars(allCars));
     document.getElementById("filterStartDate").addEventListener("change", () => displayCars(allCars));
     document.getElementById("filterEndDate").addEventListener("change", () => displayCars(allCars));
+    document.getElementById("sortPrice").addEventListener("change", (e) => {currentSort = e.target.value; displayCars(allCars);});
     document.getElementById("searchCar").addEventListener("input", () => displayCars(allCars));
     document.getElementById("resetFilters").addEventListener("click", () => {
       document.getElementById("filterMake").value = "";
@@ -1083,6 +1155,7 @@ function logout(event) {
       document.getElementById("filterStartDate").value = "";
       document.getElementById("filterEndDate").value = "";
       document.getElementById("searchCar").value = "";
+      document.getElementById("sortPrice").value = "";
 
       displayCars(allCars);
     });
@@ -1245,6 +1318,74 @@ function logout(event) {
 
     // Initial load
     window.addEventListener('DOMContentLoaded', () => loadCars());
+
+// ----------------------------
+// NUMBER PLATE FORMAT (KENYAN)
+// ----------------------------
+const plateInput = document.getElementById("carPlate");
+
+if (plateInput) {
+  plateInput.addEventListener("input", (e) => {
+    let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+    value = value.slice(0, 7);
+
+    if (value.length > 3) {
+      value = value.substring(0, 3) + " " + value.substring(3);
+    }
+
+    e.target.value = value;
+  });
+}
+
+// ----------------------------
+// FORMAT NUMBER WITH COMMAS
+// ----------------------------
+function formatNumber(value) {
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function removeCommas(value) {
+  return value.replace(/,/g, "");
+}
+
+function handleNumberInput(input) {
+  input.addEventListener("input", (e) => {
+    // remove everything except digits
+    let raw = e.target.value.replace(/[^0-9]/g, "");
+
+    if (raw === "") {
+      e.target.value = "";
+      return;
+    }
+
+    e.target.value = formatNumber(raw);
+  });
+}
+function enforceNumericKeyOnly(input) {
+  input.addEventListener("keydown", (e) => {
+    // allow control keys
+    if (
+      ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"].includes(e.key)
+    ) {
+      return;
+    }
+
+    // block anything that's not a number
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
+  });
+}
+
+// Apply to all numeric inputs
+handleNumberInput(document.getElementById("carMileage"));
+handleNumberInput(document.getElementById("carCost"));
+handleNumberInput(document.getElementById("carPrice"));
+
+enforceNumericKeyOnly(document.getElementById("carMileage"));
+enforceNumericKeyOnly(document.getElementById("carCost"));
+enforceNumericKeyOnly(document.getElementById("carPrice"));
   </script>
 
 

@@ -48,7 +48,7 @@ const carHireController = {
                 notes
             });
 
-            // ✅ SEND EMAIL
+            // SEND EMAIL
             if (email) {
                 await sendMail(
                     email,
@@ -119,20 +119,20 @@ const carHireController = {
             hire.approved_at = new Date();
             await hire.save();
 
-            // ✅ Mark car as BOOKED
+            // Mark car as BOOKED
             const car = await Car.findByPk(hire.car_id);
             if (car) {
                 car.status = "booked";
                 await car.save();
             }
 
-            // ✅ SEND APPROVAL EMAIL
+            // SEND APPROVAL EMAIL
             if (hire.email) {
                 await sendMail(
                     hire.email,
                     "Car Hire Approved - Amprovans Motors",
                     `
-                    <h2>Booking Confirmed ✅</h2>
+                    <h2>Booking Confirmed </h2>
                     <p>Dear ${hire.full_name},</p>
 
                     <p>Your hire request has been <b>APPROVED</b>.</p>
@@ -183,13 +183,13 @@ const carHireController = {
 
             await hire.save();
 
-            // ✅ SEND REJECTION EMAIL
+            // SEND REJECTION EMAIL
             if (hire.email) {
                 await sendMail(
                     hire.email,
                     "Car Hire Request Update - Amprovans Motors",
                     `
-                    <h2>Request Update ❌</h2>
+                    <h2>Request Update </h2>
                     <p>Dear ${hire.full_name},</p>
 
                     <p>Unfortunately, your hire request has been <b>REJECTED</b>.</p>

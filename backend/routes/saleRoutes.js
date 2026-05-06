@@ -8,7 +8,7 @@ router.post("/", authenticate, authorize(["admin","agent"]), saleController.crea
 // GET all sales (admin sees all, agent sees only theirs)
 router.get("/", authenticate, authorize(["admin","agent"]), saleController.getAllSales);
 router.get("/summary", authenticate, authorize(["admin","agent"]), saleController.getSalesSummary);
-router.get("/report/pdf", authenticate, authorize(["admin"]), saleController.generateSalesReport);
+router.get("/report/pdf", authenticate, authorize(["admin","agent"]), saleController.generateSalesReport);
 router.get("/report/detailed", authenticate, authorize(["admin"]), saleController.generateDetailedSalesReport);
 router.get("/ranking", authenticate, authorize (["admin"]), saleController.getAgentRanking);
 router.get("/report/ranking", authenticate, authorize (["admin"]), saleController.generateAgentRankingReport);

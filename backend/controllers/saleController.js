@@ -229,14 +229,11 @@ const saleController = {
           whereClause.agent_id = agent_id;
         }
 
-        if (type === "weekly") {
-          const lastWeek = new Date();
-          lastWeek.setDate(now.getDate() - 7);
-          whereClause.created_at = { [Op.gte]: lastWeek, [Op.lte]: now };
-        } else if (type === "monthly") {
-          const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-          const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-          whereClause.created_at = { [Op.gte]: firstDayOfMonth, [Op.lte]: lastDayOfMonth };
+        if (start_date && end_date) {
+          whereClause.created_at = {
+            [Op.gte]: new Date(start_date),
+            [Op.lte]: new Date(end_date)
+          };
         } else if (type === "custom") {
           if (!start_date || !end_date) {
             return res.status(400).json({ message: "start_date and end_date required for custom reports" });
@@ -257,8 +254,19 @@ if (ownership) {
         });
 
         if (sales.length === 0) {
-          return res.status(404).json({ message: "No sales found for the selected period" });
-        }
+  const doc = new PDFDocument();
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=empty-report.pdf");
+
+  doc.pipe(res);
+
+  doc.fontSize(16).text("Sales Report", { align: "center" });
+  doc.moveDown();
+  doc.text("No sales found for the selected period.", { align: "center" });
+
+  doc.end();
+  return;
+}
 
         // Totals
         let totalSales = 0, totalProfit = 0, totalCommission = 0;
@@ -296,16 +304,12 @@ if (ownership) {
         .fontSize(10)
         .text(`Generated: ${moment().format("YYYY-MM-DD HH:mm")}`, { align: "center" });
 
-      if (type === "weekly") {
-        doc.text(`Period: Last 7 Days`, { align: "center" });
-      } else if (type === "monthly") {
-        doc.text(
-          `Period: ${moment().startOf("month").format("DD MMM YYYY")} - ${moment().endOf("month").format("DD MMM YYYY")}`,
-          { align: "center" }
-        );
-      } else if (type === "custom") {
-        doc.text(`Period: ${start_date} - ${end_date}`, { align: "center" });
-      }
+      if (start_date && end_date) {
+          doc.text(
+            `Period: ${moment(start_date).format("DD MMM YYYY")} - ${moment(end_date).format("DD MMM YYYY")}`,
+            { align: "center" }
+          );
+        }
 
       doc.moveDown();
 
@@ -326,7 +330,7 @@ if (ownership) {
           { label: "Comm.(Ksh)", property: "commission", width: 80 },
           { label: "Net Profit(Ksh)", property: "netProfit", width: 85 },
           { label: "Agent", property: "agent", width: 100 },
-          { label: "Date", property: "date", width: 70 }, // ✅ NOW GUARANTEED TO FIT
+          { label: "Date", property: "date", width: 70 },
         ],
 
         datas: sales.map((s) => ({
@@ -420,6 +424,7 @@ if (ownership) {
     },
 
     generateDetailedSalesReport: async (req, res) => {
+      let filter = {};
       try {
         const { start_date, end_date, agent_id } = req.query;
         const { ownership } = req.query;
@@ -449,9 +454,6 @@ if (ownership) {
           return res.status(404).json({ message: "No sales found for the selected period" });
         }
 
-        if (ownership) {
-  whereClause['$Car.ownership$'] = ownership;
-}
 
         // Totals
         let totalSales = 0, totalProfit = 0, totalCommission = 0;

@@ -93,6 +93,7 @@ async function login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("userName", data.user.name);
+      localStorage.setItem("userId", data.user.id);
 
       // SweetAlert success message
       Swal.fire({
