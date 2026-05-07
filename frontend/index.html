@@ -244,14 +244,17 @@
         <div class="form-group">
             <label>Full Name *</label>
             <input type="text" id="ownerName" required>
+            <small class="error-message" id="ownerNameError"></small>
         </div>
         <div class="form-group">
             <label>Phone *</label>
             <input type="tel" id="ownerPhone" required>
+            <small class="error-message" id="ownerPhoneError"></small>
         </div>
         <div class="form-group">
             <label>Email *</label>
             <input type="email" id="ownerEmail" required>
+            <small class="error-message" id="ownerEmailError"></small>
         </div>
         <!-- CAR DETAILS -->
         <div class="form-group">
@@ -272,7 +275,7 @@
         </div>
         <div class="form-group">
             <label>Mileage (KM) *</label>
-            <input type="number" id="mileage" required>
+            <input type="text" id="mileage" required>
         </div>
         <div class="form-group">
             <label>Engine (cc) *</label>

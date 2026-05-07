@@ -28,16 +28,55 @@ const fuel = document.getElementById("fuel");
 const body = document.getElementById("body");
 const condition = document.getElementById("condition");
 const carDescription = document.getElementById("carDescription");
+const ownerNameError = document.getElementById("ownerNameError");
+const ownerPhoneError = document.getElementById("ownerPhoneError");
+const ownerEmailError = document.getElementById("ownerEmailError");
 
+/* ================= VALIDATION HELPERS ================= */
+
+function validateName(name){
+return /^[A-Za-z\s]+$/.test(name) && name.trim().length >= 3;
+}
+
+function validatePhone(phone){
+const cleaned = phone.replace(/\D/g,"");
+return cleaned.length >=10 && cleaned.length <=12;
+}
+
+function validateEmail(email){
+return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 /* ================= NAME ================= */
+
 ownerName.addEventListener("input", () => {
+
 ownerName.value = ownerName.value.replace(/[^A-Za-z\s]/g,"");
+
+if(!validateName(ownerName.value)){
+ownerNameError.textContent =
+"Name must be at least 3 letters (letters only)";
+ownerNameError.classList.add("show");
+}else{
+ownerNameError.classList.remove("show");
+}
+
 toggleSubmit();
+
+});
+
+ownerName.addEventListener("blur", () => {
+
+if(!ownerName.value.trim()){
+ownerNameError.textContent = "Full name is required";
+ownerNameError.classList.add("show");
+}
+
 });
 
 
 /* ================= PHONE ================= */
+
 ownerPhone.addEventListener("input", () => {
 
 ownerPhone.value = ownerPhone.value.replace(/[^0-9+]/g,"");
@@ -50,12 +89,52 @@ ownerPhone.value = "+" + digits;
 ownerPhone.value = digits;
 }
 
+if(!validatePhone(ownerPhone.value)){
+ownerPhoneError.textContent =
+"Phone must be 10–12 digits";
+ownerPhoneError.classList.add("show");
+}else{
+ownerPhoneError.classList.remove("show");
+}
+
 toggleSubmit();
+
+});
+
+ownerPhone.addEventListener("blur", () => {
+
+if(!ownerPhone.value.trim()){
+ownerPhoneError.textContent = "Phone number is required";
+ownerPhoneError.classList.add("show");
+}
+
 });
 
 
 /* ================= EMAIL ================= */
-ownerEmail.addEventListener("input", toggleSubmit);
+
+ownerEmail.addEventListener("input", () => {
+
+if(!validateEmail(ownerEmail.value)){
+ownerEmailError.textContent =
+"Enter a valid email address";
+ownerEmailError.classList.add("show");
+}else{
+ownerEmailError.classList.remove("show");
+}
+
+toggleSubmit();
+
+});
+
+ownerEmail.addEventListener("blur", () => {
+
+if(!ownerEmail.value.trim()){
+ownerEmailError.textContent = "Email is required";
+ownerEmailError.classList.add("show");
+}
+
+});
 
 
 /* ================= PLATE NUMBER ================= */
@@ -96,9 +175,26 @@ carYear.addEventListener("input", toggleSubmit);
 
 
 /* ================= MILEAGE ================= */
+
 mileage.addEventListener("input", () => {
-mileage.value = mileage.value.replace(/\D/g,"");
+
+let value = mileage.value.replace(/[^0-9]/g,"");
+
+if(!value){
+mileage.value = "";
+mileage.dataset.raw = "";
 toggleSubmit();
+return;
+}
+
+/* Store raw value */
+mileage.dataset.raw = value;
+
+/* Display formatted value */
+mileage.value = Number(value).toLocaleString();
+
+toggleSubmit();
+
 });
 
 
@@ -186,14 +282,14 @@ toggleSubmit();
 function toggleSubmit(){
 
 const valid =
-ownerName.value.length >=3 &&
-ownerPhone.value.length >=10 &&
-ownerEmail.checkValidity() &&
+validateName(ownerName.value) &&
+validatePhone(ownerPhone.value) &&
+validateEmail(ownerEmail.value) &&
 plateNumber.value.length >=6 &&
 carMake.value &&
 carModel.value &&
 carYear.value &&
-mileage.value &&
+mileage.dataset.raw &&
 color.value &&
 location.value &&
 expectedPrice.dataset.raw &&
@@ -224,7 +320,7 @@ formData.append("plateNumber", plateNumber.value);
 formData.append("make", carMake.value);
 formData.append("model", carModel.value);
 formData.append("year", carYear.value);
-formData.append("mileage", mileage.value);
+formData.append("mileage", mileage.dataset.raw);
 formData.append("engine", engine.value);
 formData.append("transmission", transmission.value);
 formData.append("fuelType", fuel.value);
@@ -258,9 +354,10 @@ Swal.fire({
 });
 form.reset();
 expectedPrice.dataset.raw = "";
+mileage.dataset.raw = "";
 preview.innerHTML = "";
-submitBtn.disabled = true;
 status.textContent = "";
+toggleSubmit();
 }else{
 throw new Error();
 }

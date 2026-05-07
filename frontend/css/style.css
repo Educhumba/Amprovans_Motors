@@ -1237,7 +1237,18 @@ border:1px solid #28a745;
 opacity:.6;
 cursor:not-allowed;
 }
+.error-message{
+    color:red;
+    font-size:0.85rem;
+    display:block;
+    margin-top:5px;
+    opacity:0;
+    transition:0.3s;
+}
 
+.error-message.show{
+    opacity:1;
+}
 
 
 

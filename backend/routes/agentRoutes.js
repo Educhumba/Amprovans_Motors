@@ -10,6 +10,7 @@ router.post("/", authenticate, authorize("admin"), agentController.createAgent);
 router.get("/", authenticate, authorize(["admin"]), agentController.getAgents);
 
 router.put("/:id/status", authenticate, authorize("admin"), agentController.updateStatus);
+router.delete("/:id", authenticate, authorize("admin"), agentController.deleteAgent);
 router.get("/agents", authenticate, authorize("admin"), agentController.generateAgentsReport);
 
 module.exports = router;

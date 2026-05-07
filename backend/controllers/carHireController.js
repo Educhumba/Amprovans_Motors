@@ -54,25 +54,75 @@ const carHireController = {
                     email,
                     "Car Hire Request Received - Amprovans Motors",
                     `
-                    <h2>Request Received</h2>
-                    <p>Dear ${fullName},</p>
+                    <div style="font-family: Arial, sans-serif; background:#f4f6f9; padding:40px;">
 
-                    <p>Thank you for choosing <b>Amprovans Motors</b>.</p>
+                    <div style="max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.08);">
 
-                    <p>Your hire request for:</p>
-                    <ul>
-                        <li><b>Vehicle:</b> ${carName}</li>
-                        <li><b>Pick-up Date:</b> ${pickupDate}</li>
-                        <li><b>Return Date:</b> ${returnDate}</li>
-                        <li><b>Estimated Cost:</b> KSh ${Number(totalCost).toLocaleString()}</li>
-                    </ul>
+                        <!-- Header -->
+                        <div style="background:#111827; color:white; padding:25px; text-align:center;">
+                        <h1 style="margin:0;">Amprovans Motors</h1>
+                        <p style="margin-top:8px; opacity:0.9;">
+                            Car Hire Request Received
+                        </p>
+                        </div>
 
-                    <p>Your request is currently <b>under review</b>.</p>
+                        <!-- Body -->
+                        <div style="padding:35px; color:#333; line-height:1.7;">
 
-                    <p>Our team will contact you shortly to confirm availability and finalize the booking.</p>
+                        <h2 style="margin-top:0;">Hello ${fullName},</h2>
 
-                    <br>
-                    <p>Best regards,<br><b>Amprovans Motors Team</b></p>
+                        <p>
+                            Thank you for choosing
+                            <strong>Amprovans Motors</strong>.
+                        </p>
+
+                        <p>
+                            We have successfully received your vehicle hire request.
+                            Our team is currently reviewing your booking details and
+                            vehicle availability.
+                        </p>
+
+                        <!-- Booking Details -->
+                        <div style="background:#f9fafb; border:1px solid #e5e7eb; padding:20px; border-radius:8px; margin:25px 0;">
+
+                            <p><strong>Vehicle:</strong> ${carName}</p>
+
+                            <p><strong>Pickup Date:</strong> ${pickupDate}</p>
+
+                            <p><strong>Return Date:</strong> ${returnDate}</p>
+
+                            <p><strong>Pickup Location:</strong> ${pickupLocation}</p>
+
+                            <p><strong>Estimated Cost:</strong> KSh ${Number(totalCost).toLocaleString()}</p>
+
+                        </div>
+
+                        <p>
+                            You will receive another email once your request
+                            has been reviewed and approved.
+                        </p>
+
+                        <p>
+                            If you have any questions, feel free to contact our support team.
+                        </p>
+
+                        <br>
+
+                        <p>
+                            Regards,<br>
+                            <strong>Amprovans Motors Team</strong>
+                        </p>
+
+                        </div>
+
+                        <!-- Footer -->
+                        <div style="background:#f3f4f6; padding:18px; text-align:center; font-size:12px; color:#6b7280;">
+                        © 2026 Amprovans Motors. All rights reserved.
+                        </div>
+
+                    </div>
+
+                    </div>
                     `
                 );
             }
@@ -132,27 +182,77 @@ const carHireController = {
                     hire.email,
                     "Car Hire Approved - Amprovans Motors",
                     `
-                    <h2>Booking Confirmed </h2>
-                    <p>Dear ${hire.full_name},</p>
+                    <div style="font-family: Arial, sans-serif; background:#f4f6f9; padding:40px;">
 
-                    <p>Your hire request has been <b>APPROVED</b>.</p>
+                    <div style="max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.08);">
 
-                    <ul>
-                        <li><b>Vehicle:</b> ${hire.car_name}</li>
-                        <li><b>Pickup Date:</b> ${hire.pickup_date}</li>
-                        <li><b>Return Date:</b> ${hire.return_date}</li>
-                        <li><b>Total Cost:</b> KSh ${Number(hire.total_cost).toLocaleString()}</li>
-                    </ul>
+                        <!-- Header -->
+                        <div style="background:#16a34a; color:white; padding:25px; text-align:center;">
+                        <h1 style="margin:0;">Booking Approved</h1>
 
-                    <p><b>Pickup Location:</b> ${hire.pickup_location}</p>
+                        <p style="margin-top:8px; opacity:0.9;">
+                            Your Vehicle Reservation Has Been Confirmed
+                        </p>
+                        </div>
 
-                    <p>Please bring your identification and arrive on time.</p>
+                        <!-- Body -->
+                        <div style="padding:35px; color:#333; line-height:1.7;">
 
-                    <p>Late returns may attract additional charges.</p>
+                        <h2 style="margin-top:0;">Hello ${hire.full_name},</h2>
 
-                    <br>
-                    <p>Thank you for choosing us!</p>
-                    <b>Amprovans Motors</b>
+                        <p>
+                            We are pleased to inform you that your
+                            vehicle hire request has been
+                            <strong>approved successfully</strong>.
+                        </p>
+
+                        <!-- Booking Details -->
+                        <div style="background:#f9fafb; border:1px solid #e5e7eb; padding:20px; border-radius:8px; margin:25px 0;">
+
+                            <p><strong>Vehicle:</strong> ${hire.car_name}</p>
+
+                            <p><strong>Pickup Date:</strong> ${hire.pickup_date}</p>
+
+                            <p><strong>Return Date:</strong> ${hire.return_date}</p>
+
+                            <p><strong>Pickup Location:</strong> ${hire.pickup_location}</p>
+
+                            <p><strong>Total Cost:</strong> KSh ${Number(hire.total_cost).toLocaleString()}</p>
+
+                        </div>
+
+                        <p>
+                            Please ensure you arrive on time with valid identification
+                            documents during pickup.
+                        </p>
+
+                        <p>
+                            Late returns may attract additional charges
+                            according to company policy.
+                        </p>
+
+                        <br>
+
+                        <p>
+                            Thank you for choosing
+                            <strong>Amprovans Motors</strong>.
+                        </p>
+
+                        <p>
+                            Regards,<br>
+                            <strong>Amprovans Motors Team</strong>
+                        </p>
+
+                        </div>
+
+                        <!-- Footer -->
+                        <div style="background:#f3f4f6; padding:18px; text-align:center; font-size:12px; color:#6b7280;">
+                        © 2026 Amprovans Motors. All rights reserved.
+                        </div>
+
+                    </div>
+
+                    </div>
                     `
                 );
             }
@@ -189,18 +289,69 @@ const carHireController = {
                     hire.email,
                     "Car Hire Request Update - Amprovans Motors",
                     `
-                    <h2>Request Update </h2>
-                    <p>Dear ${hire.full_name},</p>
+                    <div style="font-family: Arial, sans-serif; background:#f4f6f9; padding:40px;">
 
-                    <p>Unfortunately, your hire request has been <b>REJECTED</b>.</p>
+                    <div style="max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.08);">
 
-                    <p><b>Reason:</b> ${rejectionReason}</p>
+                        <!-- Header -->
+                        <div style="background:#dc2626; color:white; padding:25px; text-align:center;">
+                        <h1 style="margin:0;">Hire Request Update</h1>
 
-                    <p>You may contact our team for further assistance or submit a new request.</p>
+                        <p style="margin-top:8px; opacity:0.9;">
+                            Request Status Notification
+                        </p>
+                        </div>
 
-                    <br>
-                    <p>We appreciate your interest.</p>
-                    <b>Amprovans Motors</b>
+                        <!-- Body -->
+                        <div style="padding:35px; color:#333; line-height:1.7;">
+
+                        <h2 style="margin-top:0;">Hello ${hire.full_name},</h2>
+
+                        <p>
+                            Thank you for your interest in
+                            <strong>Amprovans Motors</strong>.
+                        </p>
+
+                        <p>
+                            After reviewing your request, we regret to inform you
+                            that your vehicle hire request was not approved at this time.
+                        </p>
+
+                        <!-- Reason -->
+                        <div style="background:#fef2f2; border:1px solid #fecaca; padding:20px; border-radius:8px; margin:25px 0;">
+
+                            <p style="margin:0;">
+                            <strong>Reason:</strong> ${rejectionReason}
+                            </p>
+
+                        </div>
+
+                        <p>
+                            You may contact our support team for clarification
+                            or submit another request in the future.
+                        </p>
+
+                        <p>
+                            We appreciate your understanding and hope to serve you again.
+                        </p>
+
+                        <br>
+
+                        <p>
+                            Regards,<br>
+                            <strong>Amprovans Motors Team</strong>
+                        </p>
+
+                        </div>
+
+                        <!-- Footer -->
+                        <div style="background:#f3f4f6; padding:18px; text-align:center; font-size:12px; color:#6b7280;">
+                        © 2026 Amprovans Motors. All rights reserved.
+                        </div>
+
+                    </div>
+
+                    </div>
                     `
                 );
             }

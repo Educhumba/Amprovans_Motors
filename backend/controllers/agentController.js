@@ -56,12 +56,92 @@ const agentController = {
             email,
             "Your Agent Account - Reset Password",
             `
-            <h2>Welcome to Amprovans Motors</h2>
-            <p>Your account has been created.</p>
-            <p><strong>Temporary Password:</strong> ${tempPassword}</p>
-            <p>Please reset your password using the link below:</p>
-            <a href="${resetLink}">Reset Password</a>
-            <p>This link expires in 1 hour.</p>
+            <div style="font-family: Arial, sans-serif; background:#f4f6f9; padding:40px;">
+
+              <div style="max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.08);">
+
+                <!-- Header -->
+                <div style="background:#111827; color:white; padding:25px; text-align:center;">
+                  <h1 style="margin:0;">Amprovans Motors</h1>
+                  <p style="margin-top:8px; opacity:0.9;">
+                    Agent Account Created Successfully
+                  </p>
+                </div>
+
+                <!-- Body -->
+                <div style="padding:35px; color:#333; line-height:1.7;">
+
+                  <h2 style="margin-top:0;">Welcome ${name},</h2>
+
+                  <p>
+                    Your agent account has been successfully created on the
+                    <strong>Amprovans Motors Management System</strong>.
+                  </p>
+
+                  <p>
+                    Please use the temporary password below to access your account
+                    and immediately reset your password for security purposes.
+                  </p>
+
+                  <!-- Credentials Box -->
+                  <div style="background:#f9fafb; border:1px solid #e5e7eb; padding:20px; border-radius:8px; margin:25px 0;">
+
+                    <p style="margin:0 0 10px 0;">
+                      <strong>Email:</strong> ${email}
+                    </p>
+
+                    <p style="margin:0;">
+                      <strong>Temporary Password:</strong> ${tempPassword}
+                    </p>
+
+                  </div>
+
+                  <!-- Button -->
+                  <div style="text-align:center; margin:35px 0;">
+
+                    <a href="${resetLink}"
+                      style="
+                        background:#2563eb;
+                        color:white;
+                        text-decoration:none;
+                        padding:14px 28px;
+                        border-radius:6px;
+                        display:inline-block;
+                        font-weight:bold;
+                      ">
+                      Reset Password
+                    </a>
+
+                  </div>
+
+                  <p>
+                    This password reset link will expire in
+                    <strong>1 hour</strong>.
+                  </p>
+
+                  <p>
+                    If you did not expect this account creation,
+                    please contact the system administrator immediately.
+                  </p>
+
+                  <br>
+
+                  <p style="margin-bottom:0;">
+                    Regards,<br>
+                    <strong>Amprovans Motors Team</strong>
+                  </p>
+
+                </div>
+
+                <!-- Footer -->
+                <div style="background:#f3f4f6; padding:18px; text-align:center; font-size:12px; color:#6b7280;">
+                  © 2026 Amprovans Motors. All rights reserved.
+                </div>
+
+              </div>
+
+            </div>
+
             `
         );
         } catch (err) {
@@ -119,6 +199,36 @@ const agentController = {
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to update status" });
+    }
+  },
+
+  // DELETE AGENT
+  deleteAgent: async (req, res) => {
+    try {
+
+      const { id } = req.params;
+
+      const agent = await User.findByPk(id);
+
+      if (!agent) {
+        return res.status(404).json({
+          error: "Agent not found"
+        });
+      }
+
+      await agent.destroy();
+
+      res.json({
+        message: "Agent deleted successfully"
+      });
+
+    } catch (err) {
+
+      console.error(err);
+
+      res.status(500).json({
+        error: "Failed to delete agent"
+      });
     }
   },
 

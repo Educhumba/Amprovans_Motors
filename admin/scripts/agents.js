@@ -53,6 +53,7 @@ if (role !== "admin") {
   const cancelAgentBtn = document.getElementById("cancelAgentBtn");
   const agentForm = document.getElementById("agentForm");
   const agentsList = document.getElementById("agentsList");
+  const submitBtn = agentForm.querySelector("button[type='submit']");
 
   const API_URL = "http://localhost:5000/api/agents";
   const token = localStorage.getItem("token");
@@ -130,77 +131,104 @@ phoneInput.addEventListener("input", (e) => {
   e.target.value = value;
 });
 
-  // ----------------------------
-  // CREATE AGENT
-  // ----------------------------
-  agentForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+// ----------------------------
+// CREATE AGENT
+// ----------------------------
+agentForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const name = document.getElementById("agentName").value.trim();
-    const email = document.getElementById("agentEmail").value.trim();
-    const phone = document.getElementById("agentPhone").value.trim();
+  const name = document.getElementById("agentName").value.trim();
+  const email = document.getElementById("agentEmail").value.trim();
+  const phone = document.getElementById("agentPhone").value.trim();
 
-    // NAME validation
-    if (!/^[a-zA-Z\s]+$/.test(name)) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Invalid Name",
-        text: "Name can only contain letters"
-      });
+  // NAME validation
+  if (!/^[a-zA-Z\s]+$/.test(name)) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Invalid Name",
+      text: "Name can only contain letters"
+    });
+  }
+
+  // EMAIL validation
+  if (!validateEmail(email)) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Invalid Email",
+      text: "Enter a valid email address"
+    });
+  }
+
+  // PHONE validation
+  const phoneRegex = /^(\+?\d{9,13})$/;
+
+  if (!phoneRegex.test(phone)) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Invalid Phone Number",
+      text: "Use format 07XXXXXXXX or +2547XXXXXXXX"
+    });
+  }
+
+  try {
+
+    // Disable button while saving
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Creating Agent...";
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ name, email, phone })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to create agent");
     }
 
-    // EMAIL validation
-    if (!validateEmail(email)) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Invalid Email",
-        text: "Enter a valid email address"
-      });
-    }
+    // SUCCESS MESSAGE
+    await Swal.fire({
+      icon: "success",
+      title: "Success",
+      text: "Agent created successfully",
+      timer: 1800,
+      showConfirmButton: false
+    });
 
-    // PHONE validation (Kenya format)
-    const phoneRegex = /^(\+?\d{9,13})$/;
-    if (!phoneRegex.test(phone)) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Invalid Phone Number",
-        text: "Use format 07XXXXXXXX or +2547XXXXXXXX"
-      });
-    }
+    // Reset form
+    agentForm.reset();
 
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ name, email, phone })
-      });
+    // Hide form
+    agentFormContainer.classList.add("hidden");
 
-      const data = await res.json();
+    // Refresh agents list
+    await loadAgents(
+      statusFilter.value,
+      verifiedFilter.value
+    );
 
-      if (!res.ok) throw new Error(data.error || "Failed to create agent");
+  } catch (err) {
 
-      Toast.fire({
-        icon: "success",
-        title: "Agent created successfully. Email sent."
-      });
+    console.error(err);
 
-      agentForm.reset();
-      agentFormContainer.classList.add("hidden");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: err.message
+    });
 
-      loadAgents();
+  } finally {
 
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err.message
-      });
-    }
-  });
+    // Re-enable button
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Add Agent";
+  }
+});
 
   const statusFilter = document.getElementById("statusFilter");
 
@@ -367,42 +395,68 @@ async function loadAgents(filterStatus = "all", filterVerified = "all") {
     }
   }
 
-  // ----------------------------
-  // DELETE AGENT
-  // ----------------------------
-  async function deleteAgent(id) {
-    const result = await Swal.fire({
-      title: "Delete agent?",
-      text: "This action cannot be undone",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete"
+// ----------------------------
+// DELETE AGENT
+// ----------------------------
+async function deleteAgent(id) {
+
+  const result = await Swal.fire({
+    title: "Delete agent?",
+    text: "This action cannot be undone",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete"
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
 
-    if (!result.isConfirmed) return;
+    // Handle non-json responses safely
+    let data = {};
 
-    try {
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
+    const contentType = res.headers.get("content-type");
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to delete agent");
-      }
-      Toast.fire({
-        icon: "success",
-        title: "Agent deleted successfully"
-      });
-
-      loadAgents();
-
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
+    if (contentType && contentType.includes("application/json")) {
+      data = await res.json();
     }
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to delete agent");
+    }
+
+    await Swal.fire({
+      icon: "success",
+      title: "Deleted",
+      text: "Agent deleted successfully",
+      timer: 1800,
+      showConfirmButton: false
+    });
+
+    // Refresh list
+    await loadAgents(
+      statusFilter.value,
+      verifiedFilter.value
+    );
+
+  } catch (err) {
+
+    console.error(err);
+
+    Swal.fire({
+      icon: "error",
+      title: "Delete Failed",
+      text: err.message
+    });
   }
+}
 
   const generateAgentReportBtn = document.getElementById("generateAgentReportBtn");
 

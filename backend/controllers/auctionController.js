@@ -59,18 +59,81 @@ const auctionController = {
                         ownerEmail,
                         "Car Submission Received - Amprovans Motors",
                         `
-                        <h2>Thank you for your submission!</h2>
-                        <p>Dear ${ownerName},</p>
-                        <p>Your car (<b>${make} ${model}</b>, Plate: <b>${plateNumber}</b>) has been successfully submitted.</p>
-                        <p>Our team is currently reviewing your submission.</p>
-                        <h3>What happens next?</h3>
-                        <ul>
-                            <li>✔ If approved → Your car will be listed on our platform</li>
-                            <li>✔ If rejected → We will notify you with the reason</li>
-                        </ul>
-                        <p>We will contact you soon.</p>
-                        <br>
-                        <p>Best regards,<br>Amprovans Motors Team</p>
+                        <div style="font-family: Arial, sans-serif; background:#f4f6f9; padding:40px;">
+
+                        <div style="max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.08);">
+
+                            <!-- Header -->
+                            <div style="background:#111827; color:white; padding:25px; text-align:center;">
+                            <h1 style="margin:0;">Amprovans Motors</h1>
+
+                            <p style="margin-top:8px; opacity:0.9;">
+                                Vehicle Submission Received
+                            </p>
+                            </div>
+
+                            <!-- Body -->
+                            <div style="padding:35px; color:#333; line-height:1.7;">
+
+                            <h2 style="margin-top:0;">
+                                Hello ${ownerName},
+                            </h2>
+
+                            <p>
+                                Thank you for submitting your vehicle to
+                                <strong>Amprovans Motors</strong>.
+                            </p>
+
+                            <p>
+                                Your vehicle details have been successfully received
+                                and are currently under review by our team.
+                            </p>
+
+                            <!-- Vehicle Details -->
+                            <div style="background:#f9fafb; border:1px solid #e5e7eb; padding:20px; border-radius:8px; margin:25px 0;">
+
+                                <p><strong>Vehicle:</strong> ${make} ${model} (${year})</p>
+
+                                <p><strong>Plate Number:</strong> ${plateNumber}</p>
+
+                                <p><strong>Transmission:</strong> ${transmission}</p>
+
+                                <p><strong>Fuel Type:</strong> ${fuelType}</p>
+
+                                <p><strong>Expected Price:</strong> KSh ${Number(expectedPrice).toLocaleString()}</p>
+
+                            </div>
+
+                            <p>
+                                Once the review process is complete:
+                            </p>
+
+                            <ul>
+                                <li>Your car may be approved and listed on our platform</li>
+                                <li>Or you may receive feedback if additional review is required</li>
+                            </ul>
+
+                            <p>
+                                We appreciate your trust in our services.
+                            </p>
+
+                            <br>
+
+                            <p>
+                                Regards,<br>
+                                <strong>Amprovans Motors Team</strong>
+                            </p>
+
+                            </div>
+
+                            <!-- Footer -->
+                            <div style="background:#f3f4f6; padding:18px; text-align:center; font-size:12px; color:#6b7280;">
+                            © 2026 Amprovans Motors. All rights reserved.
+                            </div>
+
+                        </div>
+
+                        </div>
                         `
                     );
                 } catch (err) {
@@ -161,24 +224,81 @@ const auctionController = {
                         clientCar.owner_email,
                         "Your Car Has Been Approved for Listing – Amprovans Motors",
                         `
-                        <h2>Great News! Your Car Has Been Approved 🎉</h2>
+                        <div style="font-family: Arial, sans-serif; background:#f4f6f9; padding:40px;">
 
-                        <p>Dear ${clientCar.owner_name},</p>
+                        <div style="max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.08);">
 
-                        <p>
-                        We are pleased to inform you that your vehicle 
-                        <strong>${clientCar.make} ${clientCar.model}</strong> 
-                        (Plate: <strong>${clientCar.plate_number}</strong>) 
-                        has been <strong>successfully approved</strong> for listing.
-                        </p>
+                            <!-- Header -->
+                            <div style="background:#16a34a; color:white; padding:25px; text-align:center;">
+                            <h1 style="margin:0;">
+                                Vehicle Approved
+                            </h1>
 
-                        <p><strong>Agreed Listing Price:</strong> KSh ${Number(agreedPrice).toLocaleString()}</p>
+                            <p style="margin-top:8px; opacity:0.9;">
+                                Your Vehicle Has Been Approved For Listing
+                            </p>
+                            </div>
 
-                        <p>Your car will now be listed and visible to potential buyers.</p>
+                            <!-- Body -->
+                            <div style="padding:35px; color:#333; line-height:1.7;">
 
-                        <br>
+                            <h2 style="margin-top:0;">
+                                Hello ${clientCar.owner_name},
+                            </h2>
 
-                        <p>Best regards,<br><strong>Amprovans Motors Team</strong></p>
+                            <p>
+                                We are pleased to inform you that your vehicle
+                                has been successfully approved for listing
+                                on the <strong>Amprovans Motors</strong> platform.
+                            </p>
+
+                            <!-- Vehicle Details -->
+                            <div style="background:#f9fafb; border:1px solid #e5e7eb; padding:20px; border-radius:8px; margin:25px 0;">
+
+                                <p>
+                                <strong>Vehicle:</strong>
+                                ${clientCar.make} ${clientCar.model} (${clientCar.year})
+                                </p>
+
+                                <p>
+                                <strong>Plate Number:</strong>
+                                ${clientCar.plate_number}
+                                </p>
+
+                                <p>
+                                <strong>Approved Listing Price:</strong>
+                                KSh ${Number(agreedPrice).toLocaleString()}
+                                </p>
+
+                            </div>
+
+                            <p>
+                                Your vehicle is now visible to potential buyers
+                                and our sales team will actively assist in finding
+                                interested customers.
+                            </p>
+
+                            <p>
+                                We appreciate the opportunity to work with you.
+                            </p>
+
+                            <br>
+
+                            <p>
+                                Regards,<br>
+                                <strong>Amprovans Motors Team</strong>
+                            </p>
+
+                            </div>
+
+                            <!-- Footer -->
+                            <div style="background:#f3f4f6; padding:18px; text-align:center; font-size:12px; color:#6b7280;">
+                            © 2026 Amprovans Motors. All rights reserved.
+                            </div>
+
+                        </div>
+
+                        </div>
                         `
                     );
                 } catch (err) {
@@ -219,27 +339,85 @@ const auctionController = {
                         clientCar.owner_email,
                         "Update on Your Car Submission – Amprovans Motors",
                         `
-                        <h2>Update on Your Car Submission</h2>
+                        <div style="font-family: Arial, sans-serif; background:#f4f6f9; padding:40px;">
 
-                        <p>Dear ${clientCar.owner_name},</p>
+                        <div style="max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.08);">
 
-                        <p>
-                        Thank you for submitting your vehicle 
-                        <strong>${clientCar.make} ${clientCar.model}</strong> 
-                        (Plate: <strong>${clientCar.plate_number}</strong>).
-                        </p>
+                            <!-- Header -->
+                            <div style="background:#dc2626; color:white; padding:25px; text-align:center;">
+                            <h1 style="margin:0;">
+                                Vehicle Submission Update
+                            </h1>
 
-                        <p>
-                        After review, we regret to inform you that your car was not approved.
-                        </p>
+                            <p style="margin-top:8px; opacity:0.9;">
+                                Review Outcome Notification
+                            </p>
+                            </div>
 
-                        <p><strong>Reason:</strong> ${rejectionReason}</p>
+                            <!-- Body -->
+                            <div style="padding:35px; color:#333; line-height:1.7;">
 
-                        <p>You are welcome to improve and resubmit in the future.</p>
+                            <h2 style="margin-top:0;">
+                                Hello ${clientCar.owner_name},
+                            </h2>
 
-                        <br>
+                            <p>
+                                Thank you for submitting your vehicle to
+                                <strong>Amprovans Motors</strong>.
+                            </p>
 
-                        <p>Kind regards,<br><strong>Amprovans Motors Team</strong></p>
+                            <p>
+                                After careful review, we regret to inform you that
+                                your vehicle submission was not approved for listing
+                                at this time.
+                            </p>
+
+                            <!-- Vehicle Details -->
+                            <div style="background:#fef2f2; border:1px solid #fecaca; padding:20px; border-radius:8px; margin:25px 0;">
+
+                                <p>
+                                <strong>Vehicle:</strong>
+                                ${clientCar.make} ${clientCar.model}
+                                </p>
+
+                                <p>
+                                <strong>Plate Number:</strong>
+                                ${clientCar.plate_number}
+                                </p>
+
+                                <p>
+                                <strong>Reason:</strong>
+                                ${rejectionReason}
+                                </p>
+
+                            </div>
+
+                            <p>
+                                You are welcome to make improvements and
+                                resubmit your vehicle in the future.
+                            </p>
+
+                            <p>
+                                We appreciate your interest and understanding.
+                            </p>
+
+                            <br>
+
+                            <p>
+                                Regards,<br>
+                                <strong>Amprovans Motors Team</strong>
+                            </p>
+
+                            </div>
+
+                            <!-- Footer -->
+                            <div style="background:#f3f4f6; padding:18px; text-align:center; font-size:12px; color:#6b7280;">
+                            © 2026 Amprovans Motors. All rights reserved.
+                            </div>
+
+                        </div>
+
+                        </div>
                         `
                     );
                 } catch (err) {

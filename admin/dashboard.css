@@ -259,6 +259,7 @@ h2 {
 /* ---------------- ADMIN CAR FORM AND LISTINGS---------------- */
 .car-card {
   background:#fff;
+  width: 250px;
   padding:12px;
   border-radius:12px;
   margin-bottom:10px;
